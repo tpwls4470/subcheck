@@ -1,0 +1,17 @@
+{
+  "name": "subcheck · 모바일 확인",
+  "short_name": "subcheck",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2f5fa",
+  "theme_color": "#e8f2ff",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
