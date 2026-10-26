@@ -1,0 +1,469 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="app-csrf" content="APP_CSRF_TOKEN"><title>subcheck · 내 사용량</title><script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script><style>#subcheck-design .sc-reference{display:flex;align-items:center;gap:18px;margin-top:24px}#subcheck-design .sc-reference-ring{flex-shrink:0;width:135px;height:135px;border-radius:50%;background:conic-gradient(var(--sc-green) var(--reference-fill),var(--sc-soft) 0);display:grid;place-items:center}#subcheck-design .sc-reference-ring>span{width:108px;height:108px;border-radius:50%;background:var(--sc-paper);display:flex;flex-direction:column;align-items:center;justify-content:center}#subcheck-design .sc-reference-ring strong{font-size:29px}#subcheck-design .sc-reference-ring small{font-size:10px;color:var(--sc-muted)}#subcheck-design .sc-reference>div:last-child{font-size:12px}#subcheck-design .sc-reference p{color:var(--sc-muted);line-height:1.7}:root{color-scheme:light}body{margin:0;background:#f2f5fa;color:#1e324b;font-family:system-ui,sans-serif}#subcheck-design .sc-stage{min-height:100vh;padding:20px 12px}#subcheck-design .sc-app{min-height:850px}#subcheck-design .sc-live-value{font-size:54px;letter-spacing:-2px;font-weight:750;margin:25px 0 0}#subcheck-design .sc-live-value small{display:block;font-size:15px;letter-spacing:0;color:var(--sc-muted);font-weight:500}#subcheck-design .sc-live-facts{display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top:1px solid var(--sc-line);padding-top:18px;margin-top:22px;font-size:12px;color:var(--sc-muted)}#subcheck-design .sc-live-facts b{display:block;color:var(--sc-ink);font-size:14px;margin-top:5px}#subcheck-design .sc-live-link{display:block;text-align:center;background:var(--sc-accent);color:var(--sc-deep);padding:14px;border-radius:14px;text-decoration:none;font-weight:650;margin-top:18px}#subcheck-design .sc-live-summary{border:1px solid var(--sc-line);border-radius:18px;background:var(--sc-paper);padding:20px;display:flex;align-items:center;gap:12px;width:100%;text-align:left}#subcheck-design .sc-live-summary small{display:block;color:var(--sc-muted);font-size:12px}#subcheck-design .sc-live-summary-value{margin-left:auto;font-size:25px;font-weight:700}#subcheck-design button:disabled{opacity:.55;cursor:wait}#subcheck-design .sc-refresh-line{line-height:1.6;font-size:12px}@media(max-width:440px){#subcheck-design .sc-stage{padding:0}#subcheck-design .sc-app{border-radius:0;border:0;min-height:100vh}}</style></head><body><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<div id="subcheck-design" class="viz-dotted-background" aria-label="서브체크 한눈에 보기 디자인">
+  <div class="sc-stage"><article class="sc-app" aria-label="서브체크 서비스 연결 시안"></article></div>
+</div>
+
+<style>
+
+
+
+
+
+
+
+
+
+#subcheck-design .sc-stage{min-height:910px;padding:28px 12px 36px;display:flex;justify-content:center;align-items:flex-start}
+#subcheck-design .sc-app{--sc-bg:light-dark(#f5f7f6,#101b1a);--sc-paper:light-dark(#ffffff,#1b2927);--sc-ink:light-dark(#142e2a,#e6f3ef);--sc-muted:light-dark(#61736f,#a8beb7);--sc-line:light-dark(#e4ebe7,#34463f);--sc-accent:#b8f1d6;--sc-deep:#123d33;--sc-soft:light-dark(#e6f4ec,#263f34);--sc-green:light-dark(#1d6048,#b8f1d6);--sc-warm:light-dark(#fbf0df,#433421);--sc-amber:light-dark(#86501c,#f1cc94);width:100%;max-width:400px;min-height:838px;border:1px solid var(--sc-line);border-radius:32px;background:var(--sc-bg);color:var(--sc-ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:15px;line-height:1.5;box-shadow:0 16px 56px #08271e12;overflow:hidden;position:relative;display:flex;flex-direction:column;isolation:isolate}
+#subcheck-design .sc-app *{box-sizing:border-box}
+#subcheck-design .sc-app button,#subcheck-design .sc-app input,#subcheck-design .sc-app select{font:inherit}
+#subcheck-design .sc-app button{color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background 160ms,opacity 160ms}
+#subcheck-design .sc-app button:active{opacity:.72}
+#subcheck-design .sc-app button:focus-visible,#subcheck-design .sc-app input:focus-visible,#subcheck-design .sc-app select:focus-visible{outline:3px solid var(--sc-green);outline-offset:3px}
+#subcheck-design .sc-app button i,#subcheck-design .sc-app button svg{flex-shrink:0}
+#subcheck-design .sc-app svg{width:20px;height:20px;stroke-width:1.7}
+#subcheck-design .sc-top{display:flex;align-items:center;justify-content:space-between;padding:23px 22px 13px;gap:12px}
+#subcheck-design .sc-brand{display:flex;align-items:center;gap:9px;font-size:21px;font-weight:800;letter-spacing:-.9px}
+#subcheck-design .sc-mark{width:29px;height:29px;background:var(--sc-deep);color:var(--sc-accent);border-radius:10px;display:grid;place-items:center}
+#subcheck-design .sc-mark svg{width:22px;height:22px;stroke-width:2.5}
+#subcheck-design .sc-icon{border:1px solid var(--sc-line);background:var(--sc-paper);border-radius:50%;width:44px;height:44px;display:grid;place-items:center;position:relative}
+#subcheck-design .sc-dot{width:6px;height:6px;background:var(--sc-green);border-radius:50%;position:absolute;right:11px;top:9px}
+#subcheck-design .sc-content{padding:8px 22px 24px;flex:1}
+#subcheck-design .sc-kicker{font-size:12px;color:var(--sc-muted);letter-spacing:.04em;display:flex;justify-content:space-between;align-items:center;margin:0 0 7px}
+#subcheck-design .sc-demo{border:1px solid var(--sc-line);padding:3px 7px;border-radius:6px;font-size:11px;letter-spacing:0}
+#subcheck-design .sc-app h1{font-size:24px;line-height:1.4;font-weight:750;letter-spacing:-1px;margin:0 0 19px}
+#subcheck-design .sc-app h2{font-size:16px;font-weight:750;letter-spacing:-.4px;margin:0}
+#subcheck-design .sc-app h3{font-size:15px;letter-spacing:-.3px;font-weight:700;margin:0}
+#subcheck-design .sc-hero{background:var(--sc-deep);color:#f3fff9;border-radius:24px;padding:21px 22px 18px;position:relative;overflow:hidden}
+#subcheck-design .sc-hero-label{display:flex;justify-content:space-between;align-items:center;gap:10px;color:#c6dfd4;font-size:13px}
+#subcheck-design .sc-hero-badge{background:#ffffff14;border:1px solid #ffffff24;border-radius:20px;font-size:11px;padding:4px 8px;color:#d9eee4;white-space:nowrap}
+#subcheck-design .sc-amount{font-size:38px;line-height:1.3;letter-spacing:-1.6px;font-weight:750;margin:10px 0 19px;font-variant-numeric:tabular-nums;display:flex;gap:4px;align-items:baseline}
+#subcheck-design .sc-amount span{font-size:18px;font-weight:500;letter-spacing:-.3px}
+#subcheck-design .sc-track{height:5px;background:#ffffff24;border-radius:8px;overflow:hidden}
+#subcheck-design .sc-track>span{height:100%;display:block;width:41.46%;background:var(--sc-accent);border-radius:8px}
+#subcheck-design .sc-hero-foot{display:flex;justify-content:space-between;margin-top:11px;gap:8px;font-size:12px;color:#c6dfd4}
+#subcheck-design .sc-hero-foot strong{color:#f3fff9;font-weight:600}
+#subcheck-design .sc-section{margin-top:22px}
+#subcheck-design .sc-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+#subcheck-design .sc-textbtn{border:0;background:transparent;padding:8px 0 8px 8px;min-height:44px;display:inline-flex;gap:3px;align-items:center;font-size:12px;color:var(--sc-muted)!important}
+#subcheck-design .sc-textbtn svg{width:14px;height:14px}
+#subcheck-design .sc-card{border:1px solid var(--sc-line);border-radius:19px;background:var(--sc-paper);overflow:hidden}
+#subcheck-design .sc-row{display:flex;align-items:center;gap:12px;width:100%;padding:15px 14px;background:transparent;border:0;text-align:left;min-height:78px}
+#subcheck-design .sc-row+.sc-row{border-top:1px solid var(--sc-line)}
+#subcheck-design .sc-avatar{height:42px;width:42px;flex-shrink:0;display:grid;place-items:center;background:var(--sc-soft);color:var(--sc-green);border-radius:14px;font-size:16px;font-weight:750;letter-spacing:-.6px}
+#subcheck-design .sc-avatar.neutral{background:var(--sc-bg);color:var(--sc-ink)}
+#subcheck-design .sc-rowtext{flex:1;min-width:0}
+#subcheck-design .sc-small{font-size:12px;color:var(--sc-muted);margin-top:3px}
+#subcheck-design .sc-right{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:14px;font-weight:650}
+#subcheck-design .sc-pill{display:inline-block;padding:3px 7px;border-radius:6px;background:var(--sc-soft);color:var(--sc-green);font-size:11px;font-weight:650;margin-top:5px}
+#subcheck-design .sc-notice{background:var(--sc-warm);color:var(--sc-amber);border-radius:17px;padding:15px;display:flex;gap:11px;width:100%;text-align:left;border:0;align-items:center;min-height:78px}
+#subcheck-design .sc-notice svg{width:22px;height:22px;flex-shrink:0}
+#subcheck-design .sc-notice strong{font-size:13px;display:block;font-weight:700}
+#subcheck-design .sc-notice p{font-size:12px;margin:4px 0 0}
+#subcheck-design .sc-notice>svg:last-child{width:15px;margin-left:auto}
+#subcheck-design .sc-add{display:flex;gap:7px;align-items:center;justify-content:center;width:100%;min-height:48px;border-radius:14px;border:0;background:var(--sc-accent);color:#123d33!important;font-size:14px;font-weight:700;margin-top:20px}
+#subcheck-design .sc-bottom{display:grid;grid-template-columns:repeat(4,1fr);background:var(--sc-paper);border-top:1px solid var(--sc-line);padding:9px 13px 12px;gap:3px;margin-top:auto}
+#subcheck-design .sc-nav{background:transparent;border:0;border-radius:13px;padding:9px 3px 5px;min-height:56px;color:var(--sc-muted)!important;display:flex;flex-direction:column;gap:5px;align-items:center;font-size:11px}
+#subcheck-design .sc-nav[aria-pressed=true]{background:var(--sc-soft);color:var(--sc-green)!important;font-weight:700}
+#subcheck-design .sc-nav svg{width:21px;height:21px}
+#subcheck-design .sc-subtitle{color:var(--sc-muted);font-size:13px;margin:-10px 0 20px}
+#subcheck-design .sc-filters{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 15px}
+#subcheck-design .sc-filter{border:1px solid var(--sc-line);background:var(--sc-paper);color:var(--sc-muted);padding:10px 14px;min-height:44px;border-radius:12px;font-size:13px}
+#subcheck-design .sc-filter[aria-pressed=true]{background:var(--sc-deep);color:#f3fff9;border-color:var(--sc-deep)}
+#subcheck-design .sc-credit{padding:20px}
+#subcheck-design .sc-credit .sc-track{background:var(--sc-line);height:8px;margin:17px 0 12px}
+#subcheck-design .sc-credit .sc-track>span{width:20%;background:var(--sc-green)}
+#subcheck-design .sc-credit-num{font-size:32px;font-weight:750;letter-spacing:-1px;margin:22px 0 2px}
+#subcheck-design .sc-credit-num small{font-size:14px;font-weight:400;color:var(--sc-muted);letter-spacing:0}
+#subcheck-design .sc-facts{display:grid;grid-template-columns:1fr auto;gap:15px 10px;font-size:14px;margin:0}
+#subcheck-design .sc-facts dt{color:var(--sc-muted)}
+#subcheck-design .sc-facts dd{margin:0;text-align:right;font-weight:600}
+#subcheck-design .sc-detailhead{padding:10px 0 23px;display:flex;align-items:center;flex-direction:column;gap:8px}
+#subcheck-design .sc-detailhead .sc-avatar{width:60px;height:60px;border-radius:20px;font-size:24px}
+#subcheck-design .sc-detailhead h1{margin:0}
+#subcheck-design .sc-back{display:flex;gap:6px;align-items:center;min-height:44px;border:0;background:transparent;padding:0;margin:0 0 10px;color:var(--sc-muted)!important;font-size:13px}
+#subcheck-design .sc-inner{padding:20px}
+#subcheck-design .sc-field{display:block;font-size:13px;font-weight:600;margin:0 0 18px}
+#subcheck-design .sc-field input,#subcheck-design .sc-field select{width:100%;display:block;margin-top:8px;min-height:49px;border:1px solid var(--sc-line);border-radius:12px;padding:12px;color:var(--sc-ink);background:var(--sc-paper);font-size:16px}
+#subcheck-design .sc-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#subcheck-design .sc-setting{padding:17px 15px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;border-bottom:1px solid var(--sc-line)}
+#subcheck-design .sc-setting:last-child{border-bottom:0}
+#subcheck-design .sc-caption{font-size:12px;color:var(--sc-muted);margin:13px 0 0;line-height:1.7}
+#subcheck-design .sc-week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:17px 0 23px}
+#subcheck-design .sc-day{text-align:center;padding:9px 0 6px;border-radius:14px;background:transparent;border:0;min-height:73px;font-size:12px;color:var(--sc-muted)}
+#subcheck-design .sc-day b{display:block;font-size:18px;margin:5px 0;font-weight:650;color:var(--sc-ink)}
+#subcheck-design .sc-day[aria-pressed=true]{background:var(--sc-deep);color:#d6ede3}
+#subcheck-design .sc-day[aria-pressed=true] b{color:#f3fff9}
+#subcheck-design .sc-day em{display:block;width:4px;height:4px;background:var(--sc-green);border-radius:50%;margin:auto}
+#subcheck-design .sc-day[aria-pressed=true] em{background:var(--sc-accent)}
+#subcheck-design .sc-schedule-top{border-bottom:1px solid var(--sc-line);padding-bottom:21px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+#subcheck-design .sc-schedule-top strong{font-size:29px;letter-spacing:-1px;font-weight:750}
+#subcheck-design .sc-timeline{margin:20px 0 24px}
+#subcheck-design .sc-timeentry{display:grid;grid-template-columns:42px 1fr;gap:12px;margin-bottom:14px}
+#subcheck-design .sc-date{font-size:12px;color:var(--sc-muted);padding-top:12px;text-align:center}
+#subcheck-design .sc-date b{display:block;color:var(--sc-ink);font-size:22px;font-weight:650}
+#subcheck-design .sc-timeentry .sc-card{padding:15px}
+#subcheck-design .sc-inline{display:flex;align-items:center;gap:10px}
+#subcheck-design .sc-timeentry .sc-right{margin-left:auto}
+#subcheck-design .sc-toast{position:absolute;left:20px;right:20px;bottom:92px;padding:13px 16px;border-radius:13px;background:var(--sc-deep);color:#f3fff9;box-shadow:0 6px 24px #0002;font-size:13px;z-index:5}
+#subcheck-design .sc-empty{padding:26px 10px;text-align:center;color:var(--sc-muted);font-size:14px}
+@media(max-width:420px){#subcheck-design .sc-stage{padding:12px 0 28px;min-height:890px}#subcheck-design .sc-app{border-radius:24px}#subcheck-design .sc-content{padding-left:18px;padding-right:18px}#subcheck-design .sc-top{padding-left:18px;padding-right:18px}#subcheck-design .sc-hero{padding:20px 18px}#subcheck-design .sc-amount{font-size:35px}#subcheck-design .sc-row{gap:10px;padding:14px 11px}}
+@media(prefers-reduced-motion:reduce){#subcheck-design .sc-app button{transition:none}}
+#subcheck-design .sc-top-actions{display:flex;gap:8px}
+#subcheck-design .sc-brand{font-size:25px;letter-spacing:-1.1px;font-weight:800}
+#subcheck-design .sc-app .sc-brand{gap:0}
+#subcheck-design .sc-stepper{display:flex;gap:7px;align-items:center;margin:7px 0 25px;font-size:12px}
+#subcheck-design .sc-stepper span{padding:7px 11px;border-radius:20px;color:var(--sc-muted);background:var(--sc-paper);border:1px solid var(--sc-line)}
+#subcheck-design .sc-stepper span[aria-current=step]{background:var(--sc-deep);color:#f3fff9;border-color:var(--sc-deep)}
+#subcheck-design .sc-stepper b{font-weight:400;color:var(--sc-muted)}
+#subcheck-design .sc-search{position:relative;margin:0 0 13px}
+#subcheck-design .sc-search input{width:100%;min-height:48px;border:1px solid var(--sc-line);border-radius:14px;background:var(--sc-paper);color:var(--sc-ink);padding:12px 14px;font:inherit;font-size:16px}
+#subcheck-design .sc-catalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+#subcheck-design .sc-service{min-height:111px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 4px;background:var(--sc-paper);border:1px solid var(--sc-line);border-radius:16px;text-align:center;font-size:12px}
+#subcheck-design .sc-app .sc-service[aria-pressed=true]{background:var(--sc-soft);border:2px solid var(--sc-green);padding:11px 3px}
+#subcheck-design .sc-service small{font-size:11px;color:var(--sc-muted);line-height:1.4}
+#subcheck-design .sc-service .sc-avatar{width:36px;height:36px;border-radius:11px;font-size:15px}
+#subcheck-design .sc-app .sc-add:disabled{background:var(--sc-line);color:var(--sc-muted)!important;cursor:default;opacity:.8}
+#subcheck-design .sc-connect{text-align:center;padding:26px 20px}
+#subcheck-design .sc-connect .sc-avatar{width:64px;height:64px;border-radius:21px;font-size:26px;margin:0 auto 14px}
+#subcheck-design .sc-connect h2{font-size:19px;margin-bottom:5px}
+#subcheck-design .sc-connect-status{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 8px;border-radius:10px;background:var(--sc-bg);font-size:12px;color:var(--sc-muted);margin:20px 0 0}
+#subcheck-design .sc-signal{display:inline-block;width:7px;height:7px;background:var(--sc-green);border-radius:50%;flex-shrink:0}
+#subcheck-design .sc-summary-tags{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:18px 0 0}
+#subcheck-design .sc-summary-tags span{padding:5px 8px;border-radius:7px;background:var(--sc-soft);color:var(--sc-green);font-size:11px}
+#subcheck-design .sc-secondary{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:47px;background:var(--sc-paper);color:var(--sc-ink);border:1px solid var(--sc-line);border-radius:14px;font-size:13px;margin-top:10px;padding:10px}
+#subcheck-design .sc-link-note{display:flex;align-items:flex-start;gap:10px;border-top:1px solid var(--sc-line);padding-top:15px;margin-top:19px;text-align:left;font-size:12px;color:var(--sc-muted);line-height:1.7}
+#subcheck-design .sc-link-note svg{flex-shrink:0;margin-top:2px}
+#subcheck-design .sc-success{background:var(--sc-soft);border-radius:50%;width:58px;height:58px;display:grid;place-items:center;color:var(--sc-green);margin:0 auto 14px}
+#subcheck-design .sc-success svg{width:30px;height:30px}
+#subcheck-design .sc-footnote{font-size:11px;color:var(--sc-muted);line-height:1.6;margin:14px 0 0}
+#subcheck-design .sc-sync-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:17px;font-size:11px;color:var(--sc-muted)}
+#subcheck-design .sc-refresh-line{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--sc-line);margin-top:19px;padding-top:7px;font-size:12px;color:var(--sc-muted)}
+#subcheck-design .sc-refresh-line button{color:var(--sc-green)!important}
+#subcheck-design .sc-source{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--sc-green);margin-top:8px}
+#subcheck-design .sc-status-banner{background:var(--sc-soft);color:var(--sc-green);padding:12px 14px;font-size:12px;border-radius:12px;margin:0 0 16px;line-height:1.6}
+#subcheck-design .sc-app .sc-status-banner.warning{background:var(--sc-warm);color:var(--sc-amber)}
+#subcheck-design .sc-preview-indicator{display:block;font-size:11px;line-height:1.5;color:var(--sc-muted);margin-top:7px}
+#subcheck-design .sc-app .sc-content{padding-top:8px}
+#subcheck-design .sc-connecting svg{animation:sc-turn 1.2s linear infinite}
+@keyframes sc-turn{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#subcheck-design .sc-connecting svg{animation:none}}
+
+#subcheck-design .sc-bottom{grid-template-columns:repeat(3,minmax(0,1fr))}
+#subcheck-design .sc-usage-link{display:flex;justify-content:center;align-items:center;gap:8px;width:100%;min-height:49px;border:0;border-top:1px solid var(--sc-line);background:var(--sc-soft);color:var(--sc-green)!important;font-weight:650;font-size:13px}
+#subcheck-design .sc-personal-label{font-size:12px;color:var(--sc-green);margin-top:5px}
+#subcheck-design .sc-donut-layout{display:flex;gap:18px;align-items:center;margin-top:20px}
+#subcheck-design .sc-donut{width:148px;height:148px;flex-shrink:0;border-radius:50%;background:conic-gradient(var(--sc-green) var(--sc-fill),var(--sc-line) 0);display:grid;place-items:center;position:relative}
+#subcheck-design .sc-donut:before{content:'';position:absolute;inset:12px;background:var(--sc-paper);border-radius:50%}
+#subcheck-design .sc-donut-label{position:relative;text-align:center;z-index:1;font-size:11px;color:var(--sc-muted)}
+#subcheck-design .sc-donut-label strong{display:block;color:var(--sc-ink);font-size:33px;line-height:1.3;letter-spacing:-1.2px;font-weight:750;margin:3px 0}
+#subcheck-design .sc-donut-label strong small{font-size:16px;letter-spacing:0}
+#subcheck-design .sc-usage-numbers{flex:1;min-width:0;font-variant-numeric:tabular-nums}
+#subcheck-design .sc-usage-numbers strong{display:block;font-size:23px;letter-spacing:-.7px;line-height:1.3}
+#subcheck-design .sc-usage-numbers small{font-size:12px;color:var(--sc-muted);display:block;margin-top:4px}
+#subcheck-design .sc-used{font-size:13px;color:var(--sc-muted);margin-top:17px}
+#subcheck-design .sc-cycle{display:flex;gap:8px;justify-content:space-between;background:var(--sc-bg);border-radius:12px;padding:12px;margin-top:18px;font-size:12px;color:var(--sc-muted)}
+#subcheck-design .sc-cycle strong{display:block;color:var(--sc-ink);font-weight:650;margin-top:3px}
+#subcheck-design .sc-usage-listrow{width:100%;border:0;background:var(--sc-paper);padding:15px;display:flex;align-items:center;gap:11px;text-align:left}
+#subcheck-design .sc-usage-listrow+.sc-usage-listrow{border-top:1px solid var(--sc-line)}
+#subcheck-design .sc-mini-ring{width:40px;height:40px;border-radius:50%;background:conic-gradient(var(--sc-green) var(--sc-fill),var(--sc-line) 0);position:relative;display:grid;place-items:center;flex-shrink:0}
+#subcheck-design .sc-mini-ring:before{content:'';position:absolute;inset:5px;background:var(--sc-paper);border-radius:50%}
+#subcheck-design .sc-mini-ring span{position:relative;font-size:10px;font-weight:700}
+#subcheck-design .sc-chart-wrap{margin-top:17px;display:flex;gap:10px;align-items:stretch}
+#subcheck-design .sc-bars{flex:1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:end;gap:13px;height:125px;padding-top:24px}
+#subcheck-design .sc-bar-col{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px;color:var(--sc-muted);font-size:11px}
+#subcheck-design .sc-bar{width:100%;max-width:27px;height:var(--sc-height);background:var(--sc-line);border-radius:5px 5px 0 0;position:relative;min-height:2px}
+#subcheck-design .sc-bar.active{background:var(--sc-green)}
+#subcheck-design .sc-bar b{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:var(--sc-muted);font-weight:400}
+#subcheck-design .sc-chart-summary{font-size:12px;color:var(--sc-muted);margin:16px 0 0}
+#subcheck-design .sc-profile{background:var(--sc-deep);color:#f3fff9;border-radius:22px;padding:23px 20px;display:flex;align-items:center;gap:15px;margin-top:6px}
+#subcheck-design .sc-profile-avatar{width:53px;height:53px;display:grid;place-items:center;border-radius:19px;background:var(--sc-accent);color:#123d33;font-size:21px;font-weight:700;flex-shrink:0}
+#subcheck-design .sc-profile h2{font-size:20px;color:#f3fff9}
+#subcheck-design .sc-profile p{font-size:12px;color:#c6dfd4;margin:5px 0 0}
+#subcheck-design .sc-profile-action{margin-top:14px;border:1px solid #ffffff45;border-radius:8px;background:#ffffff12;color:#f3fff9!important;padding:9px 12px;font-size:12px;min-height:44px}
+#subcheck-design .sc-menu{display:flex;align-items:center;gap:11px;width:100%;min-height:55px;padding:15px;border:0;border-bottom:1px solid var(--sc-line);background:var(--sc-paper);text-align:left;font-size:14px}
+#subcheck-design .sc-menu:last-child{border-bottom:0}
+#subcheck-design .sc-menu svg{width:19px;height:19px;color:var(--sc-muted)}
+#subcheck-design .sc-menu .sc-menu-end{margin-left:auto;display:flex;align-items:center;gap:6px;color:var(--sc-muted);font-size:12px}
+#subcheck-design .sc-switch-row{display:flex;align-items:center;justify-content:space-between;gap:15px;min-height:71px;padding:16px 15px;border-bottom:1px solid var(--sc-line);font-size:14px}
+#subcheck-design .sc-switch-row:last-child{border-bottom:0}
+#subcheck-design .sc-switch-row input{appearance:none;width:43px;height:25px;border-radius:20px;background:var(--sc-line);position:relative;flex-shrink:0;margin:0;cursor:pointer}
+#subcheck-design .sc-switch-row input:after{content:'';position:absolute;width:19px;height:19px;border-radius:50%;left:3px;top:3px;background:var(--sc-paper);box-shadow:0 1px 3px #0002}
+#subcheck-design .sc-switch-row input:checked{background:var(--sc-green)}
+#subcheck-design .sc-switch-row input:checked:after{left:21px}
+#subcheck-design .sc-social{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:52px;background:var(--sc-paper);border:1px solid var(--sc-line);border-radius:14px;margin-top:12px;font-size:14px;font-weight:600}
+#subcheck-design .sc-social-letter{width:24px;font-size:17px;font-weight:700;text-align:center}
+#subcheck-design .sc-auth-intro{padding:27px 0 23px}
+#subcheck-design .sc-auth-intro h1{font-size:29px;line-height:1.45}
+#subcheck-design .sc-auth-identity{border:1px solid var(--sc-line);background:var(--sc-paper);border-radius:20px;padding:24px;text-align:center;margin-top:24px}
+#subcheck-design .sc-plain-action{display:block;margin:16px auto 0;min-height:44px;border:0;background:transparent;color:var(--sc-muted)!important;font-size:13px}
+#subcheck-design .sc-app .sc-usage-filters{gap:6px}
+#subcheck-design .sc-service-select{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 15px;color:var(--sc-muted);font-size:13px}
+#subcheck-design .sc-service-select select{font:inherit;font-size:16px;background:var(--sc-paper);color:var(--sc-ink);border:1px solid var(--sc-line);border-radius:11px;min-height:44px;padding:8px 12px;width:175px}
+#subcheck-design .sc-usage-filters .sc-filter{padding:9px 12px;font-size:12px}
+@media(max-width:360px){#subcheck-design .sc-donut{width:127px;height:127px}#subcheck-design .sc-donut-layout{gap:12px}#subcheck-design .sc-usage-numbers strong{font-size:21px}#subcheck-design .sc-bars{gap:9px}}
+
+#subcheck-design .sc-app{color-scheme:light;--sc-bg:#f7fbf9;--sc-paper:#fff;--sc-ink:#203d36;--sc-muted:#58746a;--sc-line:#e0eee7;--sc-accent:#a8edcf;--sc-deep:#176447;--sc-soft:#e9f8ef;--sc-green:#237251;--sc-warm:#fff5df;--sc-amber:#845616;box-shadow:0 16px 54px #39735410}
+#subcheck-design .sc-app .sc-hero{background:#dbf7e9;color:var(--sc-ink);border:1px solid #c8ecd9}
+#subcheck-design .sc-app .sc-hero-label,#subcheck-design .sc-app .sc-hero-foot{color:#44695b}
+#subcheck-design .sc-app .sc-hero-badge{background:#ffffffb3;color:#306049;border-color:#c0e4d0}
+#subcheck-design .sc-app .sc-hero-foot strong{color:var(--sc-ink)}
+#subcheck-design .sc-app .sc-hero .sc-track{background:#bce6cf}
+#subcheck-design .sc-app .sc-hero .sc-track>span{background:#4aa57a}
+#subcheck-design .sc-app .sc-profile{background:#e5f3ff;color:var(--sc-ink);border:1px solid #d4e9f8}
+#subcheck-design .sc-app .sc-profile h2{color:var(--sc-ink)}
+#subcheck-design .sc-app .sc-profile p{color:#4a6d80}
+#subcheck-design .sc-app .sc-profile-action{background:#fff;color:#235871!important;border-color:#c8e0ef}
+#subcheck-design .sc-app .sc-profile-avatar{background:#fff;color:#337394}
+#subcheck-design .sc-app .sc-bottom{background:#fff}
+#subcheck-design .sc-app .sc-nav i[data-lucide="chart-pie"]{display:block;width:21px;height:21px;background:conic-gradient(var(--sc-green) 0 24%,transparent 24% 29%,var(--sc-green) 29% 100%);border-radius:50%;position:relative}
+#subcheck-design .sc-app .sc-nav i[data-lucide="chart-pie"]:after{content:'';position:absolute;inset:5px;background:var(--sc-paper);border-radius:50%}
+#subcheck-design .sc-app .sc-nav[aria-pressed=true] i[data-lucide="chart-pie"]:after{background:var(--sc-soft)}
+#subcheck-design .sc-home-usage{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#subcheck-design .sc-home-usage button{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;min-height:90px;border:1px solid var(--sc-line);background:var(--sc-paper);padding:14px 12px;border-radius:17px}
+#subcheck-design .sc-home-usage h3{font-size:14px}
+#subcheck-design .sc-home-usage .sc-mini-ring{width:43px;height:43px}
+#subcheck-design .sc-home-usage .sc-mini-ring span{font-size:11px}
+#subcheck-design .sc-home-usage .sc-small{font-size:11px}
+#subcheck-design .sc-home-equal{margin-top:17px}
+#subcheck-design .sc-home-equal .sc-heading{margin-bottom:8px}
+#subcheck-design .sc-manage-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+#subcheck-design .sc-manage-actions button{min-height:46px;border:1px solid var(--sc-line);border-radius:12px;padding:10px 7px;font-size:12px;background:var(--sc-paper);color:var(--sc-muted)}
+#subcheck-design .sc-app .sc-manage-actions .sc-upgrade{background:#e4f8ed;border-color:#c7e9d6;color:#245d42}
+#subcheck-design .sc-app .sc-manage-actions .sc-cancel{color:#945747}
+#subcheck-design .sc-service small{font-size:11px}
+#subcheck-design .sc-catalog-summary{font-size:12px;color:var(--sc-muted);margin:10px 0 14px}
+#subcheck-design .sc-service-group h2{margin:19px 0 10px;font-size:15px}
+#subcheck-design .sc-category-note{font-size:11px;color:var(--sc-muted);margin:9px 0 15px}
+#subcheck-design .sc-services-subfilters{display:flex;gap:5px;flex-wrap:wrap;margin:0 0 16px}
+#subcheck-design .sc-subfilter{border:0;border-radius:7px;background:var(--sc-soft);color:var(--sc-muted);padding:7px 9px;font-size:11px;min-height:36px}
+#subcheck-design .sc-app .sc-subfilter[aria-pressed=true]{background:#d0eedf;color:#245d42;font-weight:700}
+#subcheck-design .sc-catalog-more{margin-top:12px}
+#subcheck-design .sc-action-choice{display:flex;gap:6px;margin:19px 0 14px;flex-wrap:wrap}
+#subcheck-design .sc-action-choice button{border:1px solid var(--sc-line);background:var(--sc-paper);border-radius:10px;min-height:44px;padding:8px 10px;font-size:12px}
+#subcheck-design .sc-app .sc-action-choice button[aria-pressed=true]{background:var(--sc-soft);border-color:#a4d6bc;color:var(--sc-green)}
+#subcheck-design .sc-action-list{padding:0;margin:18px 0 0 19px;color:var(--sc-muted);font-size:13px;line-height:1.9}
+
+#subcheck-design .sc-app{--sc-bg:#f6faff;--sc-paper:#fff;--sc-ink:#203b56;--sc-muted:#5d748d;--sc-line:#dfebf6;--sc-accent:#b8dbff;--sc-deep:#326aaf;--sc-soft:#eaf3ff;--sc-green:#356eaf;--sc-hero-bg:#e1efff;--sc-hero-border:#cddff6;--sc-hero-text:#486988;--sc-track-bg:#c9def6;--sc-profile-bg:#f0edff;--sc-profile-border:#e0d9f4}
+#subcheck-design .sc-app[data-theme="lavender"]{--sc-bg:#faf8ff;--sc-ink:#403858;--sc-muted:#75688b;--sc-line:#ebe4f5;--sc-accent:#d9c9fa;--sc-deep:#7560a6;--sc-soft:#f1ebfc;--sc-green:#7960a9;--sc-hero-bg:#eee5ff;--sc-hero-border:#e0d3f6;--sc-hero-text:#73618d;--sc-track-bg:#dfd0f3;--sc-profile-bg:#f1f4ff;--sc-profile-border:#dfe5f6}
+#subcheck-design .sc-app[data-theme="peach"]{--sc-bg:#fffaf6;--sc-ink:#574138;--sc-muted:#8a6d5f;--sc-line:#f2e6dd;--sc-accent:#ffd4b8;--sc-deep:#a15f3d;--sc-soft:#fff0e5;--sc-green:#a36240;--sc-hero-bg:#ffeadb;--sc-hero-border:#f4d9c6;--sc-hero-text:#8a6752;--sc-track-bg:#f3d4bf;--sc-profile-bg:#fff4df;--sc-profile-border:#f0e1bf}
+#subcheck-design .sc-app .sc-hero{background:var(--sc-hero-bg);border-color:var(--sc-hero-border)}
+#subcheck-design .sc-app .sc-hero-label,#subcheck-design .sc-app .sc-hero-foot{color:var(--sc-hero-text)}
+#subcheck-design .sc-app .sc-hero-badge{color:var(--sc-green);border-color:var(--sc-hero-border)}
+#subcheck-design .sc-app .sc-hero .sc-track{background:var(--sc-track-bg)}
+#subcheck-design .sc-app .sc-hero .sc-track>span{background:var(--sc-green)}
+#subcheck-design .sc-app .sc-profile{background:var(--sc-profile-bg);border-color:var(--sc-profile-border)}
+#subcheck-design .sc-app .sc-profile p{color:var(--sc-muted)}
+#subcheck-design .sc-app .sc-profile-avatar,#subcheck-design .sc-app .sc-profile-action{color:var(--sc-green)!important}
+#subcheck-design .sc-app .sc-add{color:var(--sc-ink)!important}
+#subcheck-design .sc-app .sc-manage-actions .sc-upgrade{background:var(--sc-soft);border-color:var(--sc-line);color:var(--sc-green)}
+#subcheck-design .sc-app .sc-subfilter[aria-pressed=true]{background:var(--sc-track-bg);color:var(--sc-ink)}
+#subcheck-design .sc-quota{padding:16px;border:1px solid var(--sc-line);border-radius:16px;background:var(--sc-paper);margin-top:12px}
+#subcheck-design .sc-quota-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;font-weight:650}
+#subcheck-design .sc-quota-meta{display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-size:12px;color:var(--sc-muted)}
+#subcheck-design .sc-quota-value{font-size:25px;letter-spacing:-.7px;font-weight:700;line-height:1.4;margin-top:13px}
+#subcheck-design .sc-quota-value small{font-size:13px;font-weight:400;letter-spacing:0;color:var(--sc-muted)}
+#subcheck-design .sc-quota .sc-track{background:var(--sc-line);height:6px;margin-top:12px}
+#subcheck-design .sc-quota .sc-track>span{background:var(--sc-green)}
+#subcheck-design .sc-quota-reset{margin-top:13px;border-top:1px solid var(--sc-line);padding-top:10px;font-size:12px;color:var(--sc-muted);line-height:1.8}
+#subcheck-design .sc-quota-reset strong{font-weight:600;color:var(--sc-ink)}
+#subcheck-design .sc-unknown-track{height:6px;background:repeating-linear-gradient(135deg,var(--sc-line) 0 5px,var(--sc-paper) 5px 9px);margin-top:12px;border-radius:6px}
+#subcheck-design .sc-theme-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px}
+#subcheck-design .sc-theme-option{background:var(--sc-paper);border:1px solid var(--sc-line);border-radius:13px;min-height:67px;padding:9px 5px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:6px}
+#subcheck-design .sc-theme-option[aria-pressed=true]{border:2px solid var(--sc-green);padding:8px 4px}
+#subcheck-design .sc-color-dot{width:18px;height:18px;border-radius:50%;display:block;background:var(--sc-dot-color)}
+#subcheck-design .sc-quota-summary{display:block;font-size:11px;color:var(--sc-muted);margin-top:5px}
+
+</style>
+<script>
+(()=>{
+const root=document.getElementById('subcheck-design');
+const el=root.querySelector('.sc-app');
+const icon=name=>`<i data-lucide="${name}" aria-hidden="true"></i>`;
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n).toLocaleString('ko-KR');
+const initial=[
+ {id:'chatgpt',name:'ChatGPT',plan:'Plus',price:30000,date:'2026-10-28',cat:'AI',letter:'C',paid:false},
+ {id:'gemini',name:'Gemini',plan:'AI 구독',price:29000,date:'2026-10-30',cat:'AI',letter:'G',paid:false},
+ {id:'netflix',name:'Netflix',plan:'영상 구독',price:13500,date:'2026-11-03',cat:'영상·음악',letter:'N',paid:true},
+ {id:'coupang',name:'쿠팡 와우',plan:'멤버십',price:7890,date:'2026-11-08',cat:'멤버십',letter:'W',paid:true},
+ {id:'tving',name:'티빙',plan:'영상 구독',price:9500,date:'2026-11-14',cat:'영상·음악',letter:'T',paid:true},
+ {id:'melon',name:'멜론',plan:'음악 구독',price:10900,date:'2026-11-20',cat:'영상·음악',letter:'M',paid:true}
+];
+const catalog=[
+ {id:'chatgpt',name:'ChatGPT',cat:'추천',letter:'C',tag:'개인 구독 확인 중',support:'개인 Plus·Pro의 결제일·잔여 한도를 외부 앱에 제공하는 공개 연동은 확인되지 않았어요. 조직 API 비용 조회와는 다른 정보예요.',price:30000,plan:'Plus'},
+ {id:'claude',name:'Claude',cat:'추천',letter:'CL',tag:'개인 구독 확인 중',support:'공식 조회 API는 조직 API 비용과 일부 기업 분석용이에요. 개인 구독의 잔여 한도·결제일 연동은 별도 확인이 필요해요.',price:29000,plan:'구독 플랜'},
+ {id:'gemini',name:'Gemini',cat:'추천',letter:'G',tag:'개인 구독 확인 중',support:'Gemini API의 사용량 정보와 Google AI 개인 구독 정보는 구분해야 해요. 개인 구독 조회 연동은 확인 중이에요.',price:29000,plan:'AI 구독'},
+ {id:'kling',name:'클링',cat:'영상',letter:'K',tag:'API 조회 문서 있음',support:'API 계정 사용량 조회 문서는 있어요. 웹 멤버십 크레딧과 같은 잔액인지, 조회 지연·연동 권한은 추가 검증이 필요해요.',price:null,plan:'선불 크레딧'},
+ {id:'higgsfield',name:'Higgsfield',cat:'영상',letter:'H',tag:'웹·API 잔액 별도',support:'일반 API 잔액과 웹 구독 크레딧은 별개예요. 웹 계정 연결 수단과 외부 앱에서의 사용 조건은 추가 확인이 필요해요.',price:29000,plan:'구독 플랜'},
+ {id:'midjourney',name:'Midjourney',cat:'디자인',letter:'MJ',tag:'자동 연동 제한',support:'공식 안내에서 일부 허용 예외를 제외한 외부 자동화 접근을 제한해요. 허가 전에는 로그인 자동 수집을 제공할 수 없어요.',price:14000,plan:'구독 플랜',restricted:true},
+ {id:'netflix',name:'Netflix',cat:'영화',letter:'N',tag:'조회 연동 확인 중',support:'공식 계정 화면에서 결제일·잔액을 확인할 수 있어요. 서브체크가 읽을 수 있는 공개 조회 연동은 확인되지 않았어요.',price:13500,plan:'영상 구독'},
+ {id:'youtube',name:'YouTube',cat:'영화',letter:'Y',tag:'연동 검토 전',support:'개인 Premium 구독 조회와 연결 권한을 확인한 뒤 지원 여부를 안내할 예정이에요.',price:14900,plan:'Premium'},
+ {id:'tving',name:'티빙',cat:'영화',letter:'T',tag:'공식 조회 확인 중',support:'외부 앱용 구독 정보 조회 지원 여부를 확인 중이에요. 이 시안에서는 연동 흐름만 체험할 수 있어요.',price:9500,plan:'영상 구독'},
+ {id:'suno',name:'Suno',cat:'음악',letter:'S',tag:'연동 검토 전',support:'공식 계정 연결과 잔여 크레딧 조회 지원 여부를 검토할 예정이에요.',price:10000,plan:'구독 플랜'},
+ {id:'melon',name:'멜론',cat:'음악',letter:'M',tag:'공식 조회 확인 중',support:'개인 이용권을 외부 앱에서 읽을 수 있는 공식 경로를 확인 중이에요.',price:10900,plan:'음악 구독'},
+ {id:'coupang',name:'쿠팡 와우',cat:'기타',letter:'W',tag:'공식 조회 확인 중',support:'와우 멤버십의 개인 결제일·금액을 조회하는 외부 연동 경로를 확인 중이에요.',price:7890,plan:'멤버십'}
+];
+const s={screen:'home',filter:'전체',category:'전체',search:'',selected:'chatgpt',chosen:null,apps:initial.map(a=>({...a})),credit:120,sync:'idle',syncScenario:'정상',lastSync:'아직 갱신하지 않음 · 예시',linking:false,flowVersion:2,added:null,toast:null};
+let refreshTimer,linkTimer,toastTimer;
+const screens=['serviceAction','actionPreview','usage','billing','login','auth','account','logout','connections','notifications','help','contact','policies','about','withdrawal','home','subscriptions','credits','settings','detail','add','connect','confirm','registered','calendar','support'];
+const selectedService=()=>catalog.find(a=>a.id===s.chosen)||catalog[0];
+const stepper=n=>`<div class="sc-stepper" aria-label="구독 추가 단계">${['선택','연동','완료'].map((a,i)=>`${i?'<b>—</b>':''}<span ${i+1===n?'aria-current="step"':''}>0${i+1} ${a}</span>`).join('')}</div>`;
+const demo=()=>'<span class="sc-demo">연동 흐름 시안</span>';
+function save(){window.openai?.setWidgetState?.({modelContent:{design:'한눈에 보기',version:5,screen:s.screen,usageService:s.usageId,chosenService:s.chosen},privateContent:{version:5,screen:s.screen,filter:s.filter,category:s.category,chosen:s.chosen,selected:s.selected,usageId:s.usageId,color:s.color,loggedIn:s.loggedIn,provider:s.provider,notifications:s.notifications,sync:s.sync,lastSync:s.lastSync}}).catch(()=>{});}
+function change(screen){if(screen!=='connect'&&s.linking){clearTimeout(linkTimer);s.linking=false;}s.screen=screen;render();save();}
+function notify(message){s.toast=message;render();clearTimeout(toastTimer);toastTimer=setTimeout(()=>{s.toast=null;render();},3500);}
+function row(a){const date=new Date(a.date+'T00:00:00Z'),gap=Math.round((date-new Date('2026-10-26T00:00:00Z'))/86400000);return `<button class="sc-row cursor-interaction" data-detail="${a.id}"><span class="sc-avatar ${a.cat==='AI'?'':'neutral'}">${esc(a.letter)}</span><span class="sc-rowtext"><h3>${esc(a.name)}</h3><span class="sc-small">${esc(a.plan)} · ${date.getUTCMonth()+1}월 ${date.getUTCDate()}일</span></span><span class="sc-right">${a.priceUnknown?'금액 확인 필요':fmt(a.price)+'원'}<br><span class="sc-pill">D-${gap}</span></span></button>`;}
+function overview(){const total=s.apps.reduce((v,a)=>v+a.price,0),paid=s.apps.filter(a=>a.paid).reduce((v,a)=>v+a.price,0);return `<div class="sc-kicker"><span>2026년 10월 26일 월요일</span>${demo()}</div><h1>내 구독, 새는 돈 없이.</h1><div class="sc-hero"><div class="sc-hero-label"><span>10월 구독료</span><span class="sc-hero-badge">정기 구독 ${s.apps.length}개</span></div><div class="sc-amount">${fmt(total)}<span>원</span></div><div class="sc-track" aria-label="이번 달 결제 완료 비중"><span style="width:${paid/total*100}%"></span></div><div class="sc-hero-foot"><span>결제 완료 <strong>${fmt(paid)}원</strong></span><span>예정 <strong>${fmt(total-paid)}원</strong></span></div></div><section class="sc-section"><div class="sc-heading"><h2>다가오는 결제</h2><button class="sc-textbtn cursor-interaction" data-screen="subscriptions">전체 보기 ${icon('chevron-right')}</button></div><div class="sc-card">${s.apps.filter(a=>!a.paid).slice(0,2).map(row).join('')}</div></section><section class="sc-section"><div class="sc-heading"><h2>놓치기 전 확인</h2><span class="sc-small">1건</span></div><button class="sc-notice cursor-interaction" data-screen="credits">${icon('hourglass')}<span><strong>남은 크레딧, 만료 전에 확인하세요</strong><p>클링 ${s.credit} 크레딧 · 5일 후 만료</p></span>${icon('chevron-right')}</button></section><button class="sc-add cursor-interaction" data-screen="add">${icon('plus')} 구독 추가하기</button><div class="sc-sync-meta"><span>실제 계정 연결 전 · 모든 금액은 예시</span><span>${s.sync==='updated'?'갱신 시연 완료':'새로고침으로 갱신'}</span></div>`;}
+function subscriptions(){return `<div class="sc-kicker"><span>MY SUBSCRIPTIONS</span>${demo()}</div><h1>내가 구독하는 것들</h1><p class="sc-subtitle">${s.apps.length}개 구독 · 월 ${fmt(s.apps.reduce((v,a)=>v+a.price,0))}원</p><div class="sc-filters">${['전체','AI','영상·음악','멤버십'].map(t=>`<button class="sc-filter cursor-interaction" data-filter="${t}" aria-pressed="${s.filter===t}">${t}</button>`).join('')}</div><div class="sc-card">${s.apps.filter(a=>s.filter==='전체'||a.cat===s.filter).map(row).join('')}</div><button class="sc-add cursor-interaction" data-screen="add">${icon('plus')} 구독 추가하기</button>`;}
+function credits(){const waiting=s.sync==='loading',expired=s.sync==='expired',failed=s.sync==='failed';return `<div class="sc-kicker"><span>CREDIT CHECK</span>${demo()}</div><h1>남은 잔액도, 한 번에.</h1><p class="sc-subtitle">연결한 서비스의 잔액을 새로고침해요.</p>${expired?'<div class="sc-status-banner warning" role="status">연결이 만료됐어요. 마지막 조회 잔액을 표시합니다.</div>':failed?'<div class="sc-status-banner warning" role="status">서비스가 응답하지 않아요. 마지막 조회 잔액을 유지합니다.</div>':''}<div class="sc-card sc-credit"><div class="sc-inline"><span class="sc-avatar neutral">K</span><span><h3>클링</h3><span class="sc-small">연결된 계정의 잔액 · 예시</span></span><span class="sc-pill" style="margin-left:auto">5일 후 만료</span></div><div class="sc-credit-num"><span data-credit-amount>${s.credit}</span> <small>/ 600 크레딧</small></div><div class="sc-small">${expired||failed?'마지막으로 확인한 잔여 크레딧':'남은 크레딧'}</div><div class="sc-track" role="progressbar" aria-label="잔여 크레딧 예시" aria-valuenow="${s.credit}" aria-valuemin="0" aria-valuemax="600"><span style="width:${s.credit/6}%"></span></div><dl class="sc-facts" style="margin-top:23px"><dt>만료일</dt><dd>2026. 10. 31.</dd><dt>연결 상태</dt><dd>${expired?'다시 로그인 필요':failed?'다시 시도 필요':'연결 완료 · 시연'}</dd></dl><div class="sc-refresh-line"><span role="status" aria-live="polite">${waiting?'조회 중 · 시연':esc(s.lastSync)}</span><button class="sc-textbtn cursor-interaction ${waiting?'sc-connecting':''}" data-refresh ${waiting?'disabled':''}>${icon('refresh-cw')} ${waiting?'조회 중':'새로고침'}</button></div></div>${expired?'<button class="sc-add cursor-interaction" data-reconnect>사이트에 다시 연결하기</button>':''}<p class="sc-caption">자동 조회 화면을 체험하는 시안입니다. 실제 계정은 연결되지 않았어요. 웹 멤버십 잔액 조회 지원 여부는 확인 중입니다.</p><button class="sc-secondary cursor-interaction" data-support="kling">${icon('link-2')} 클링 연동 지원 범위 보기</button>`;}
+function detail(){const a=s.apps.find(a=>a.id===s.selected)||s.apps[0];return `<button class="sc-back cursor-interaction" data-screen="subscriptions">${icon('arrow-left')} 내 구독</button><div class="sc-detailhead"><span class="sc-avatar">${esc(a.letter)}</span><h1>${esc(a.name)}</h1><span class="sc-small">${esc(a.plan)} · 예시 데이터</span></div><div class="sc-hero"><div class="sc-hero-label">다음 결제 예정</div><div class="sc-amount">${fmt(a.price)}<span>원</span></div><div class="sc-hero-foot"><strong>${a.date.replaceAll('-','. ')}.</strong><span>매월 결제</span></div></div><div class="sc-card sc-inner sc-section"><dl class="sc-facts"><dt>결제 주기</dt><dd>매월</dd><dt>알림 시점</dt><dd>결제 3일 전</dd><dt>데이터 출처</dt><dd>연동 흐름 예시</dd><dt>조회 가능 범위</dt><dd>지원 확인 필요</dd></dl></div>${remainingLink(a.id)}<button class="sc-add cursor-interaction" data-screen="calendar">${icon('calendar-plus')} 캘린더 알림 미리보기</button><button class="sc-secondary cursor-interaction" data-support="${a.id}">${icon('link-2')} 연동 지원 범위 보기</button>`;}
+function catalogGrid(){const q=s.search.trim().toLowerCase(),list=catalog.filter(a=>(s.category==='전체'||a.cat===s.category)&&(!q||a.name.toLowerCase().includes(q)||a.id.includes(q)));return list.length?list.map(a=>`<button class="sc-service cursor-interaction" data-choose="${a.id}" aria-pressed="${s.chosen===a.id}"><span class="sc-avatar ${a.cat==='추천'?'':'neutral'}">${a.letter}</span><span>${a.name}</span><small>${a.tag}</small></button>`).join(''):'<div class="sc-empty" style="grid-column:1/-1">찾는 서비스가 없어요.<br>다른 이름으로 검색해주세요.</div>';}
+function add(){return `<button class="sc-back cursor-interaction" data-screen="home">${icon('arrow-left')} 돌아가기</button>${stepper(1)}<div class="sc-kicker"><span>ADD SUBSCRIPTION</span>${demo()}</div><h1>어떤 구독을 챙겨드릴까요?</h1><p class="sc-subtitle">서비스를 선택하고 계정을 연결해요.</p><div class="sc-search"><input aria-label="구독 서비스 검색" data-search placeholder="서비스 이름 검색" value="${esc(s.search)}" autocomplete="off"></div><div class="sc-filters">${['전체','추천','영상','디자인','영화','음악'].map(t=>`<button class="sc-filter cursor-interaction" data-category="${t}" aria-pressed="${s.category===t}">${t}</button>`).join('')}</div><div class="sc-catalog" data-catalog>${catalogGrid()}</div><button class="sc-add cursor-interaction" data-next ${!s.chosen?'disabled':''}>${s.chosen?esc(selectedService().name)+' 연동하기':'서비스를 선택해주세요'} ${icon('arrow-right')}</button><p class="sc-footnote">선택 목록은 연동 흐름을 보여주는 예시입니다.<br>서비스마다 실제로 가져올 수 있는 정보가 달라요.</p>`;}
+function connect(){const a=selectedService();return `<button class="sc-back cursor-interaction" data-screen="add">${icon('arrow-left')} 서비스 선택</button>${stepper(2)}<div class="sc-kicker"><span>CONNECT ACCOUNT</span>${demo()}</div><h1>로그인 한 번으로 간편하게.</h1><p class="sc-subtitle">${esc(a.name)}에서 확인한 정보를 모아봐요.</p><div class="sc-card sc-connect"><span class="sc-avatar">${a.letter}</span><h2>${a.name} 계정 연결</h2><span class="sc-small">${s.linking?'로그인·정보 확인 과정을 시연 중이에요.':'계정 연결 후 가져온 정보를 확인해요.'}</span><div class="sc-summary-tags"><span>구독 플랜</span><span>다음 결제일</span><span>잔여 사용량</span></div><div class="sc-connect-status" role="status" aria-live="polite"><span class="sc-signal"></span>${s.linking?'연동 진행 중 · 시연':'연동 상태: 대기 중 · 시연'}</div><div class="sc-link-note">${icon('info')}<span>${esc(a.support)}<br>확인되지 않은 항목은 자동으로 채울 수 없어요.</span></div></div><button class="sc-add cursor-interaction ${s.linking?'sc-connecting':''}" data-connect ${s.linking?'disabled':''}>${icon(s.linking?'refresh-cw':'external-link')} ${s.linking?'정보 확인 중…':'구독 사이트 이동 & 로그인'}</button><button class="sc-secondary cursor-interaction" data-support="${a.id}">${icon('link-2')} 실제 연동 지원 범위 확인</button><p class="sc-caption">이 버튼은 로그인 이후의 화면 흐름을 시연합니다. 외부 사이트를 열거나 로그인 정보를 요청하지 않아요.</p>`;}
+function confirm(){const a=selectedService();return `<button class="sc-back cursor-interaction" data-screen="connect">${icon('arrow-left')} 계정 연결</button>${stepper(3)}<div class="sc-kicker"><span>REVIEW & ADD</span>${demo()}</div><h1>가져온 정보를 확인해주세요.</h1><p class="sc-subtitle">서비스에서 받은 정보를 확인하는 단계예요.</p><div class="sc-status-banner" role="status">연동 흐름 체험 완료 · 아래 정보는 예시입니다.</div><div class="sc-card"><div class="sc-connect" style="padding-bottom:17px"><span class="sc-avatar">${a.letter}</span><h2>${a.name}</h2><span class="sc-small">${a.plan}</span></div><dl class="sc-facts sc-inner" style="border-top:1px solid var(--sc-line)"><dt>구독 금액</dt><dd>${a.priceUnknown?'연동 후 확인':a.price===null?'확인 필요':fmt(a.price)+'원 / 월'}</dd><dt>남은 크레딧</dt><dd>${a.id==='kling'?'120 / 600 · 예시':'제공 항목 확인 필요'}</dd><dt>${a.price===null?'크레딧 만료일':'다음 결제일'}</dt><dd>${a.priceUnknown?'연동 후 확인':a.price===null?'2026. 10. 31.':'2026. 10. 29.'}</dd><dt>정보 출처</dt><dd>디자인용 예시</dd></dl></div><button class="sc-add cursor-interaction" data-register>이 정보로 등록 완료 ${icon('arrow-right')}</button><p class="sc-caption">실제 출시에서는 연결된 서비스가 제공하는 항목만 표시해요. 이 화면은 실계정 조회 결과가 아닙니다.</p>`;}
+function registered(){const a=selectedService();return `<div class="sc-connect" style="padding:38px 0 20px"><div class="sc-success">${icon('check')}</div><h1>${esc(a.name)}, 준비됐어요.</h1><p class="sc-subtitle">등록 이후 화면을 체험할 수 있어요.</p></div><div class="sc-card sc-inner"><dl class="sc-facts"><dt>등록 항목</dt><dd>${a.price===null?'잔여 크레딧':'정기 구독'}</dd><dt>갱신 방식</dt><dd>새로고침 · 시연</dd><dt>실제 계정 연결</dt><dd>미연결</dd></dl></div><button class="sc-add cursor-interaction" data-screen="${a.price===null?'credits':'subscriptions'}">${a.price===null?'내 사용량 확인하기':'내 사용량 확인하기'} ${icon('arrow-right')}</button><button class="sc-secondary cursor-interaction" data-screen="home">홈으로 돌아가기</button>`;}
+function support(){const a=selectedService();return `<button class="sc-back cursor-interaction" data-screen="${s.supportBack||'connect'}">${icon('arrow-left')} 돌아가기</button><div class="sc-kicker"><span>CONNECTION CHECK</span><span class="sc-demo">2026. 10. 26. 검토</span></div><h1>${a.name} 연동 범위</h1><div class="sc-card sc-inner"><span class="sc-pill">${a.tag}</span><p style="font-size:14px;line-height:1.8;margin:18px 0 0">${esc(a.support)}</p></div><div class="sc-section"><h2>확인한 뒤 연결해요</h2><p class="sc-caption">계정 연결이 허용되는지, 어떤 잔액·결제 정보를 제공하는지, 얼마나 자주 갱신할 수 있는지 확인한 뒤 실제 연동을 제공할 예정이에요.</p></div><button class="sc-add cursor-interaction" data-screen="connect">연동 화면 체험하기</button><p class="sc-footnote">공개 문서 확인과 실제 계정 연동 성공은 서로 다른 단계입니다.</p>`;}
+function settings(){return `<div class="sc-kicker"><span>MY SETTINGS</span>${demo()}</div><h1>연결은 간편하게, 정보는 정확하게.</h1><div class="sc-card"><div class="sc-setting"><span>구독 추가</span><strong>서비스 선택 후 연결</strong></div><div class="sc-setting"><span>잔액 갱신</span><strong>새로고침으로 조회</strong></div><div class="sc-setting"><span>갱신 실패 시</span><strong>마지막 잔액 유지</strong></div><div class="sc-setting"><span>실제 계정 연결</span><strong>미연결 · 시안</strong></div></div><p class="sc-caption">지원하지 않는 서비스는 연결 완료로 표시하지 않아요. 연결 만료 시에는 다시 로그인할 수 있도록 안내합니다.</p><button class="sc-secondary cursor-interaction" data-screen="add">${icon('link-2')} 다른 서비스 연결하기</button>`;}
+function calendar(){const a=s.apps.find(a=>a.id===s.selected)||s.apps[0];return `<button class="sc-back cursor-interaction" data-screen="detail">${icon('arrow-left')} 구독 상세</button><div class="sc-kicker"><span>CALENDAR REMINDER</span>${demo()}</div><h1>결제 전에 한 번 더.</h1><div class="sc-card sc-inner"><div class="sc-avatar">${icon('calendar-check')}</div><h2 style="margin:18px 0 22px">${esc(a.name)} 결제 확인</h2><dl class="sc-facts"><dt>결제 예정일</dt><dd>${a.date.replaceAll('-','. ')}.</dd><dt>예정 금액</dt><dd>${fmt(a.price)}원</dd><dt>알림 시점</dt><dd>결제 3일 전</dd></dl></div><p class="sc-caption">캘린더 일정의 화면 예시입니다. 실제 일정은 추가하지 않습니다.</p><button class="sc-add cursor-interaction" data-screen="detail">확인했어요</button>`;}
+function refresh(){if(s.sync==='loading')return;s.sync='loading';render();clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>{if(s.syncScenario==='재로그인'){s.sync='expired';}else if(s.syncScenario==='응답 없음'){s.sync='failed';}else{s.sync='updated';s.lastSync='방금 갱신 · 시연';}render();save();},850);}
+const usageExamples=[
+ {id:'kling',name:'클링',letter:'K',plan:'개인 구독 크레딧',remaining:120,total:600,unit:'크레딧',reset:'11월 1일',expiry:'10월 31일',history:[210,340,280,450,390,480]},
+ {id:'higgsfield',name:'Higgsfield',letter:'H',plan:'개인 구독 크레딧',remaining:600,total:1000,unit:'크레딧',reset:'11월 15일',expiry:'11월 14일',history:[500,380,650,720,430,400]},
+ {id:'chatgpt',name:'ChatGPT',letter:'C',plan:'개인 구독 사용 한도',remaining:null,total:null,unit:'',reset:null},
+ {id:'gemini',name:'Gemini',letter:'G',plan:'개인 구독 사용 한도',remaining:null,total:null,unit:'',reset:null},
+ {id:'netflix',name:'Netflix',letter:'N',plan:'일반 구독',kind:'period',end:'11월 3일',days:8}
+];
+const personalNote='개인 구독의 사용량을 보여주는 디자인 예시입니다. 실제 계정은 연결되지 않았고, 자동 조회 지원 여부는 서비스별 확인이 필요해요.';
+s.usageId='kling';s.usageHistory=false;s.loggedIn=false;s.provider='Google';s.notifications={payment:true,expiry:true,weekly:false};
+initial.push({id:'kling',name:'클링',plan:'개인 구독 플랜',price:19000,date:'2026-10-31',cat:'AI',letter:'K',paid:false},{id:'higgsfield',name:'Higgsfield',plan:'개인 구독 플랜',price:29000,date:'2026-11-15',cat:'AI',letter:'H',paid:true});
+s.apps=initial.map(a=>({...a}));
+const klingCatalog=catalog.find(a=>a.id==='kling');klingCatalog.plan='개인 구독 플랜';klingCatalog.price=19000;klingCatalog.tag='개인 크레딧 확인 중';
+const higgsCatalog=catalog.find(a=>a.id==='higgsfield');higgsCatalog.tag='개인 크레딧 확인 중';
+function remainingLink(id){return `<button class="sc-usage-link cursor-interaction" data-usage="${id||'kling'}">${icon('chart-pie')} 남은 사용량 보기 ${icon('arrow-right')}</button>`;}
+function homeV3(){const total=s.apps.reduce((v,a)=>v+a.price,0),paid=s.apps.filter(a=>a.paid).reduce((v,a)=>v+a.price,0);return `<div class="sc-kicker"><span>2026년 10월 26일 월요일</span><span class="sc-demo">예시 데이터</span></div><h1>내 구독, 새는 돈 없이.</h1><div class="sc-hero"><div class="sc-hero-label"><span>10월 구독료</span><span class="sc-hero-badge">정기 구독 ${s.apps.length}개</span></div><div class="sc-amount">${fmt(total)}<span>원</span></div><div class="sc-track" aria-label="결제 완료 비중"><span style="width:${paid/total*100}%"></span></div><div class="sc-hero-foot"><span>결제 완료 <strong>${fmt(paid)}원</strong></span><span>예정 <strong>${fmt(total-paid)}원</strong></span></div></div><section class="sc-section"><div class="sc-heading"><h2>다가오는 결제</h2><button class="sc-textbtn cursor-interaction" data-screen="billing">전체 보기 ${icon('chevron-right')}</button></div><div class="sc-card">${s.apps.filter(a=>!a.paid).slice(0,2).map(row).join('')}${remainingLink()}</div></section><section class="sc-section"><div class="sc-heading"><h2>놓치기 전 확인</h2><span class="sc-small">1건</span></div><button class="sc-notice cursor-interaction" data-usage="kling">${icon('hourglass')}<span><strong>개인 크레딧, 만료 전에 확인하세요</strong><p>클링 120 크레딧 · 5일 후 만료</p></span>${icon('chevron-right')}</button></section><button class="sc-add cursor-interaction" data-screen="add">${icon('plus')} 구독 추가하기</button><p class="sc-footnote">홈에서는 결제·갱신일을, 내 사용량에서는 남은 혜택을 챙겨요.</p>`;}
+function billingV3(){return `<button class="sc-back cursor-interaction" data-screen="home">${icon('arrow-left')} 홈으로</button><div class="sc-kicker"><span>PAYMENT SCHEDULE</span><span class="sc-demo">예시 데이터</span></div><h1>내 결제 일정</h1><p class="sc-subtitle">다음 결제일 순서로 확인해요.</p><div class="sc-card">${[...s.apps].sort((a,b)=>a.date.localeCompare(b.date)).map(row).join('')}</div><button class="sc-add cursor-interaction" data-screen="add">${icon('plus')} 구독 추가하기</button>`;}
+function ring(a,mini=false){const pct=Math.round(a.remaining/a.total*100);return mini?`<span class="sc-mini-ring" style="--sc-fill:${pct}%" role="img" aria-label="${esc(a.name)} ${pct}% 남음"><span>${pct}%</span></span>`:`<div class="sc-donut" style="--sc-fill:${pct}%" role="img" aria-label="${esc(a.name)} 총 ${a.total} 중 ${a.remaining} 크레딧, ${pct}퍼센트 남음"><div class="sc-donut-label">남은 사용량<strong>${pct}<small>%</small></strong>이번 이용 기간</div></div>`;}
+function usageChart(a){return `<section class="sc-section"><div class="sc-heading"><h2>최근 사용량</h2><span class="sc-small">월별 사용 크레딧 · 예시</span></div><div class="sc-card sc-inner"><div class="sc-bars" role="img" aria-label="${esc(a.name)} 5월부터 10월까지 사용 크레딧: ${a.history.join(', ')}">${a.history.map((n,i)=>`<div class="sc-bar-col"><div class="sc-bar ${i===5?'active':''}" style="--sc-height:${n/a.total*100}%"><b>${fmt(n)}</b></div><span>${i+5}월</span></div>`).join('')}</div><p class="sc-chart-summary">이번 달 ${fmt(a.total-a.remaining)} 크레딧 사용 · ${Math.round((a.total-a.remaining)/a.total*100)}% 사용</p></div></section>`;}
+function usageCard(a){if(a.id==='chatgpt')return quotasV5();if(a.kind==='period')return `<div class="sc-card sc-inner"><div class="sc-inline"><span class="sc-avatar neutral">${a.letter}</span><span><h2>${a.name}</h2><span class="sc-small">${a.plan}</span></span></div><div class="sc-credit-num">${a.days}<small>일 남음</small></div><p class="sc-caption">${a.end}까지 이용 가능 · 예시</p><div class="sc-status-banner" style="margin:17px 0 0">정액 구독은 크레딧 대신 남은 이용 기간을 표시해요. 선불 잔액이 있는 경우에는 별도 금액으로 구분해요.</div></div>`;
+if(a.remaining===null)return `<div class="sc-card sc-inner"><div class="sc-inline"><span class="sc-avatar">${a.letter}</span><span><h2>${a.name}</h2><span class="sc-small">${a.plan}</span></span></div><div class="sc-empty" style="padding-top:30px;padding-bottom:24px"><strong style="display:block;font-size:21px;color:var(--sc-ink);margin-bottom:9px">사용량 확인 필요</strong>개인 계정 사용량을 아직 가져오지 못했어요.</div><div class="sc-status-banner warning" style="margin:0">서비스가 제공하지 않는 잔여 한도나 퍼센트는 임의로 계산하지 않아요.</div><button class="sc-secondary cursor-interaction" data-support="${a.id}">연동 상태 확인하기</button></div>`;
+return `<div class="sc-card sc-inner"><div class="sc-inline"><span class="sc-avatar">${a.letter}</span><span><h2>${a.name}</h2><span class="sc-personal-label">${a.plan}</span></span><span class="sc-pill" style="margin-left:auto">예시</span></div><div class="sc-donut-layout">${ring(a)}<div class="sc-usage-numbers"><span class="sc-small">남은 크레딧</span><strong>${fmt(a.remaining)}</strong><small>/ ${fmt(a.total)} 크레딧</small><div class="sc-used">사용 ${fmt(a.total-a.remaining)}<br>전체의 ${Math.round((a.total-a.remaining)/a.total*100)}%</div></div></div><div class="sc-cycle"><span>초기화일<strong>${a.reset}</strong></span><span>현재 크레딧 만료<strong>${a.expiry}</strong></span></div><div class="sc-refresh-line"><span role="status" aria-live="polite">${s.sync==='loading'?'조회 중 · 시연':esc(s.lastSync)}</span><button class="sc-textbtn cursor-interaction ${s.sync==='loading'?'sc-connecting':''}" data-refresh ${s.sync==='loading'?'disabled':''}>${icon('refresh-cw')} 새로고침</button></div></div>`;}
+function usageV3(){const a=usageExamples.find(x=>x.id===s.usageId)||usageExamples[0];return `<div class="sc-kicker"><span>MY USAGE</span><span class="sc-demo">개인 구독 · 예시</span></div><h1>남은 사용량, 한눈에.</h1><p class="sc-subtitle">크레딧·이용 한도·남은 기간을 확인해요.</p><label class="sc-service-select">서비스<select data-usage-select aria-label="사용량 서비스 선택">${usageExamples.map(x=>`<option value="${x.id}" ${x.id===a.id?'selected':''}>${x.name}</option>`).join('')}</select></label>${s.sync==='expired'?'<div class="sc-status-banner warning">연결이 만료됐어요. 마지막 확인 정보를 표시합니다.</div>':s.sync==='failed'?'<div class="sc-status-banner warning">조회에 실패했어요. 마지막 확인 정보를 유지합니다.</div>':''}${usageCard(a)}${a.remaining!==null&&a.kind!=='period'?`<button class="sc-secondary cursor-interaction" data-history aria-expanded="${s.usageHistory}">${icon('chart-column')} 최근 사용량 그래프 ${s.usageHistory?'접기':'보기'}</button>${s.usageHistory?usageChart(a):''}`:''}<section class="sc-section"><div class="sc-heading"><h2>서비스별 사용량</h2><span class="sc-small">남은 혜택 기준</span></div><div class="sc-card">${usageExamples.map(x=>`<button class="sc-usage-listrow cursor-interaction" data-usage="${x.id}"><span class="sc-avatar neutral">${x.letter}</span><span class="sc-rowtext"><h3>${x.name}</h3><span class="sc-small">${x.kind==='period'?'이용 기간':x.remaining===null?'사용 한도 확인 필요':fmt(x.remaining)+' / '+fmt(x.total)+' 크레딧'}</span></span>${x.kind==='period'?`<span class="sc-pill">${x.days}일 남음</span>`:x.remaining===null?'<span class="sc-small">미확인</span>':ring(x,true)}</button>`).join('')}</div></section><p class="sc-footnote">${personalNote}</p>`;}
+function menu(label,iconName,screen,end=''){return `<button class="sc-menu cursor-interaction" data-screen="${screen}">${icon(iconName)}<span>${label}</span><span class="sc-menu-end">${end}${icon('chevron-right')}</span></button>`;}
+function mypageV3(){return `<div class="sc-kicker"><span>MY PAGE</span><span class="sc-demo">계정 화면 시안</span></div><h1>마이페이지</h1><div class="sc-profile"><div class="sc-profile-avatar">${s.loggedIn?'세':'S'}</div><div><h2>${s.loggedIn?'사용자 님':'반가워요!'}</h2><p>${s.loggedIn?s.provider+' 로그인 · 체험 계정':'로그인하고 내 구독을 이어서 챙겨요.'}</p>${s.loggedIn?'':`<button class="sc-profile-action cursor-interaction" data-screen="login">로그인 · 회원가입 ${icon('arrow-right')}</button>`}</div></div><section class="sc-section"><div class="sc-heading"><h2>내 계정</h2></div><div class="sc-card">${menu('계정 관리','user-round','account',s.loggedIn?'로그인됨':'게스트')}${menu('연결한 서비스','link-2','connections','연결 관리')}${menu('알림 설정','bell','notifications')}</div></section><section class="sc-section"><div class="sc-heading"><h2>도움말과 안내</h2></div><div class="sc-card">${menu('자주 묻는 질문','circle-help','help')}${menu('문의하기','message-circle','contact')}${menu('약관 및 개인정보 안내','shield-check','policies')}${menu('앱 정보','info','about','v0.3 시안')}</div></section>${s.loggedIn?'<button class="sc-plain-action cursor-interaction" data-screen="logout">로그아웃</button>':''}<p class="sc-footnote">로그인과 계정 연결은 서로 다른 기능이에요.<br>이 시안에서는 화면 흐름만 체험할 수 있어요.</p>`;}
+function loginV3(){return `<button class="sc-back cursor-interaction" data-screen="settings">${icon('arrow-left')} 마이페이지</button><div class="sc-auth-intro"><div class="sc-kicker"><span>WELCOME TO SUBCHECK</span><span class="sc-demo">로그인 시안</span></div><h1>내 구독을 챙기는<br>가장 간편한 시작.</h1><p class="sc-subtitle" style="margin:14px 0 0">처음이라면 가입하고, 다시 왔다면 이어서.</p></div>${[['Google','G'],['카카오','K'],['Apple','A']].map(([p,l])=>`<button class="sc-social cursor-interaction" data-provider="${p}"><span class="sc-social-letter">${l}</span>${p}로 계속하기</button>`).join('')}<button class="sc-plain-action cursor-interaction" data-screen="settings">로그인 없이 둘러보기</button><p class="sc-caption">실제 인증 전의 화면 시안입니다. 비밀번호를 입력하거나 외부 계정에 접속하지 않아요.</p>`;}
+function authV3(){return `<button class="sc-back cursor-interaction" data-screen="login">${icon('arrow-left')} 로그인 방법 선택</button><div class="sc-kicker"><span>ACCOUNT SIGN IN</span><span class="sc-demo">인증 화면 예시</span></div><h1>${esc(s.provider)}로 계속하기</h1><div class="sc-auth-identity"><div class="sc-avatar" style="margin:auto">S</div><h2 style="margin:17px 0 7px">subcheck 로그인</h2><p class="sc-caption">실제 서비스에서는 ${esc(s.provider)} 인증 화면에서<br>계정을 선택하고 동의한 뒤 돌아옵니다.</p></div><button class="sc-add cursor-interaction" data-login>로그인 완료 화면 체험하기 ${icon('arrow-right')}</button><p class="sc-footnote">이 동작은 로그인 상태의 디자인만 변경합니다.</p>`;}
+function accountV3(){return `<button class="sc-back cursor-interaction" data-screen="settings">${icon('arrow-left')} 마이페이지</button><div class="sc-kicker"><span>MY ACCOUNT</span><span class="sc-demo">계정 시안</span></div><h1>계정 관리</h1>${s.loggedIn?`<div class="sc-card sc-inner"><dl class="sc-facts"><dt>닉네임</dt><dd>사용자</dd><dt>로그인 방법</dt><dd>${esc(s.provider)}</dd><dt>계정 상태</dt><dd>체험용 로그인</dd></dl></div><button class="sc-secondary cursor-interaction" data-screen="logout">로그아웃</button><button class="sc-plain-action cursor-interaction" data-screen="withdrawal">회원 탈퇴 안내</button>`:'<div class="sc-status-banner">게스트로 둘러보고 있어요. 로그인 후 계정 관리 화면을 이용할 수 있어요.</div><button class="sc-add cursor-interaction" data-screen="login">로그인 · 회원가입</button>'}`;}
+function logoutV3(){return `<button class="sc-back cursor-interaction" data-screen="settings">${icon('arrow-left')} 마이페이지</button><h1>로그아웃할까요?</h1><p class="sc-subtitle">언제든 다시 로그인할 수 있어요.</p><div class="sc-card sc-inner"><p class="sc-caption" style="margin:0">시안에서는 체험 로그인 상태만 해제해요. 실제 외부 계정이나 구독에는 영향을 주지 않습니다.</p></div><button class="sc-add cursor-interaction" data-logout>로그아웃하기</button><button class="sc-secondary cursor-interaction" data-screen="settings">계속 이용하기</button>`;}
+function connectionsV3(){return `<button class="sc-back cursor-interaction" data-screen="settings">${icon('arrow-left')} 마이페이지</button><div class="sc-kicker"><span>CONNECTED SERVICES</span><span class="sc-demo">연결 상태 예시</span></div><h1>연결한 서비스</h1><p class="sc-subtitle">연결 상태와 마지막 조회를 확인해요.</p><div class="sc-card">${usageExamples.slice(0,4).map(a=>`<button class="sc-menu cursor-interaction" data-relink="${a.id}"><span class="sc-avatar neutral">${a.letter}</span><span class="sc-rowtext"><h3>${a.name}</h3><span class="sc-small">${a.remaining===null?'사용량 제공 여부 확인 필요':'개인 구독 · 연결 화면 예시'}</span></span><span class="sc-menu-end">확인 ${icon('chevron-right')}</span></button>`).join('')}</div><button class="sc-add cursor-interaction" data-screen="add">${icon('plus')} 서비스 연결하기</button><p class="sc-footnote">외부 계정은 실제로 연결되지 않았습니다.</p>`;}
+function notificationsV3(){return `<button class="sc-back cursor-interaction" data-screen="settings">${icon('arrow-left')} 마이페이지</button><div class="sc-kicker"><span>NOTIFICATIONS</span><span class="sc-demo">알림 설정 시안</span></div><h1>필요한 순간에만 알려드려요.</h1><div class="sc-card">${[['payment','결제 예정 알림','결제일 3일 전'],['expiry','크레딧 만료 알림','만료일 3일 전'],['weekly','주간 사용량 요약','매주 월요일']].map(([id,label,desc])=>`<label class="sc-switch-row"><span>${label}<span class="sc-small" style="display:block">${desc}</span></span><input type="checkbox" data-notification="${id}" ${s.notifications[id]?'checked':''} aria-label="${label}"></label>`).join('')}</div><p class="sc-caption">알림 선호 설정 화면입니다. 실제 알림 발송·기기 권한 요청은 연결되지 않았어요.</p>`;}
+function infoV3(){const text={help:['자주 묻는 질문','개인 크레딧과 이용 한도는 다른가요?','서비스마다 크레딧 수량, 메시지 한도, 이용 기간이 달라요. 내 사용량에서 서비스별 단위와 초기화일을 따로 표시합니다.'],contact:['문의하기','무엇을 도와드릴까요?','출시 버전에서는 문의 내용과 답변받을 연락처를 입력하는 창을 제공할 예정이에요. 현재는 문의가 접수되지 않습니다.'],policies:['약관 및 개인정보 안내','서비스 약관 · 개인정보 처리방침','출시 전에 실제 로그인·계정 연결·저장 방식에 맞는 안내를 제공할 예정이에요. 이 화면은 메뉴 구성 시안입니다.'],about:['앱 정보','subcheck','개인 구독의 결제일과 남은 사용량을 챙기는 구독 알리미. 디자인 시안 v0.3 · 2026. 10. 26.'],withdrawal:['회원 탈퇴 안내','탈퇴 전에 확인해주세요','출시 버전에서는 탈퇴 시 저장 정보와 연결 권한의 처리 내용을 안내한 후 확인을 받도록 구성합니다. 이 시안에서는 계정 삭제를 실행하지 않습니다.']}[s.screen]||['안내','서비스 안내',''];return `<button class="sc-back cursor-interaction" data-screen="settings">${icon('arrow-left')} 마이페이지</button><h1>${text[0]}</h1><div class="sc-card sc-inner"><h2>${text[1]}</h2><p class="sc-caption">${text[2]}</p></div>`;}
+
+s.category='전체';s.aiCategory='전체';s.catalogExpanded=false;s.catalogPage=0;s.actionKind='upgrade';s.actionService='kling';s.billingChannel='서비스 웹사이트';
+const oldCatalog=[...catalog];
+const entries=[
+ ['chatgpt','ChatGPT','AI','대화·검색','C'],['claude','Claude','AI','대화·검색','CL'],['gemini','Gemini','AI','대화·검색','G'],['perplexity','Perplexity','AI','대화·검색','P'],['grok','Grok','AI','대화·검색','GR'],['copilot','Copilot','AI','대화·검색','CO'],['deepseek','DeepSeek','AI','대화·검색','D'],
+ ['kling','클링','AI','영상','K'],['higgsfield','Higgsfield','AI','영상','H'],['runway','Runway','AI','영상','R'],['pika','Pika','AI','영상','PK'],['luma','Luma','AI','영상','L'],['heygen','HeyGen','AI','영상','HG'],
+ ['midjourney','Midjourney','AI','이미지·디자인','MJ'],['adobefirefly','Adobe Firefly','AI','이미지·디자인','AF'],['leonardo','Leonardo.Ai','AI','이미지·디자인','LE'],['ideogram','Ideogram','AI','이미지·디자인','ID'],['canva','Canva','AI','이미지·디자인','CV'],
+ ['suno','Suno','AI','음성·음악','S'],['udio','Udio','AI','음성·음악','U'],['elevenlabs','ElevenLabs','AI','음성·음악','11'],['cursor','Cursor','AI','코딩','CU'],['githubcopilot','GitHub Copilot','AI','코딩','GC'],['replit','Replit','AI','코딩','RE'],
+ ['netflix','Netflix','영상·음악','영상','N'],['tving','티빙','영상·음악','영상','T'],['wavve','웨이브','영상·음악','영상','WV'],['disneyplus','Disney+','영상·음악','영상','D+'],['watcha','왓챠','영상·음악','영상','WA'],['youtube','YouTube Premium','영상·음악','영상','Y'],
+ ['melon','멜론','영상·음악','음악','M'],['spotify','Spotify','영상·음악','음악','SP'],['applemusic','Apple Music','영상·음악','음악','AM'],['genie','지니뮤직','영상·음악','음악','GN'],['flo','FLO','영상·음악','음악','FL'],['bugs','벅스','영상·음악','음악','B'],
+ ['coupang','쿠팡 와우','멤버십','쇼핑','W'],['naverplus','네이버플러스','멤버십','쇼핑','N+'],['baemin','배민클럽','멤버십','배달','BM'],['yogiyo','요기패스X','멤버십','배달','YO'],['kurly','컬리멤버스','멤버십','쇼핑','KR'],['costco','코스트코','멤버십','쇼핑','CC'],
+ ['notion','Notion','생산성·저장공간','생산성','NO'],['adobe','Adobe CC','생산성·저장공간','생산성','AD'],['figma','Figma','생산성·저장공간','생산성','F'],['microsoft365','Microsoft 365','생산성·저장공간','생산성','365'],['icloud','iCloud+','생산성·저장공간','저장공간','iC'],['googleone','Google One','생산성·저장공간','저장공간','G1'],['dropbox','Dropbox','생산성·저장공간','저장공간','DB']
+];
+catalog.splice(0,catalog.length,...entries.map(([id,name,cat,subcat,letter])=>{const previous=oldCatalog.find(a=>a.id===id);return {...(previous||{}),id,name,cat,subcat,letter,tag:previous?.tag||'연동 검토 전',support:previous?.support||'개인 구독의 결제일·사용량을 가져오는 공식 연결 경로를 확인할 예정이에요. 목록에 있는 것만으로 자동 연동을 지원하는 것은 아닙니다.',price:previous?.price??null,priceUnknown:!previous,plan:previous?.plan||'개인 구독 플랜'};}));
+function homeV4(){const original=homeV3();const usage=`<section class="sc-section sc-home-equal"><div class="sc-heading"><h2>내 사용량</h2><button class="sc-textbtn cursor-interaction" data-usage="kling">전체 보기 ${icon('chevron-right')}</button></div><div class="sc-home-usage">${usageExamples.slice(0,2).map(a=>`<button class="cursor-interaction" data-usage="${a.id}"><span><h3>${a.name}</h3><span class="sc-small">${fmt(a.remaining)} 크레딧 남음</span></span>${ring(a,true)}</button>`).join('')}</div></section>`;return original.replace('<section class="sc-section"><div class="sc-heading"><h2>다가오는 결제',usage+'<section class="sc-section"><div class="sc-heading"><h2>다가오는 결제');}
+function catalogItems(){const q=s.search.trim().toLowerCase();return catalog.filter(a=>(s.category==='전체'||a.cat===s.category)&&(s.category!=='AI'||s.aiCategory==='전체'||a.subcat===s.aiCategory)&&(!q||a.name.toLowerCase().includes(q)||a.id.includes(q)));}
+function catalogV4(){const list=catalogItems(),pages=Math.max(1,Math.ceil(list.length/12));s.catalogPage=Math.min(s.catalogPage,pages-1);const visible=list.slice(s.catalogPage*12,s.catalogPage*12+12);return visible.length?`<div class="sc-catalog">${visible.map(a=>`<button class="sc-service cursor-interaction" data-choose="${a.id}" aria-pressed="${s.chosen===a.id}"><span class="sc-avatar ${a.cat==='AI'?'':'neutral'}">${a.letter}</span><span>${a.name}</span><small>${a.cat==='AI'?a.subcat:a.cat}</small></button>`).join('')}</div>${pages>1?`<div class="sc-manage-actions"><button class="cursor-interaction" data-catalog-prev ${s.catalogPage===0?'disabled':''}>이전 서비스</button><button class="cursor-interaction" data-expand-catalog>다음 서비스 · ${s.catalogPage+1}/${pages}</button></div>`:''}`:'<div class="sc-empty">찾는 서비스가 없어요.<br>다른 이름이나 분류로 검색해주세요.</div>';}
+function addV4(){return `<button class="sc-back cursor-interaction" data-screen="home">${icon('arrow-left')} 돌아가기</button>${stepper(1)}<div class="sc-kicker"><span>ADD SUBSCRIPTION</span><span class="sc-demo">서비스 선택 시안</span></div><h1>모든 구독을 한곳에.</h1><p class="sc-subtitle">AI부터 멤버십까지, 결제와 사용량을 챙겨요.</p><div class="sc-search"><input aria-label="구독 서비스 검색" data-search placeholder="예: 클링, 넷플릭스, 멜론" value="${esc(s.search)}" autocomplete="off"></div><div class="sc-filters">${['전체','AI','영상·음악','멤버십','생산성·저장공간'].map(t=>`<button class="sc-filter cursor-interaction" data-category="${t}" aria-pressed="${s.category===t}">${t}</button>`).join('')}</div>${s.category==='AI'?`<div class="sc-services-subfilters" aria-label="AI 서비스 분류">${['전체','대화·검색','영상','이미지·디자인','음성·음악','코딩'].map(t=>`<button class="sc-subfilter cursor-interaction" data-ai-category="${t}" aria-pressed="${s.aiCategory===t}">${t}</button>`).join('')}</div>`:''}<div class="sc-catalog-summary" data-catalog-count>${catalogItems().length}개 서비스 · ${s.category==='전체'?'전체 분류':esc(s.category)}</div><div data-catalog>${catalogV4()}</div><button class="sc-add cursor-interaction" data-next ${!s.chosen?'disabled':''}>${s.chosen?esc(selectedService().name)+' 연동하기':'서비스를 선택해주세요'} ${icon('arrow-right')}</button><p class="sc-footnote">선택 목록이며 자동 연동 지원 목록은 아닙니다.<br>크레딧·이용 한도·이용 기간을 서비스에 맞게 구분해요. 서비스명과 멤버십 제공 여부는 출시 전에 다시 확인합니다.</p>`;}
+function actionsV4(id){return `<div class="sc-manage-actions" aria-label="서비스 구독 관리"><button class="sc-upgrade cursor-interaction" data-service-action="upgrade" data-service-id="${id}">${icon('arrow-up-right')} 업그레이드하기</button><button class="sc-cancel cursor-interaction" data-service-action="cancel" data-service-id="${id}">서비스 해지하기</button></div>`;}
+function usageV4(){const original=usageV3(),a=usageExamples.find(x=>x.id===s.usageId)||usageExamples[0];return original.replace('<section class="sc-section"><div class="sc-heading"><h2>서비스별 사용량',actionsV4(a.id)+'<section class="sc-section"><div class="sc-heading"><h2>서비스별 사용량');}
+function detailV4(){const a=s.apps.find(a=>a.id===s.selected)||s.apps[0];return detail().replace('<button class="sc-secondary cursor-interaction" data-support=',actionsV4(a.id)+'<button class="sc-secondary cursor-interaction" data-support=');}
+function actionV4(){const a=catalog.find(x=>x.id===s.actionService)||catalog[0],cancel=s.actionKind==='cancel';return `<button class="sc-back cursor-interaction" data-screen="${s.actionBack||'usage'}">${icon('arrow-left')} 돌아가기</button><div class="sc-kicker"><span>MANAGE SUBSCRIPTION</span><span class="sc-demo">구독 관리 시안</span></div><h1>${a.name}<br>${cancel?'서비스 해지하기':'업그레이드하기'}</h1><p class="sc-subtitle">${cancel?'이용 종료일과 남은 혜택을 먼저 확인해요.':'필요한 만큼 더 쓸 수 있는 플랜을 확인해요.'}</p><div class="sc-card sc-inner"><div class="sc-inline"><span class="sc-avatar">${a.letter}</span><span><h2>${a.name}</h2><span class="sc-small">결제한 곳에서 구독을 관리해요.</span></span></div><div class="sc-action-choice" aria-label="결제 경로 선택">${['서비스 웹사이트','App Store','Google Play'].map(t=>`<button class="cursor-interaction" data-billing-channel="${t}" aria-pressed="${s.billingChannel===t}">${t}</button>`).join('')}</div><ol class="sc-action-list"><li>${s.billingChannel}의 구독 관리로 이동</li><li>${cancel?'다음 결제일·잔여 크레딧·이용 종료일 확인':'변경할 플랜·추가 요금·적용일 확인'}</li><li>${cancel?'서비스에서 해지 내용을 확인하고 완료':'서비스에서 변경 내용을 확인하고 완료'}</li></ol></div><button class="sc-add cursor-interaction" data-action-preview>${s.billingChannel} 관리 화면 보기 ${icon('external-link')}</button><p class="sc-caption">이 시안은 관리 경로를 안내합니다. 실제 사이트 이동, 구독 변경, 결제나 해지는 실행하지 않아요.</p>`;}
+function actionPreviewV4(){const a=catalog.find(x=>x.id===s.actionService)||catalog[0];return `<button class="sc-back cursor-interaction" data-screen="serviceAction">${icon('arrow-left')} 구독 관리</button><div class="sc-kicker"><span>SERVICE HANDOFF</span><span class="sc-demo">이동 전 안내</span></div><h1>${s.billingChannel}에서<br>이어서 진행해요.</h1><div class="sc-card sc-inner"><h2>${a.name} · ${s.actionKind==='cancel'?'해지':'업그레이드'}</h2><p class="sc-caption">출시 버전에서는 확인된 공식 관리 주소로 이동하도록 연결합니다. 완료 후 돌아오면 새로고침으로 상태를 확인할 수 있게 구성할 예정이에요.</p></div><button class="sc-add cursor-interaction" data-screen="${s.actionBack||'usage'}">확인했어요</button>`;}
+
+s.color='blue';s.quotaDemo=false;
+const themeOptions=[{id:'blue',name:'스카이 블루',color:'#b8dbff'},{id:'lavender',name:'라벤더',color:'#d9c9fa'},{id:'peach',name:'피치',color:'#ffd4b8'}];
+function themesV5(){return `<section class="sc-section"><div class="sc-heading"><h2>화면 색상</h2><span class="sc-small">밝은 색상</span></div><div class="sc-card sc-theme-options">${themeOptions.map(t=>`<button class="sc-theme-option cursor-interaction" data-theme-choice="${t.id}" aria-pressed="${s.color===t.id}"><span class="sc-color-dot" style="--sc-dot-color:${t.color}"></span>${t.name}</button>`).join('')}</div></section>`;}
+function mypageV5(){return mypageV3().replace('<section class="sc-section"><div class="sc-heading"><h2>내 계정',themesV5()+'<section class="sc-section"><div class="sc-heading"><h2>내 계정');}
+function quotasV5(){const pools=[{name:'일간 한도',scope:'모델·기능 A · 표시 예시',used:40,total:100,reset:'10월 27일 00:00',kind:'일간 고정 시각 · 예시'},{name:'주간 한도',scope:'모델·기능 B · 표시 예시',used:140,total:200,reset:'10월 30일 15:00',kind:'주간 개별 시각 · 예시'}];return `<div class="sc-card sc-inner"><div class="sc-inline"><span class="sc-avatar">C</span><span><h2>ChatGPT</h2><span class="sc-small">개인 구독 · 주기별 이용 한도</span></span><span class="sc-pill" style="margin-left:auto">${s.quotaDemo?'예시':'조회 전'}</span></div><p class="sc-footnote">플랜·모델·기능마다 주기가 달라요. 실제 계정에서 제공되는 한도만 표시합니다.</p></div>${pools.map(p=>{const left=p.total-p.used,pct=Math.round(left/p.total*100);return `<div class="sc-quota"><div class="sc-quota-heading"><span>${p.name}</span><span class="sc-pill">${s.quotaDemo?'표시 방식 예시':'조회 필요'}</span></div><span class="sc-quota-summary">${s.quotaDemo?p.scope:'대상 모델·기능 확인 필요'}</span><div class="sc-quota-value">${s.quotaDemo?`${pct}% <small>남음 · ${left} / ${p.total}회</small>`:'— <small>남은 한도 확인 필요</small>'}</div>${s.quotaDemo?`<div class="sc-track" role="progressbar" aria-label="${p.name} 예시 잔여율" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:${pct}%"></span></div><div class="sc-quota-meta"><span>사용 ${p.used}회</span><span>남음 ${left}회</span></div>`:'<div class="sc-unknown-track" aria-hidden="true"></div>'}<div class="sc-quota-reset">다음 초기화 <strong>${s.quotaDemo?p.reset+' · 한국시간':'확인 필요'}</strong><br>${s.quotaDemo?p.kind:'서비스가 알려주는 초기화 시각을 기준으로 표시해요.'}</div></div>`;}).join('')}<button class="sc-secondary cursor-interaction" data-quota-demo>${s.quotaDemo?'실제 조회 전 상태 보기':'일간·주간 표시 예시 보기'}</button><p class="sc-footnote">${s.quotaDemo?'수량·퍼센트·초기화일은 모두 가상의 디자인 예시입니다. ':'실제 계정의 사용량이 아직 연결되지 않았어요. '}일간과 주간 한도는 서로 다른 대상일 수 있어 합산하지 않습니다. 5시간·월간·이동 시간창 한도도 같은 구조로 구분할 수 있어요.</p>`;}
+function applyThemeV5(){el.dataset.theme=s.color;}
+function usageV5(){const view=usageV4();return s.usageId==='chatgpt'?view.replace(/<section class="sc-section"><div class="sc-heading"><h2>서비스별 사용량[\s\S]*?<\/section>/,''):view;}
+
+function render(){applyThemeV5();const nav=[['home','house','홈'],['usage','chart-pie','내 사용량'],['settings','user-round','마이페이지']],active=['credits','subscriptions'].includes(s.screen)?'usage':['login','auth','account','logout','connections','notifications','help','contact','policies','about','withdrawal'].includes(s.screen)?'settings':['detail','calendar','billing'].includes(s.screen)?'home':s.screen;const views={home:homeV4,usage:usageV5,subscriptions:usageV5,credits:usageV5,billing:billingV3,settings:mypageV5,login:loginV3,auth:authV3,account:accountV3,logout:logoutV3,connections:connectionsV3,notifications:notificationsV3,help:infoV3,contact:infoV3,policies:infoV3,about:infoV3,withdrawal:infoV3,detail:detailV4,add:addV4,connect,confirm,registered,support,calendar,serviceAction:actionV4,actionPreview:actionPreviewV4};const inFlow=['add','connect','confirm','registered','support'].includes(s.screen);el.innerHTML=`<header class="sc-top"><div class="sc-brand" aria-label="subcheck">subcheck</div><div class="sc-top-actions"><button class="sc-icon cursor-interaction ${s.sync==='loading'?'sc-connecting':''}" data-refresh aria-label="클링 실제 잔액 새로고침" ${s.sync==='loading'?'disabled':''}>${icon('refresh-cw')}</button><button class="sc-icon cursor-interaction" data-usage="kling" aria-label="클링 사용량 보기">${icon('bell')}</button></div></header><main class="sc-content">${(views[s.screen]||overview)()}</main>${inFlow?'':`<nav class="sc-bottom" aria-label="주 메뉴">${nav.map(([id,i,l])=>`<button class="sc-nav cursor-interaction" data-screen="${id}" aria-pressed="${id===active}">${icon(i)}${l}</button>`).join('')}</nav>`}${s.toast?`<div class="sc-toast" role="status">${esc(s.toast)}</div>`:''}`;globalThis.lucide?.createIcons();}
+el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+ if(b.hasAttribute('data-history')){s.usageHistory=!s.usageHistory;render();return;}
+ if(b.dataset.themeChoice){s.color=b.dataset.themeChoice;render();save();return;}
+ if(b.hasAttribute('data-quota-demo')){s.quotaDemo=!s.quotaDemo;render();return;}
+ if(b.dataset.usage){s.usageId=b.dataset.usage;change('usage');return;}
+ if(b.dataset.provider){s.provider=b.dataset.provider;change('auth');return;}
+ if(b.hasAttribute('data-login')){s.loggedIn=true;change('settings');return;}
+ if(b.hasAttribute('data-logout')){s.loggedIn=false;change('settings');return;}
+ if(b.dataset.relink){s.chosen=b.dataset.relink;change('connect');return;}
+ if(b.dataset.screen){change(b.dataset.screen);return;}
+ if(b.dataset.detail){s.selected=b.dataset.detail;change('detail');return;}
+ if(b.dataset.filter){s.filter=b.dataset.filter;render();save();return;}
+ if(b.dataset.category){s.category=b.dataset.category;s.catalogPage=0;render();save();return;}
+ if(b.dataset.aiCategory){s.aiCategory=b.dataset.aiCategory;s.catalogPage=0;render();save();return;}
+ if(b.hasAttribute('data-expand-catalog')){s.catalogPage=(s.catalogPage+1)%Math.ceil(catalogItems().length/12);render();return;}
+ if(b.hasAttribute('data-catalog-prev')){s.catalogPage=Math.max(0,s.catalogPage-1);render();return;}
+ if(b.dataset.serviceAction){s.actionKind=b.dataset.serviceAction;s.actionService=b.dataset.serviceId;s.actionBack=s.screen;s.billingChannel='서비스 웹사이트';change('serviceAction');return;}
+ if(b.dataset.billingChannel){s.billingChannel=b.dataset.billingChannel;render();return;}
+ if(b.hasAttribute('data-action-preview')){change('actionPreview');return;}
+ if(b.dataset.choose){s.chosen=b.dataset.choose;render();save();return;}
+ if(b.hasAttribute('data-next')){change('connect');return;}
+ if(b.hasAttribute('data-refresh')){refresh();return;}
+ if(b.hasAttribute('data-reconnect')){s.chosen='kling';change('connect');return;}
+ if(b.dataset.support){s.supportBack=s.screen;s.chosen=b.dataset.support;change('support');return;}
+ if(b.hasAttribute('data-connect')){if(s.linking)return;s.linking=true;render();linkTimer=setTimeout(()=>{s.linking=false;change('confirm');},1000);return;}
+ if(b.hasAttribute('data-register')){const a=selectedService();if(a.priceUnknown&&a.price===null)a.price=0;if(!usageExamples.some(x=>x.id===a.id))usageExamples.push({id:a.id,name:a.name,letter:a.letter,plan:'개인 구독 사용량',remaining:null,total:null});s.usageId=a.id;if(a.price!==null){const existing=s.apps.find(x=>x.id===a.id),newApp={id:a.id,name:a.name,plan:a.plan,price:a.price,priceUnknown:a.priceUnknown,date:'2026-10-29',cat:['chatgpt','claude','gemini','higgsfield','midjourney'].includes(a.id)?'AI':['영화','음악'].includes(a.cat)?'영상·음악':'멤버십',letter:a.letter,paid:false};if(existing)Object.assign(existing,newApp);else s.apps.push(newApp);}s.added=a.id;change('registered');return;}
+});
+el.addEventListener('change',e=>{if(e.target.hasAttribute('data-usage-select')){s.usageId=e.target.value;render();save();}if(e.target.dataset.notification){s.notifications[e.target.dataset.notification]=e.target.checked;save();}});
+el.addEventListener('input',e=>{if(e.target.hasAttribute('data-search')){s.search=e.target.value;s.catalogPage=0;el.querySelector('[data-catalog]').innerHTML=catalogV4();el.querySelector('[data-catalog-count]').textContent=catalogItems().length+'개 서비스 · '+s.category;globalThis.lucide?.createIcons();}});
+function restore(state){const p=state?.privateContent;if(p?.version!==5)return;if(['blue','lavender','peach'].includes(p.color))s.color=p.color;if(usageExamples.some(x=>x.id===p.usageId))s.usageId=p.usageId;if(typeof p.loggedIn==='boolean')s.loggedIn=p.loggedIn;if(['Google','카카오','Apple'].includes(p.provider))s.provider=p.provider;if(p.notifications&&typeof p.notifications==='object'){for(const k of ['payment','expiry','weekly'])if(typeof p.notifications[k]==='boolean')s.notifications[k]=p.notifications[k];}if(screens.includes(p.screen)&&!['confirm','registered'].includes(p.screen))s.screen=p.screen;if(['전체','AI','영상·음악','멤버십'].includes(p.filter))s.filter=p.filter;if(['전체','AI','영상·음악','멤버십','생산성·저장공간'].includes(p.category))s.category=p.category;if(catalog.some(a=>a.id===p.chosen))s.chosen=p.chosen;if(initial.some(a=>a.id===p.selected))s.selected=p.selected;if(['connect','support'].includes(s.screen)&&!s.chosen)s.screen='add';}
+const live={connected:false,balance:null,busy:false,error:'',loaded:false};
+const originalCard=usageCard,originalConnect=connect;
+const liveValue=()=>live.balance?fmt(live.balance.credits):'—';
+const liveBadge=()=>`<span class="sc-pill">${live.busy?'확인 중':live.connected?'실제 연결':'연결 필요'}</span>`;
+function creditReference(balance){
+  if(!balance||String(balance.plan).toLowerCase()!=='pro'||typeof balance.credits!=='number'||!Number.isFinite(balance.credits)||balance.credits<0)return null;
+  return {monthly:3000,percent:Math.round(balance.credits/3000*1000)/10};
+}
+function referenceRing(){
+  const ref=creditReference(live.balance);
+  if(!ref)return '';
+  return `<div class="sc-reference"><div class="sc-reference-ring" style="--reference-fill:${Math.min(ref.percent,100)}%" role="img" aria-label="월 지급량 대비 현재 잔액 ${ref.percent}퍼센트"><span><strong>${ref.percent}%</strong><small>월 지급량 대비</small></span></div><div><strong>Pro 월 3,000크레딧 기준</strong><p>현재 잔액이 월 지급량의<br>${ref.percent}%에 해당해요.</p></div></div><p class="sc-footnote">플랜 기준 참고 비율이에요. 추가 구매분 등이 포함될 수 있어 이번 달 구독 크레딧의 정확한 잔여율과는 다를 수 있어요. <a href="https://kling.ai/blog/kling-video-3-0-credit-cost-guide?tab=all" target="_blank" rel="noopener noreferrer">기준 보기</a></p>`;
+}
+function liveCard(){return `<div class="sc-card sc-inner sc-live-card"><div class="sc-inline"><span class="sc-avatar">K</span><span><h2>클링</h2><span class="sc-small">개인 유료 크레딧</span></span><span style="margin-left:auto">${liveBadge()}</span></div>${referenceRing()}<div class="sc-live-value">${liveValue()}<small>크레딧 남음</small></div><p class="sc-caption">${live.balance?'플랜 '+esc(live.balance.plan||'미제공'):'클링 계정을 연결하면 남은 잔액을 가져와요.'}</p>${live.error?`<p class="sc-status-banner warning" role="alert">${esc(live.error)}${live.balance?' 마지막 확인 잔액을 표시합니다.':''}</p>`:''}<div class="sc-live-facts"><span>월 지급 기준<b>${creditReference(live.balance)?'Pro · 3,000크레딧':'확인 필요'}</b></span><span>초기화·만료일<b>제공되지 않음</b></span></div><p class="sc-footnote">보너스·팀 크레딧은 포함하지 않아요.<br>플랜 기준 비율과 실제 조회 잔액을 함께 표시합니다.</p><div class="sc-refresh-line"><span role="status" aria-live="polite">${live.busy?'클링에서 조회 중…':live.balance?'마지막 확인 '+esc(live.balance.observedAt):'아직 조회하지 않았어요'}</span></div>${live.connected?`<button class="sc-add" data-live-refresh ${live.busy?'disabled':''}>${icon('refresh-cw')} ${live.busy?'잔액 확인 중':'잔액 새로고침'}</button>`:'<a class="sc-live-link" href="/connect">클링 연결하기</a>'}</div>`;}
+usageCard=function(a){return a.id==='kling'?liveCard():`<div class="sc-status-banner">이 서비스의 정보는 디자인 예시이며 실제 조회되지 않았어요.</div>`+originalCard(a);};
+usageV5=function(){const a=usageExamples.find(x=>x.id===s.usageId)||usageExamples[0];return `<div class="sc-kicker"><span>MY USAGE</span><span class="sc-demo">${a.id==='kling'?'실제 계정 조회':'디자인 예시'}</span></div><h1>남은 사용량, 한눈에.</h1><p class="sc-subtitle">서비스별로 남은 혜택을 확인해요.</p><label class="sc-service-select">서비스<select data-usage-select aria-label="사용량 서비스 선택">${usageExamples.map(x=>`<option value="${x.id}" ${x.id===a.id?'selected':''}>${esc(x.name)}${x.id==='kling'?' · 실제 연결':' · 예시'}</option>`).join('')}</select></label>${usageCard(a)}${a.id==='kling'?'':actionsV4(a.id)}`;};
+homeV4=function(){return `<div class="sc-kicker"><span>나의 구독 대시보드</span><span class="sc-demo">개발 중</span></div><h1>내 구독, 새는 돈 없이.</h1><p class="sc-subtitle">결제일도, 남은 사용량도 챙겨요.</p><section class="sc-section"><div class="sc-heading"><h2>내 사용량</h2><button class="sc-textbtn" data-usage="kling">자세히 보기 ${icon('arrow-right')}</button></div><button class="sc-live-summary" data-usage="kling"><span class="sc-avatar">K</span><span><strong>클링</strong><small>개인 유료 크레딧</small></span><span class="sc-live-summary-value">${liveValue()}<small>${live.balance?'크레딧 남음':'연결 후 확인'}</small></span></button><p class="sc-footnote">${live.connected?'실제 연결됨 · 결제 정보는 아직 가져오지 않았어요.':'클링에 연결하면 실제 잔액을 확인할 수 있어요.'}</p></section><section class="sc-section"><div class="sc-heading"><h2>다가오는 결제</h2><span class="sc-demo">예시 일정</span></div><div class="sc-card">${s.apps.filter(x=>!x.paid&&x.id!=='kling').slice(0,2).map(row).join('')}${remainingLink('kling')}</div><p class="sc-footnote">결제 금액·일정은 화면 구성을 위한 예시예요.</p></section><button class="sc-add" data-screen="add">${icon('plus')} 구독 추가하기</button>`;};
+connectionsV3=function(){return `<button class="sc-back" data-screen="settings">${icon('arrow-left')} 마이페이지</button><h1>연결한 서비스</h1>${liveCard()}<p class="sc-footnote">이 컴퓨터에서만 사용하는 테스트 연결이에요. 서브체크 회원 로그인과는 별개입니다.</p>`;};
+connect=function(){if(s.chosen!=='kling')return originalConnect();return `<button class="sc-back" data-screen="add">${icon('arrow-left')} 서비스 선택</button><h1>클링 계정 연결</h1><p class="sc-subtitle">공식 로그인 화면에서 연결을 승인해주세요.</p><div class="sc-card sc-inner"><h2>가져오는 정보</h2><p>개인 유료 크레딧 잔액과 플랜</p><p class="sc-footnote">이미지·영상 생성 권한을 요청하지 않아요. 보너스·팀 크레딧, 결제일, 초기화일은 이번 조회에 포함되지 않습니다.</p></div><a class="sc-live-link" href="/connect">클링 공식 로그인으로 이동</a><p class="sc-footnote">승인 후 별도 확인 화면으로 돌아옵니다. 이 앱 주소로 돌아오면 연결 결과가 반영돼요.</p>`;};
+catalog.find(x=>x.id==='kling').support='개인 유료 크레딧과 플랜 조회를 검증했어요. 보너스·팀 크레딧과 초기화일·만료일은 제공되지 않아요.';
+catalog.find(x=>x.id==='kling').tag='실제 잔액 연동';
+const originalRefresh=refresh;
+refresh=function(){if(s.screen==='home'||s.usageId==='kling'||s.screen==='connections')return fetchLive(true);notify('이 서비스의 새로고침은 디자인 예시예요.');};
+el.addEventListener('click',e=>{if(e.target.closest('[data-live-refresh]'))fetchLive(true);});
+async function fetchLive(refresh=false){
+  if(live.busy)return;
+  live.busy=true;live.error='';render();
+  try{
+    const response=await fetch(refresh?'/api/kling/refresh':'/api/kling/status',{method:refresh?'POST':'GET',headers:refresh?{'x-subcheck-csrf':document.querySelector('meta[name="app-csrf"]').content}:{},cache:'no-store'});
+    const data=await response.json();
+    if(!response.ok)throw Error(data.message||'잔액을 확인하지 못했어요. 잠시 후 다시 시도해주세요.');
+    live.connected=data.connected;
+    if(data.balance)live.balance=data.balance;
+    if(!data.connected&&live.balance)live.error='연결이 만료됐어요. 다시 연결해주세요.';
+  }catch(error){live.error=error.message;}finally{live.busy=false;live.loaded=true;render();}
+}
+s.screen='usage';s.usageId='kling';
+fetchLive();
+
+render();
+window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState){restore(e.detail.globals.widgetState);render();}});
+if(globalThis.Tweak){const options={radius:32,color:'blue',syncScenario:'정상'};const tweak=new Tweak({container:el,onChange:()=>{el.style.borderRadius=options.radius+'px';s.color=options.color;applyThemeV5();s.syncScenario=options.syncScenario;render();}});tweak.addSlider(options,'radius',{label:'화면 모서리',min:12,max:40,unit:'px'});tweak.addSelect(options,'color',{label:'밝은 색상 비교',options:[{label:'스카이 블루',value:'blue'},{label:'라벤더',value:'lavender'},{label:'피치',value:'peach'}]});tweak.addSelect(options,'syncScenario',{label:'새로고침 결과 시연',options:['정상','재로그인','응답 없음']});}
+})();
+
+</script>
+</body></html>

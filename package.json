@@ -1,0 +1,16 @@
+{
+  "name": "subcheck",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "start": "node server/app.mjs",
+    "auth:register": "node server/kling-auth.mjs --register",
+    "auth:start": "node server/kling-auth.mjs",
+    "test": "node --test test/*.test.mjs && node server/kling-auth.mjs --test"
+  }
+}

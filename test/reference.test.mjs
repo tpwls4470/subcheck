@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync('src/live-ui.js','utf8');
+const fn=source.slice(source.indexOf('function creditReference('),source.indexOf('function referenceRing('));
+const context=vm.createContext({});vm.runInContext(fn,context);
+test('Pro reference uses official 3000 monthly baseline',()=>{assert.equal(context.creditReference({plan:'Pro',credits:1192}).percent,39.7);});
+test('zero and above baseline remain truthful',()=>{assert.equal(context.creditReference({plan:'Pro',credits:0}).percent,0);assert.equal(context.creditReference({plan:'Pro',credits:4500}).percent,150);});
+test('unknown plans and invalid balances have no estimate',()=>{for(const credits of ['1192',-1,NaN,Infinity])assert.equal(context.creditReference({plan:'Pro',credits}),null);assert.equal(context.creditReference({plan:'Premier',credits:1192}),null);assert.equal(context.creditReference(null),null);});
+test('inline application scripts parse',()=>{const html=fs.readFileSync('public/index.html','utf8');for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)){if(m[1].trim())new vm.Script(m[1]);}});
