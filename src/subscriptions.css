@@ -1,0 +1,18 @@
+#subcheck-design .sc-app button.sc-brand{border:0;background:transparent;padding:0;min-height:44px;font-size:25px;font-weight:800;letter-spacing:-1.1px;color:var(--sc-ink)}
+#subcheck-design .sc-subscription-summary{background:var(--sc-soft);border-radius:22px;padding:22px;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:16px;margin:22px 0;color:var(--sc-ink)}
+#subcheck-design .sc-subscription-summary>div>span{display:block;font-size:12px;color:var(--sc-muted)}
+#subcheck-design .sc-subscription-summary strong{display:block;font-size:28px;letter-spacing:-1px;margin-top:9px;white-space:nowrap}
+#subcheck-design .sc-subscription-summary strong small{font-size:13px;letter-spacing:0;margin-left:4px;font-weight:500}
+#subcheck-design .sc-subscription-summary p{grid-column:1/-1;margin:0;font-size:12px;line-height:1.6;color:var(--sc-muted)}
+#subcheck-design .sc-subscription-tile{border:1px solid var(--sc-line);border-radius:20px;background:var(--sc-paper);margin-bottom:14px;padding:18px}
+#subcheck-design .sc-subscription-title{display:flex;align-items:center;gap:12px;width:100%;padding:0 0 12px;border:0;background:transparent;text-align:left;min-height:56px}
+#subcheck-design .sc-subscription-title h3{margin:0;font-size:16px}
+#subcheck-design .sc-subscription-title>svg{margin-left:auto;color:var(--sc-muted)}
+#subcheck-design .sc-subscription-source{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--sc-muted);flex-wrap:wrap}
+#subcheck-design .sc-subscription-facts{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;padding:17px 0;margin:16px 0 0;border-top:1px solid var(--sc-line)}
+#subcheck-design .sc-subscription-facts dt{font-size:12px;color:var(--sc-muted)}
+#subcheck-design .sc-subscription-facts dd{font-weight:650;font-size:16px;margin:5px 0 0;color:var(--sc-ink)}
+#subcheck-design .sc-subscription-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--sc-line);padding-top:9px;font-size:12px;color:var(--sc-muted)}
+#subcheck-design .sc-subscription-footer button{min-height:44px;font-size:12px}
+#subcheck-design .sc-app{overflow:clip}
+#subcheck-design .sc-app .sc-bottom{position:sticky;bottom:0;z-index:5;background:var(--sc-paper);padding-bottom:max(12px,env(safe-area-inset-bottom))}
