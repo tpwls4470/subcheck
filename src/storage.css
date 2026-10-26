@@ -1,0 +1,19 @@
+#subcheck-design .sc-app .sc-profile{align-items:flex-start}
+#subcheck-design .sc-app .sc-profile>div:last-child{min-width:0;flex:1}
+#subcheck-design .sc-app .sc-profile h2{margin:0}
+#subcheck-design .sc-app .sc-profile-action{display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1.25;white-space:nowrap;max-width:100%;min-height:44px}
+#subcheck-design .sc-app .sc-profile-action svg{width:16px;height:16px;display:block;flex-shrink:0}
+#subcheck-design .sc-app .sc-service-logo{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:44px;height:44px;padding:7px;background:#fff;border:1px solid var(--sc-line);border-radius:13px;overflow:hidden}
+#subcheck-design .sc-app .sc-service-logo img{width:100%;height:100%;object-fit:contain;display:block}
+#subcheck-design .sc-example-group{margin:20px 0;border:1px solid var(--sc-line);border-radius:16px;background:var(--sc-paper);overflow:hidden}
+#subcheck-design .sc-example-group>summary{padding:18px;display:flex;align-items:center;gap:8px;list-style:none;font-size:14px;font-weight:650;cursor:pointer;min-height:56px}
+#subcheck-design .sc-example-group>summary::-webkit-details-marker{display:none}
+#subcheck-design .sc-example-group>summary>span{font-size:12px;font-weight:400;color:var(--sc-muted);margin-left:auto}
+#subcheck-design .sc-example-group>summary>svg{width:16px;height:16px}
+#subcheck-design .sc-example-body{padding:0 16px 16px}
+#subcheck-design .sc-example-body>label,#subcheck-design .sc-edit-form>label{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--sc-muted)}
+#subcheck-design .sc-example-body select,#subcheck-design .sc-edit-form input,#subcheck-design .sc-edit-form select{box-sizing:border-box;width:100%;min-height:46px;border:1px solid var(--sc-line);background:var(--sc-paper);color:var(--sc-ink);padding:10px 12px;border-radius:10px;font:inherit;margin-bottom:14px}
+#subcheck-design .sc-edit-form{display:grid;gap:5px;background:var(--sc-paper);padding:20px;border-radius:20px;border:1px solid var(--sc-line)}
+#subcheck-design .sc-edit-form input[readonly]{background:var(--sc-soft)}
+#subcheck-design .sc-form-message{color:var(--sc-amber);font-size:13px;margin:0}
+#subcheck-design .sc-save-inline{margin-top:8px;min-height:44px;width:100%;justify-content:center}

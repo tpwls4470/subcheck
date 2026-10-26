@@ -1,0 +1,345 @@
+{
+  "perplexity": {
+    "file": "perplexity.svg",
+    "mime": "image/svg+xml",
+    "source": "https://www.perplexity.ai/favicon.svg",
+    "website": "https://www.perplexity.ai",
+    "checked": "2026-10-26"
+  },
+  "claude": {
+    "file": "claude.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://claude.ai/favicon.ico",
+    "website": "https://claude.ai",
+    "checked": "2026-10-26"
+  },
+  "copilot": {
+    "file": "copilot.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://copilot.microsoft.com/static/cmc/favicon.ico",
+    "website": "https://copilot.microsoft.com",
+    "checked": "2026-10-26"
+  },
+  "higgsfield": {
+    "file": "higgsfield.png",
+    "mime": "image/png",
+    "source": "https://higgsfield.ai/icon.png",
+    "website": "https://higgsfield.ai",
+    "checked": "2026-10-26"
+  },
+  "runway": {
+    "file": "runway.png",
+    "mime": "image/png",
+    "source": "https://runway.com/icon.png?icon.35ps9bmugbe1e.png",
+    "website": "https://runwayml.com",
+    "checked": "2026-10-26"
+  },
+  "kling": {
+    "file": "kling.ico",
+    "mime": "image/x-icon",
+    "source": "https://s16-kling.klingai.com/kos/s101/nlav112918/kling-homepage-aio/favicon.ico",
+    "website": "https://kling.ai",
+    "checked": "2026-10-26"
+  },
+  "pika": {
+    "file": "pika.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://pika.art/favicon.ico?favicon.03qzqgaru0by8.ico",
+    "website": "https://pika.art",
+    "checked": "2026-10-26"
+  },
+  "ideogram": {
+    "file": "ideogram.ico",
+    "mime": "image/x-icon",
+    "source": "https://ideogram.ai/favicon.ico",
+    "website": "https://ideogram.ai",
+    "checked": "2026-10-26"
+  },
+  "canva": {
+    "file": "canva.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://static.canva.com/static/images/favicon.ico",
+    "website": "https://www.canva.com",
+    "checked": "2026-10-26"
+  },
+  "grok": {
+    "file": "grok.svg",
+    "mime": "image/svg+xml",
+    "source": "https://grok.com/images/favicon.svg",
+    "website": "https://grok.com",
+    "checked": "2026-10-26"
+  },
+  "luma": {
+    "file": "luma.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://lumalabs.ai/favicons/favicon-black.ico",
+    "website": "https://lumalabs.ai",
+    "checked": "2026-10-26"
+  },
+  "heygen": {
+    "file": "heygen.ico",
+    "mime": "image/x-icon",
+    "source": "https://www.heygen.com/favicon.ico?favicon.2m321y0geyyfh.ico",
+    "website": "https://www.heygen.com",
+    "checked": "2026-10-26"
+  },
+  "adobefirefly": {
+    "file": "adobefirefly.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://firefly.adobe.com/releases/e699b27e741695806a0a1ef6f615b67b06fda8a1/assets/fi_favicon-B5cV7Wia.ico",
+    "website": "https://firefly.adobe.com",
+    "checked": "2026-10-26"
+  },
+  "cursor": {
+    "file": "cursor.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://cursor.com/marketing-static/favicon-light.ico",
+    "website": "https://cursor.com",
+    "checked": "2026-10-26"
+  },
+  "elevenlabs": {
+    "file": "elevenlabs.ico",
+    "mime": "image/x-icon",
+    "source": "https://elevenlabs.io/favicon.ico?9c55860cee08706b",
+    "website": "https://elevenlabs.io",
+    "checked": "2026-10-26"
+  },
+  "githubcopilot": {
+    "file": "githubcopilot.png",
+    "mime": "image/png",
+    "source": "https://github.com/fluidicon.png",
+    "website": "https://github.com",
+    "checked": "2026-10-26"
+  },
+  "tving": {
+    "file": "tving.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://www.tving.com/favicon.ico",
+    "website": "https://www.tving.com",
+    "checked": "2026-10-26"
+  },
+  "wavve": {
+    "file": "wavve.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://www.wavve.com/favicon.ico",
+    "website": "https://www.wavve.com",
+    "checked": "2026-10-26"
+  },
+  "suno": {
+    "file": "suno.ico",
+    "mime": "image/x-icon",
+    "source": "https://cdn-o.suno.com/favicon.ico",
+    "website": "https://suno.com",
+    "checked": "2026-10-26"
+  },
+  "watcha": {
+    "file": "watcha.ico",
+    "mime": "image/x-icon",
+    "source": "https://watcha.com/favicon.ico",
+    "website": "https://watcha.com",
+    "checked": "2026-10-26"
+  },
+  "disneyplus": {
+    "file": "disneyplus.svg",
+    "mime": "image/svg+xml",
+    "source": "https://static-assets.bamgrid.com/product/disneyplus/favicons/mask-icon-aurora.86b2f302cf50180b25ddd8835041b1c3.svg",
+    "website": "https://www.disneyplus.com",
+    "checked": "2026-10-26"
+  },
+  "melon": {
+    "file": "melon.ico",
+    "mime": "image/x-icon",
+    "source": "https://www.melon.com/favicon.ico?2",
+    "website": "https://www.melon.com",
+    "checked": "2026-10-26"
+  },
+  "genie": {
+    "file": "genie.ico",
+    "mime": "image/x-icon",
+    "source": "https://www.genie.co.kr/resources/favicon_32.ico?v=202602091400",
+    "website": "https://www.genie.co.kr",
+    "checked": "2026-10-26"
+  },
+  "replit": {
+    "file": "replit.png",
+    "mime": "image/png",
+    "source": "https://replit.com/public/icons/favicon-prompt-192-rebrand.png",
+    "website": "https://replit.com",
+    "checked": "2026-10-26"
+  },
+  "flo": {
+    "file": "flo.ico",
+    "mime": "image/x-icon",
+    "source": "https://www.music-flo.com/favicon.ico",
+    "website": "https://www.music-flo.com",
+    "checked": "2026-10-26"
+  },
+  "bugs": {
+    "file": "bugs.ico",
+    "mime": "image/x-icon",
+    "source": "https://file.bugsm.co.kr/wbugs/common/faviconBugs.ico",
+    "website": "https://music.bugs.co.kr",
+    "checked": "2026-10-26"
+  },
+  "youtube": {
+    "file": "youtube.ico",
+    "mime": "image/x-icon",
+    "source": "https://www.youtube.com/s/desktop/dc0b62b0/img/favicon.ico",
+    "website": "https://www.youtube.com",
+    "checked": "2026-10-26"
+  },
+  "baemin": {
+    "file": "baemin.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://www.baemin.com/_next/static/media/favicon.41582b85.ico",
+    "website": "https://www.baemin.com",
+    "checked": "2026-10-26"
+  },
+  "naverplus": {
+    "file": "naverplus.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://www.naver.com/favicon.ico?1",
+    "website": "https://www.naver.com",
+    "checked": "2026-10-26"
+  },
+  "costco": {
+    "file": "costco.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://www.costco.co.kr/_ui/responsive/common/images/favicon.ico",
+    "website": "https://www.costco.co.kr",
+    "checked": "2026-10-26"
+  },
+  "yogiyo": {
+    "file": "yogiyo.png",
+    "mime": "image/png",
+    "source": "https://www.yogiyo.co.kr/mobile/image/app_128x128.png",
+    "website": "https://www.yogiyo.co.kr",
+    "checked": "2026-10-26"
+  },
+  "spotify": {
+    "file": "spotify.png",
+    "mime": "image/png",
+    "source": "https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png",
+    "website": "https://open.spotify.com",
+    "checked": "2026-10-26"
+  },
+  "kurly": {
+    "file": "kurly.ico",
+    "mime": "image/x-icon",
+    "source": "https://res.kurly.com/favicon.ico",
+    "website": "https://www.kurly.com",
+    "checked": "2026-10-26"
+  },
+  "notion": {
+    "file": "notion.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://www.notion.com/front-static/favicon.ico",
+    "website": "https://www.notion.so",
+    "checked": "2026-10-26"
+  },
+  "adobe": {
+    "file": "adobe.ico",
+    "mime": "image/x-icon",
+    "source": "https://www.adobe.com/favicon.ico",
+    "website": "https://www.adobe.com",
+    "checked": "2026-10-26"
+  },
+  "figma": {
+    "file": "figma.png",
+    "mime": "image/png",
+    "source": "https://static.figma.com/app/icon/2/icon-128.png",
+    "website": "https://www.figma.com",
+    "checked": "2026-10-26"
+  },
+  "icloud": {
+    "file": "icloud.ico",
+    "mime": "image/x-icon",
+    "source": "https://www.icloud.com/favicon.ico",
+    "website": "https://www.icloud.com",
+    "checked": "2026-10-26"
+  },
+  "applemusic": {
+    "file": "applemusic.png",
+    "mime": "image/png",
+    "source": "https://music.apple.com/assets/favicon/favicon-180.png",
+    "website": "https://music.apple.com",
+    "checked": "2026-10-26"
+  },
+  "microsoft365": {
+    "file": "microsoft365.ico",
+    "mime": "image/x-icon",
+    "source": "https://res.cdn.office.net/officehub/images/content/images/unauth-copilotcom/favicon-copilot-brand-refresh-23392c1f66.ico",
+    "website": "https://www.microsoft365.com",
+    "checked": "2026-10-26"
+  },
+  "googleone": {
+    "file": "googleone.png",
+    "mime": "image/png",
+    "source": "https://one.google.com/about/public/favicon-32x32.png",
+    "website": "https://one.google.com",
+    "checked": "2026-10-26"
+  },
+  "netflix": {
+    "file": "netflix.ico",
+    "mime": "image/x-icon",
+    "source": "https://assets.nflxext.com/us/ffe/siteui/common/icons/nficon2023.ico",
+    "website": "https://www.netflix.com",
+    "checked": "2026-10-26"
+  },
+  "dropbox": {
+    "file": "dropbox.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://cfl.dropboxstatic.com/static/metaserver/static/images/favicon.ico",
+    "website": "https://www.dropbox.com",
+    "checked": "2026-10-26"
+  },
+  "gemini": {
+    "file": "gemini.png",
+    "mime": "image/png",
+    "source": "https://gemini.google/favicon.ico",
+    "website": "https://gemini.google",
+    "checked": "2026-10-26"
+  },
+  "midjourney": {
+    "file": "midjourney.svg",
+    "mime": "image/svg+xml",
+    "source": "https://docs.midjourney.com/hc/theming_assets/01JMMWQ0W4N5SFX7GFX86WYYG2",
+    "website": "https://docs.midjourney.com",
+    "checked": "2026-10-26"
+  },
+  "chatgpt": {
+    "file": "chatgpt.ico",
+    "mime": "image/x-icon",
+    "source": "https://cdn.oaistatic.com/assets/favicon-eex17e9e.ico",
+    "website": "https://cdn.oaistatic.com/assets/favicon-eex17e9e.ico",
+    "checked": "2026-10-26"
+  },
+  "coupang": {
+    "file": "coupang.ico",
+    "mime": "image/x-icon",
+    "source": "https://news.coupang.com/wp-content/uploads/2022/07/220719_favicon-512x512-1-1.ico",
+    "website": "https://news.coupang.com/wp-content/uploads/2022/07/220719_favicon-512x512-1-1.ico",
+    "checked": "2026-10-26"
+  },
+  "udio": {
+    "file": "udio.ico",
+    "mime": "image/vnd.microsoft.icon",
+    "source": "https://www.udio.com/favicon.ico?favicon.0wbc3vz33genq.ico",
+    "website": "https://www.udio.com/favicon.ico?favicon.0wbc3vz33genq.ico",
+    "checked": "2026-10-26"
+  },
+  "deepseek": {
+    "file": "deepseek.png",
+    "mime": "image/png",
+    "source": "https://avatars.githubusercontent.com/u/148330874?v=4",
+    "website": "https://github.com/deepseek-ai.png",
+    "checked": "2026-10-26"
+  },
+  "leonardo": {
+    "file": "leonardo.ico",
+    "mime": "image/x-icon",
+    "source": "https://docs.leonardo.ai/favicon.ico",
+    "website": "https://docs.leonardo.ai/favicon.ico",
+    "checked": "2026-10-26"
+  }
+}
