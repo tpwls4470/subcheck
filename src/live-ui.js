@@ -1,5 +1,15 @@
 const live={connected:false,balance:null,busy:false,error:'',loaded:false};
 const originalCard=usageCard,originalConnect=connect;
+async function disconnectLive(){
+  if(live.busy||!window.confirm('이 기기에서 클링 연결 정보와 조회 잔액을 지울까요? 클링 구독은 해지되지 않으며, 클링 계정에 승인한 권한 취소는 별도로 진행해야 해요.'))return;
+  live.busy=true;live.error='';render();
+  try{
+    const response=await fetch('/api/kling/disconnect',{method:'POST',headers:{'x-subcheck-csrf':document.querySelector('meta[name="app-csrf"]').content},cache:'no-store'});
+    if(!response.ok)throw Error('연결을 해제하지 못했어요. 다시 시도해주세요.');
+    live.connected=false;live.balance=null;
+    notify('이 기기의 클링 연결 정보와 잔액을 지웠어요.');
+  }catch(error){live.error=error.message;}finally{live.busy=false;render();}
+}
 const liveValue=()=>live.balance?fmt(live.balance.credits):'—';
 const liveBadge=()=>`<span class="sc-pill">${live.busy?'확인 중':live.connected?'실제 연결':'연결 필요'}</span>`;
 function creditReference(balance){
@@ -21,7 +31,9 @@ catalog.find(x=>x.id==='kling').support='개인 유료 크레딧과 플랜 조�
 catalog.find(x=>x.id==='kling').tag='실제 잔액 연동';
 const originalRefresh=refresh;
 refresh=function(){if(s.screen==='home'||s.usageId==='kling'||s.screen==='connections')return fetchLive(true);notify('이 서비스의 새로고침은 디자인 예시예요.');};
-el.addEventListener('click',e=>{if(e.target.closest('[data-live-refresh]'))fetchLive(true);});
+const connectedCard=liveCard;
+liveCard=function(){const card=connectedCard();return live.connected?card.replace('</div><div class="sc-live-facts">','</div><div class="sc-live-facts">').replace(/<\/div>$/,`<button class="sc-secondary" data-live-disconnect ${live.busy?'disabled':''}>이 기기에서 연결 해제</button><p class="sc-footnote">기기에 보관된 연결 정보를 지웁니다. 구독 해지와 클링 계정의 승인 권한 취소는 별도예요.</p></div>`):card;};
+el.addEventListener('click',e=>{if(e.target.closest('[data-live-refresh]'))fetchLive(true);if(e.target.closest('[data-live-disconnect]'))disconnectLive();});
 async function fetchLive(refresh=false){
   if(live.busy)return;
   live.busy=true;live.error='';render();

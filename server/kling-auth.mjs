@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
+import {returnDestination,clearConnection} from './session-flow.mjs';
 
 const folder=path.dirname(fileURLToPath(import.meta.url));
 const base='http://127.0.0.1:4319';
@@ -124,8 +125,9 @@ const server=http.createServer(async(req,res)=>{
     const url=new URL(req.url,base),{id,s}=session(req,res);
     if(req.method==='GET'&&url.pathname==='/')return send(res,200,page(s));
     if(req.method==='GET'&&url.pathname==='/status')return send(res,200,JSON.stringify({connected:!!s.accessToken,balance:s.lastResult}), 'application/json');
+    if(req.method==='GET'&&url.pathname==='/csrf')return send(res,200,JSON.stringify({csrf:s.csrf}),'application/json');
     if(req.method==='GET'&&url.pathname==='/connect'){
-      const state=random(),verifier=random();states.set(state,{session:id,verifier,created:Date.now()});
+      const state=random(),verifier=random();states.set(state,{session:id,verifier,created:Date.now(),returnTo:returnDestination(url.searchParams.get('return'))});
       const auth=new URL(metadata.authorization_endpoint);auth.search=new URLSearchParams({client_id:client.client_id,redirect_uri:callback,response_type:'code',scope:'account.credit.read',state,code_challenge:crypto.createHash('sha256').update(verifier).digest('base64url'),code_challenge_method:'S256',resource}).toString();res.writeHead(302,{'location':auth.toString(),'cache-control':'no-store','referrer-policy':'no-referrer'});return res.end();
     }
     if(req.method==='GET'&&url.pathname==='/oauth/callback'){
@@ -138,13 +140,13 @@ const server=http.createServer(async(req,res)=>{
       const token=await r.json();if(!r.ok||!token.access_token)return send(res,400,page(s,'서브체크 전용 로그인 연결이 완료되지 않았어요.'));
       s.accessToken=token.access_token;s.expiresAt=Date.now()+Number(token.expires_in??300)*1000;s.initialized=false;
       try{await balance(s);s.status='조회 성공';}catch{s.status='로그인은 성공했지만 잔액 조회는 아직 완료되지 않았어요.';}
-      res.writeHead(303,{'location':'/','cache-control':'no-store'});return res.end();
+      res.writeHead(303,{'location':pending.returnTo||'/','cache-control':'no-store'});return res.end();
     }
     if(req.method==='POST'&&['/refresh','/disconnect'].includes(url.pathname)){
       // The synchronizer token remains mandatory when an embedded browser omits Origin.
       if(!allowedOrigin(req.headers))return send(res,403,'Invalid origin');
       const form=await body(req);if(form.get('csrf')!==s.csrf)return send(res,403,'Invalid request');
-      if(url.pathname==='/disconnect'){s.accessToken=null;s.expiresAt=0;s.lastResult=null;s.sessionId=null;s.initialized=false;return send(res,200,page(s,'로컬 테스트 연결 정보를 지웠어요. 서비스 계정의 연결 권한 해제는 별도입니다.'));}
+      if(url.pathname==='/disconnect'){clearConnection(s);for(const [key,value] of states)if(value.session===id)states.delete(key);return send(res,200,page(s,'이 기기의 연결 정보와 조회 잔액을 지웠어요. 클링 계정의 승인 권한 해제는 별도입니다.'));}
       try{await balance(s);return send(res,200,page(s,'Kling에서 실제 잔액을 다시 조회했어요.'));}catch(e){return send(res,400,page(s,e.message));}
     }
     return send(res,404,'Not found');

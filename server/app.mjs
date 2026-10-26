@@ -26,23 +26,26 @@ const server=http.createServer(async(req,res)=>{
       const html=(await fs.readFile('public/index.html','utf8')).replace('APP_CSRF_TOKEN',csrf);
       return send(res,200,html,'text/html; charset=utf-8');
     }
-    if(req.method==='GET'&&req.url==='/connect'){res.writeHead(302,{location:upstream+'/connect','cache-control':'no-store'});return res.end();}
+    if(req.method==='GET'&&req.url==='/connect'){res.writeHead(302,{location:upstream+'/connect?return=app','cache-control':'no-store'});return res.end();}
     if(req.method==='GET'&&req.url==='/api/kling/status'){
       const r=await forward(req,'/status');
       if(!r.ok)throw Error('status');
       const cookie=r.headers.get('set-cookie');if(cookie)res.appendHeader('set-cookie',cookie);
       return send(res,200,await r.json());
     }
-    if(req.method==='POST'&&req.url==='/api/kling/refresh'){
+    if(req.method==='POST'&&['/api/kling/refresh','/api/kling/disconnect'].includes(req.url)){
+      const disconnect=req.url==='/api/kling/disconnect';
       if(req.headers['x-subcheck-csrf']!==csrf||req.headers['sec-fetch-site']==='cross-site'||(req.headers.origin&&req.headers.origin!=='null'&&req.headers.origin!==base))return send(res,403,{message:'화면을 다시 열고 시도해주세요.'});
       // The existing auth server owns its session and CSRF check.
-      const root=await forward(req,'/');
-      const markup=await root.text();
-      const token=markup.match(/name="csrf" value="([A-Za-z0-9_-]+)"/)?.[1];
-      if(!token)return send(res,401,{message:'클링 연결이 만료됐어요. 다시 연결해주세요.'});
-      const r=await forward(req,'/refresh',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded',origin:upstream},body:new URLSearchParams({csrf:token})});
+      const root=await forward(req,'/csrf');
+      if(!root.ok)throw Error('csrf');
+      const token=(await root.json()).csrf;
+      if(typeof token!=='string')throw Error('csrf');
+      const newCookie=root.headers.get('set-cookie');
+      const r=await forward(req,disconnect?'/disconnect':'/refresh',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded',origin:upstream,...(newCookie?{cookie:newCookie.split(';')[0]}:{})},body:new URLSearchParams({csrf:token})});
       await r.body?.cancel();
       if(!r.ok)return send(res,r.status===400?429:502,{message:'조회하지 못했어요. 잠시 후 다시 시도하거나 연결 상태를 확인해주세요.'});
+      if(disconnect)return send(res,200,{connected:false,balance:null});
       const status=await forward(req,'/status');
       if(!status.ok)throw Error('status');
       return send(res,200,await status.json());
