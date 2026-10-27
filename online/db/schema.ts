@@ -10,4 +10,13 @@ export const subscriptions=sqliteTable('subscriptions',{
  channel:text('channel').notNull().default('unknown'),
  updatedAt:text('updated_at').notNull(),
  deletedAt:text('deleted_at'),
+ reminder3:integer('reminder_3').notNull().default(0),
+ reminderDay:integer('reminder_day').notNull().default(0),
 },table=>[primaryKey({columns:[table.userId,table.serviceId]})]);
+export const pushDevices=sqliteTable('push_devices',{
+ userId:text('user_id').notNull(),
+ deviceId:text('device_id').notNull(),
+ endpoint:text('endpoint').notNull(),
+ updatedAt:text('updated_at').notNull(),
+ lastSent:text('last_sent'),
+},table=>[primaryKey({columns:[table.userId,table.deviceId]})]);

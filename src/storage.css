@@ -44,3 +44,10 @@
 @media(prefers-reduced-motion:reduce){#subcheck-design .sc-card-refresh[aria-busy="true"] svg{animation:none}}
 
 #subcheck-design .sc-discover-all{min-height:44px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+
+#subcheck-design .sc-reminder-entry{display:flex;align-items:center;gap:12px;width:100%;padding:16px;margin:16px 0;background:var(--sc-paper);border:1px solid var(--sc-line);border-radius:18px;color:var(--sc-ink);text-align:left;cursor:pointer}
+#subcheck-design .sc-reminder-entry span{flex:1}#subcheck-design .sc-reminder-entry small{display:block;color:var(--sc-muted);margin-top:5px}
+#subcheck-design .sc-reminder-item{margin-bottom:12px}#subcheck-design .sc-reminder-options,#subcheck-design .sc-reminder-field{display:flex;gap:16px;flex-wrap:wrap;margin:16px 0}
+#subcheck-design .sc-reminder-options label,#subcheck-design .sc-reminder-field label{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px}
+#subcheck-design .sc-reminder-field{border:1px solid var(--sc-line);border-radius:12px;padding:12px}#subcheck-design .sc-reminder-field legend{font-size:13px}
+#subcheck-design .sc-edit-form .sc-reminder-field input,#subcheck-design .sc-reminder-options input{width:20px;height:20px;min-height:20px;margin:0;accent-color:var(--sc-deep)}

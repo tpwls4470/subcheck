@@ -10,7 +10,7 @@ test('subscription validation keeps unknown fields nullable and rejects invalid 
   for(const input of [{amount:-1},{amount:'1000'},{nextPayment:'2026-02-30'},{cycle:'weekly'}])assert.throws(()=>validateSubscription({serviceId:'kling',name:'클링',...input}));
 });
 test('subscription storage persists and isolates owners using actual SQLite statements',async()=>{
-  const db=new DatabaseSync(':memory:');db.exec(fs.readFileSync('drizzle/0000_good_network.sql','utf8'));
+  const db=new DatabaseSync(':memory:');for(const file of fs.readdirSync('drizzle').filter(x=>x.endsWith('.sql')).sort())db.exec(fs.readFileSync('drizzle/'+file,'utf8'));
   const env={SUBCHECK_SEAL_KEY:randomBytes(32).toString('base64url'),KLING_CLIENT_ID:'test',DB:{prepare(sql){return {bind(...values){return {async all(){return {results:db.prepare(sql).all(...values)};},async run(){return db.prepare(sql).run(...values);}};}};}}};
   const request=(path,user,options={})=>new Request(origin+path,{...options,headers:{'oai-authenticated-user-id':user,...options.headers}});
   const root=await worker.fetch(request('/','owner-A'),env);const csrf=(await root.text()).match(/name="app-csrf" content="([^"]+)"/)[1];
@@ -27,3 +27,4 @@ test('subscription storage persists and isolates owners using actual SQLite stat
   assert.equal(db.prepare('SELECT COUNT(*) AS n FROM subscriptions').get().n,1);
   db.close();
 });
+

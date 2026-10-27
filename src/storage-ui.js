@@ -55,7 +55,7 @@ async function loadStoredSubscriptions(){
 el.addEventListener('submit',async event=>{
   if(!event.target.hasAttribute('data-subscription-form'))return;event.preventDefault();if(savedState.busy)return;
   const form=event.target,values=new FormData(form),message=form.querySelector('.sc-form-message');
-  const payload={serviceId:s.editingSubscription,name:values.get('name'),plan:values.get('plan'),amount:values.get('amount')===''?null:Number(values.get('amount')),nextPayment:values.get('nextPayment')||null,cycle:values.get('cycle'),channel:values.get('channel')};
+  const payload={serviceId:s.editingSubscription,name:values.get('name'),plan:values.get('plan'),amount:values.get('amount')===''?null:Number(values.get('amount')),nextPayment:values.get('nextPayment')||null,cycle:values.get('cycle'),channel:values.get('channel'),reminder3:values.has('reminder3'),reminderDay:values.has('reminderDay')};
   savedState.busy=true;const button=form.querySelector('button[type="submit"]');button.disabled=true;button.textContent='저장 중…';
   try{const response=await fetch('/api/subscriptions',{method:'POST',headers:{'content-type':'application/json','x-subcheck-csrf':document.querySelector('meta[name="app-csrf"]').content},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw Error(data.message||'저장하지 못했어요.');applyStoredItems([data.item,...savedState.items.filter(x=>x.serviceId!==data.item.serviceId)]);savedState.error='';change('home');notify('내 계정에 구독 정보를 저장했어요.');}
   catch(error){message.textContent=error.message;}finally{savedState.busy=false;button.disabled=false;button.textContent='내 계정에 저장';}
