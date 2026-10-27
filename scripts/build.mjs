@@ -5,6 +5,7 @@ const extra=await fs.readFile('src/live-ui.js','utf8');
 const subscriptions=await fs.readFile('src/subscriptions-ui.js','utf8');
 const subscriptionCss=await fs.readFile('src/subscriptions.css','utf8');
 const storage=await fs.readFile('src/storage-ui.js','utf8');
+const quickSelection=await fs.readFile('src/quick-selection-ui.js','utf8');
 const extensionSync=await fs.readFile('src/extension-sync-ui.js','utf8');
 const mobile=await fs.readFile('src/mobile-ui.js','utf8');
 const account=await fs.readFile('src/account-ui.js','utf8');
@@ -14,7 +15,7 @@ const logoManifest=JSON.parse(await fs.readFile('assets/service-logos/manifest.j
 const logoImages={};
 for(const [id,asset] of Object.entries(logoManifest))logoImages[id]='data:'+asset.mime+';base64,'+(await fs.readFile('assets/service-logos/'+asset.file)).toString('base64');
 const logoCode='const serviceLogoImages='+JSON.stringify(logoImages)+';\nfunction serviceLogo(id,name){const src=serviceLogoImages[id];return src?`<span class="sc-service-logo"><img src="${src}" alt="${esc(name)} 로고" width="30" height="30" loading="lazy"></span>`:`<span class="sc-service-logo" aria-label="서비스 로고 확인 필요">${icon("image")}</span>`;}';
-html=html.replace('restore(window.openai?.widgetState);render();',logoCode+'\n'+extra+'\n'+subscriptions+'\n'+storage+'\n'+reminders+'\n'+account+'\n'+mobile+'\n'+extensionSync+'\nrender();');
+html=html.replace('restore(window.openai?.widgetState);render();',logoCode+'\n'+extra+'\n'+subscriptions+'\n'+storage+'\n'+reminders+'\n'+account+'\n'+mobile+'\n'+extensionSync+'\n'+quickSelection+'\nrender();');
 html=html.replace('home:homeV4,usage:usageV5','install:installScreen,reminders:reminderScreen,editSubscription:editSubscriptionScreen,home:homeV4,usage:usageV5');
 html=html.replace(/<span class="sc-avatar[^\"]*"[^>]*>\$\{(?:esc\()?((?:a|x|record))\.letter\)?\}<\/span>/g,(_,variable)=>'${serviceLogo('+variable+'.id,'+variable+'.name)}');
 html=html.replaceAll('<span class="sc-avatar">K</span>','${serviceLogo(\'kling\',\'클링\')}').replaceAll('<span class="sc-avatar">C</span>','${serviceLogo(\'chatgpt\',\'ChatGPT\')}');

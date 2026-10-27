@@ -85,6 +85,24 @@ html{scroll-padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 #subcheck-design .sc-billing-help{margin-top:14px;padding:14px;background:var(--sc-soft);border-radius:12px;font-size:12px;line-height:1.7}#subcheck-design .sc-billing-help p{margin:0 0 8px;color:var(--sc-muted)}#subcheck-design .sc-billing-help a{display:inline-flex;align-items:center;gap:5px;color:var(--sc-deep);min-height:44px}#subcheck-design .sc-billing-help a svg{width:14px;height:14px}#subcheck-design .sc-billing-help .sc-secondary{margin:8px 0 0}
 
 #subcheck-design .sc-usage-window{margin:22px 0}#subcheck-design .sc-usage-window .sc-heading{font-size:14px;margin-bottom:10px}#subcheck-design .sc-usage-window .sc-track{height:10px;margin:8px 0}
+
+#subcheck-design .sc-usage-picker{margin:20px 0}
+#subcheck-design .sc-usage-picker h2{font-size:14px;margin:0}
+#subcheck-design .sc-usage-rail{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:3px 2px 9px;overscroll-behavior-x:contain}
+#subcheck-design .sc-usage-rail::-webkit-scrollbar{display:none}
+#subcheck-design .sc-usage-choice{flex:0 0 104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:114px;padding:12px 8px;background:var(--sc-paper);border:1px solid var(--sc-line);border-radius:18px;color:var(--sc-ink);cursor:pointer}
+#subcheck-design .sc-usage-choice strong{font-size:12px;white-space:nowrap}
+#subcheck-design .sc-usage-choice small{font-size:10px;color:var(--sc-muted)}
+#subcheck-design .sc-usage-choice[aria-pressed="true"]{border:2px solid var(--sc-deep);background:var(--sc-soft);padding:11px 7px}
+#subcheck-design .sc-usage-choice:focus-visible{outline:2px solid var(--sc-deep);outline-offset:2px}
+#subcheck-design .sc-add-dock{position:fixed;z-index:50;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:400px;box-sizing:border-box;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));background:var(--sc-paper);border:1px solid var(--sc-line);border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -6px 24px #203b5612}
+#subcheck-design .sc-dock-selection{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+#subcheck-design .sc-dock-selection>span:last-of-type{display:flex;flex-direction:column;flex:1}
+#subcheck-design .sc-dock-selection small{font-size:10px;color:var(--sc-muted)}
+#subcheck-design .sc-dock-selection strong{font-size:14px}
+#subcheck-design .sc-dock-selection .sc-textbtn{min-height:44px}
+#subcheck-design .sc-add-dock .sc-add{margin:0;min-height:48px}
+#subcheck-design .sc-app:has(.sc-add-dock)>.sc-content{padding-bottom:calc(160px + env(safe-area-inset-bottom,0px))}
 </style></head><body><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <div id="subcheck-design" class="viz-dotted-background" aria-label="서브체크 한눈에 보기 디자인">
   <div class="sc-stage"><article class="sc-app" aria-label="서브체크 서비스 연결 시안"></article></div>
@@ -779,6 +797,25 @@ setInterval(()=>{if(s.screen==='usage'&&s.usageId==='chatgpt')loadExtensionUsage
 loadExtensionUsage();
 const usageBeforeSyncLabel=usageV5;
 usageV5=function(){let html=usageBeforeSyncLabel();html=html.replace('ChatGPT · 공식 화면 확인','ChatGPT · 확장 동기화');return s.usageId==='chatgpt'?html.replace('공식 화면에서 확인','확장 수집 기록'):html;};
+
+const usageBeforeQuickSelection=usageV5;
+usageV5=function(){
+ const html=usageBeforeQuickSelection();
+ const rail=`<section class="sc-usage-picker" aria-label="사용량을 확인할 서비스"><div class="sc-heading"><h2>서비스</h2><span class="sc-small">옆으로 넘겨 선택</span></div><div class="sc-usage-rail">${usageExamples.map(x=>`<button class="sc-usage-choice" data-quick-usage="${x.id}" aria-pressed="${s.usageId===x.id}">${serviceLogo(x.id,x.name)}<strong>${esc(x.name)}</strong><small>${x.id==='kling'?'실제 연결':x.id==='chatgpt'?'확장 동기화':'예시'}</small></button>`).join('')}</div></section>`;
+ return html.replace(/<label class="sc-service-select">[\s\S]*?<\/label>/,rail);
+};
+el.addEventListener('click',event=>{const button=event.target.closest('[data-quick-usage]');if(!button)return;const left=el.querySelector('.sc-usage-rail')?.scrollLeft||0;s.usageId=button.dataset.quickUsage;render();const rail=el.querySelector('.sc-usage-rail');if(rail)rail.scrollLeft=left;el.querySelector(`[data-quick-usage="${s.usageId}"]`)?.focus({preventScroll:true});if(s.usageId==='chatgpt')loadExtensionUsage();});
+const addBeforeQuickSelection=addV4;
+addV4=function(){
+ let html=addBeforeQuickSelection();
+ html=html.replace(/<button class="sc-add" data-open-editor="[^"]*"[\s\S]*?<\/button>/,'');
+ html=html.replace(/<button class="sc-secondary" data-next>[\s\S]*?<\/button>/,'');
+ if(!s.chosen)return html;
+ const service=selectedService();
+ return html+`<aside class="sc-add-dock" aria-label="선택한 서비스 추가"><div class="sc-dock-selection" role="status">${serviceLogo(service.id,service.name)}<span><small>선택한 서비스</small><strong>${esc(service.name)}</strong></span>${service.id==='kling'?'<button class="sc-textbtn" data-next>계정 연결</button>':''}</div><button class="sc-add" data-open-editor="${service.id}">${icon('plus')} 구독 추가하기</button></aside>`;
+};
+const renderBeforeQuickSelection=render;
+render=function(){const left=el.querySelector('.sc-usage-rail')?.scrollLeft??0;renderBeforeQuickSelection();const rail=el.querySelector('.sc-usage-rail');if(rail)rail.scrollLeft=left;};
 
 render();
 window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState){restore(e.detail.globals.widgetState);render();}});
