@@ -5,6 +5,7 @@ export const subscriptions=sqliteTable('subscriptions',{
  name:text('name').notNull(),
  plan:text('plan'),
  amount:integer('amount'),
+ currency:text('currency').notNull().default('KRW'),
  nextPayment:text('next_payment'),
  cycle:text('cycle').notNull().default('unknown'),
  channel:text('channel').notNull().default('unknown'),
@@ -35,3 +36,4 @@ export const usageSnapshots=sqliteTable('usage_snapshots',{
  windows:text('windows').notNull(),
  updatedAt:text('updated_at').notNull(),
 },table=>[primaryKey({columns:[table.userId,table.serviceId]})]);
+

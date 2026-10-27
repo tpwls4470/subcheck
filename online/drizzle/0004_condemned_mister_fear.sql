@@ -1,0 +1,1 @@
+ALTER TABLE `subscriptions` ADD `currency` text DEFAULT 'KRW' NOT NULL;

@@ -1,0 +1,19 @@
+const fx={rate:null,date:null,stale:false};
+const usd=value=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(value);
+function krwEstimate(value){return fx.rate?'약 '+fmt(Math.round(value*fx.rate))+'원':'환율 확인 전';}
+subscriptionAmount=function(record){if(record.amount===null)return '미확인';if(record.currency==='USD')return `<span class="sc-money-main">${usd(record.amount)}</span><small class="sc-money-estimate">${krwEstimate(record.amount)}</small>`;return fmt(record.amount)+'원';};
+const homeBeforeCurrency=homeV4;
+homeV4=function(){let html=homeBeforeCurrency();const monthly=savedState.items.filter(x=>x.cycle==='monthly'&&x.amount!==null),dollars=monthly.filter(x=>x.currency==='USD').reduce((n,x)=>n+Math.round(x.amount*100),0)/100,won=monthly.filter(x=>x.currency!=='USD').reduce((n,x)=>n+x.amount,0);return html.replace(/<div class="sc-subscription-summary">[\s\S]*?<\/p><\/div>/,`<div class="sc-subscription-summary"><div><span>내 구독</span><strong>${new Set([...savedState.items.map(x=>x.serviceId),...(live.connected?['kling']:[])]).size}<small>개</small></strong></div><div><span>월 달러 결제 합계</span><strong>${usd(dollars)}</strong><small class="sc-money-estimate">${krwEstimate(dollars)}</small></div><p>${won?'원화 결제 '+fmt(won)+'원 별도 · ':''}저장한 월간 구독만 합산합니다. 연간 구독·미확인 금액 제외.<br>${fx.rate?`1달러 = ${fmt(fx.rate)}원 · ${esc(fx.date)} 기준${fx.stale?' · 이전 조회값':''}`:'환율을 확인하지 못했어요.'}<br>원화는 수수료·카드 환율을 제외한 예상액이에요.</p></div>`);};
+function updateFxPreview(){const form=el.querySelector('[data-subscription-form]'),preview=form?.querySelector('[data-fx-preview]');if(!preview)return;const value=form.elements.amount.value,currency=form.elements.currency.value;form.elements.amount.step=currency==='USD'?'0.01':'1';preview.textContent=currency==='USD'?(value!==''&&Number(value)>=0?usd(Number(value))+' · '+krwEstimate(Number(value))+(fx.date?' ('+fx.date+' 기준)':''):'달러 금액을 입력하면 원화 예상액을 보여드려요.'):'원화 결제금액으로 저장돼요.';}
+el.addEventListener('input',e=>{if(['amount','currency'].includes(e.target.name))updateFxPreview();});el.addEventListener('change',e=>{if(e.target.name==='currency')updateFxPreview();});
+let drag=null,preventRailClickUntil=0;
+el.addEventListener('pointerdown',e=>{const rail=e.target.closest('.sc-usage-rail');if(!rail||e.pointerType!=='mouse'||e.button!==0)return;drag={rail,x:e.clientX,left:rail.scrollLeft,moved:false};});
+window.addEventListener('pointermove',e=>{if(!drag)return;const delta=e.clientX-drag.x;if(Math.abs(delta)>5){drag.moved=true;drag.rail.classList.add('is-dragging');drag.rail.scrollLeft=drag.left-delta;e.preventDefault();}});
+window.addEventListener('pointerup',()=>{if(drag){if(drag.moved)preventRailClickUntil=Date.now()+250;drag.rail.classList.remove('is-dragging');drag=null;}});
+el.addEventListener('click',e=>{if(e.target.closest('.sc-usage-rail')&&Date.now()<preventRailClickUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
+el.addEventListener('click',e=>{const b=e.target.closest('[data-rail-move]');if(!b)return;el.querySelector('.sc-usage-rail')?.scrollBy({left:Number(b.dataset.railMove)*180,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
+const usageBeforeRailControls=usageV5;
+usageV5=function(){return usageBeforeRailControls().replace('<span class="sc-small">옆으로 넘겨 선택</span>','<div class="sc-rail-controls"><button data-rail-move="-1" aria-label="이전 서비스">'+icon('chevron-left')+'</button><button data-rail-move="1" aria-label="다음 서비스">'+icon('chevron-right')+'</button></div>').replace('<div class="sc-usage-rail">','<div class="sc-usage-rail" tabindex="0" aria-label="서비스 목록 · 좌우로 넘기기">');};
+const renderBeforeSpacing=render;render=function(){renderBeforeSpacing();updateFxPreview();};
+async function loadFx(){try{const r=await fetch('/api/exchange-rate',{cache:'no-store'}),d=await r.json();if(r.ok){Object.assign(fx,d);if(['home','detail','editSubscription'].includes(s.screen))render();}}catch{}}
+loadFx();

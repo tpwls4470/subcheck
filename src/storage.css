@@ -92,3 +92,26 @@ html{scroll-padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 #subcheck-design .sc-title-add>button:focus-visible{outline:2px solid var(--sc-deep);outline-offset:3px}
 
 #subcheck-design .sc-title-add>button{position:relative;min-height:32px;padding:5px 9px;font-size:12px;font-weight:600;border:0;border-radius:9px;background:var(--sc-soft);color:var(--sc-deep)}#subcheck-design .sc-title-add>button:after{content:"";position:absolute;inset:-6px 0}#subcheck-design .sc-title-add>button svg{width:14px;height:14px}#subcheck-design .sc-title-add{margin-bottom:6px}
+
+#subcheck-design .sc-app{--sc-space-section:28px;--sc-space-heading:12px;--sc-space-content:16px}
+#subcheck-design .sc-content>.sc-section,#subcheck-design .sc-content>.sc-discover,#subcheck-design .sc-content>section.sc-card{margin-top:var(--sc-space-section);margin-bottom:0}
+#subcheck-design .sc-content>.sc-subtitle{margin:8px 0 24px;line-height:1.65}
+#subcheck-design .sc-app .sc-heading{margin-bottom:12px;gap:12px;align-items:center}
+#subcheck-design .sc-card.sc-inner h2{margin:0 0 10px;font-size:17px;line-height:1.4}
+#subcheck-design .sc-app .sc-footnote{margin-top:12px;margin-bottom:16px;line-height:1.75}
+#subcheck-design .sc-discover>.sc-footnote{margin-top:0;margin-bottom:16px}
+#subcheck-design .sc-app .sc-subscription-tile{margin-bottom:16px}
+#subcheck-design .sc-app .sc-edit-form{gap:12px}
+#subcheck-design .sc-app .sc-edit-form>label{gap:8px}
+#subcheck-design .sc-app .sc-edit-form input,#subcheck-design .sc-app .sc-edit-form select{margin-bottom:0}
+#subcheck-design .sc-money-main{display:block}
+#subcheck-design .sc-money-estimate{display:block;font-size:11px;font-weight:400;color:var(--sc-muted);margin-top:5px;line-height:1.5}
+#subcheck-design .sc-fx-preview{font-size:12px;color:var(--sc-deep);line-height:1.6;margin:0 0 4px}
+#subcheck-design .sc-usage-rail{cursor:grab;touch-action:pan-x pan-y;scroll-behavior:smooth;scroll-snap-type:x proximity}
+#subcheck-design .sc-usage-rail.is-dragging{cursor:grabbing;scroll-behavior:auto;scroll-snap-type:none;user-select:none}
+#subcheck-design .sc-usage-choice{scroll-snap-align:start}
+#subcheck-design .sc-usage-choice img{-webkit-user-drag:none;user-select:none;pointer-events:none}
+#subcheck-design .sc-rail-controls{display:flex;gap:4px}
+#subcheck-design .sc-rail-controls button{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--sc-line);border-radius:50%;background:var(--sc-paper);color:var(--sc-deep);cursor:pointer}
+#subcheck-design .sc-rail-controls svg{width:18px;height:18px}
+@media(prefers-reduced-motion:reduce){#subcheck-design .sc-usage-rail{scroll-behavior:auto}}

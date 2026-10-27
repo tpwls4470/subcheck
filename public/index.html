@@ -110,6 +110,29 @@ html{scroll-padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 #subcheck-design .sc-title-add>button:focus-visible{outline:2px solid var(--sc-deep);outline-offset:3px}
 
 #subcheck-design .sc-title-add>button{position:relative;min-height:32px;padding:5px 9px;font-size:12px;font-weight:600;border:0;border-radius:9px;background:var(--sc-soft);color:var(--sc-deep)}#subcheck-design .sc-title-add>button:after{content:"";position:absolute;inset:-6px 0}#subcheck-design .sc-title-add>button svg{width:14px;height:14px}#subcheck-design .sc-title-add{margin-bottom:6px}
+
+#subcheck-design .sc-app{--sc-space-section:28px;--sc-space-heading:12px;--sc-space-content:16px}
+#subcheck-design .sc-content>.sc-section,#subcheck-design .sc-content>.sc-discover,#subcheck-design .sc-content>section.sc-card{margin-top:var(--sc-space-section);margin-bottom:0}
+#subcheck-design .sc-content>.sc-subtitle{margin:8px 0 24px;line-height:1.65}
+#subcheck-design .sc-app .sc-heading{margin-bottom:12px;gap:12px;align-items:center}
+#subcheck-design .sc-card.sc-inner h2{margin:0 0 10px;font-size:17px;line-height:1.4}
+#subcheck-design .sc-app .sc-footnote{margin-top:12px;margin-bottom:16px;line-height:1.75}
+#subcheck-design .sc-discover>.sc-footnote{margin-top:0;margin-bottom:16px}
+#subcheck-design .sc-app .sc-subscription-tile{margin-bottom:16px}
+#subcheck-design .sc-app .sc-edit-form{gap:12px}
+#subcheck-design .sc-app .sc-edit-form>label{gap:8px}
+#subcheck-design .sc-app .sc-edit-form input,#subcheck-design .sc-app .sc-edit-form select{margin-bottom:0}
+#subcheck-design .sc-money-main{display:block}
+#subcheck-design .sc-money-estimate{display:block;font-size:11px;font-weight:400;color:var(--sc-muted);margin-top:5px;line-height:1.5}
+#subcheck-design .sc-fx-preview{font-size:12px;color:var(--sc-deep);line-height:1.6;margin:0 0 4px}
+#subcheck-design .sc-usage-rail{cursor:grab;touch-action:pan-x pan-y;scroll-behavior:smooth;scroll-snap-type:x proximity}
+#subcheck-design .sc-usage-rail.is-dragging{cursor:grabbing;scroll-behavior:auto;scroll-snap-type:none;user-select:none}
+#subcheck-design .sc-usage-choice{scroll-snap-align:start}
+#subcheck-design .sc-usage-choice img{-webkit-user-drag:none;user-select:none;pointer-events:none}
+#subcheck-design .sc-rail-controls{display:flex;gap:4px}
+#subcheck-design .sc-rail-controls button{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--sc-line);border-radius:50%;background:var(--sc-paper);color:var(--sc-deep);cursor:pointer}
+#subcheck-design .sc-rail-controls svg{width:18px;height:18px}
+@media(prefers-reduced-motion:reduce){#subcheck-design .sc-usage-rail{scroll-behavior:auto}}
 </style></head><body><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <div id="subcheck-design" class="viz-dotted-background" aria-label="서브체크 한눈에 보기 디자인">
   <div class="sc-stage"><article class="sc-app" aria-label="서브체크 서비스 연결 시안"></article></div>
@@ -625,7 +648,7 @@ const previousRecord=subscriptionRecord;
 subscriptionRecord=function(app){
   const item=savedState.items.find(x=>x.serviceId===app.id);
   if(!item)return previousRecord(app);
-  return {...app,example:false,source:'saved',plan:item.plan||(app.id==='kling'?live.balance?.plan:null)||'미확인',amount:item.amount,nextPayment:item.nextPayment,cycle:{monthly:'매월',yearly:'매년',unknown:'미확인'}[item.cycle],channel:{website:'서비스 웹사이트',appstore:'App Store',googleplay:'Google Play',unknown:'미확인'}[item.channel]};
+  return {...app,example:false,source:'saved',plan:item.plan||(app.id==='kling'?live.balance?.plan:null)||'미확인',amount:item.amount,currency:item.currency||'KRW',nextPayment:item.nextPayment,cycle:{monthly:'매월',yearly:'매년',unknown:'미확인'}[item.cycle],channel:{website:'서비스 웹사이트',appstore:'App Store',googleplay:'Google Play',unknown:'미확인'}[item.channel]};
 };
 const previousTile=subscriptionTile;
 subscriptionTile=function(record){
@@ -659,7 +682,7 @@ detailV4=function(){
 function editorValue(key){const saved=savedState.items.find(x=>x.serviceId===s.editingSubscription);return saved?.[key]??'';}
 function editSubscriptionScreen(){
   const service=catalog.find(x=>x.id===s.editingSubscription)||catalog[0];
-  return `<button class="sc-back" data-screen="home">${icon('arrow-left')} 내 구독</button><h1>구독 정보 저장</h1><p class="sc-subtitle">${esc(service.name)} · 모르는 항목은 비워두세요.</p><p class="sc-footnote">서비스에서 자동으로 받지 못한 결제 정보만 처음 한 번 확인해 저장해요. 크레딧 잔액은 직접 입력하지 않습니다.</p><form data-subscription-form class="sc-edit-form"><label>서비스<input name="name" value="${esc(service.name)}" readonly></label><label>이용 플랜<input name="plan" maxlength="80" value="${esc(editorValue('plan')||(service.id==='kling'?live.balance?.plan||'':''))}" placeholder="미확인이면 비워두세요"></label><label>결제금액 · 원<input name="amount" type="number" min="0" max="100000000" step="1" inputmode="numeric" value="${editorValue('amount')}" placeholder="미확인이면 비워두세요"></label><label>다음 결제 예정일<input name="nextPayment" type="date" value="${esc(editorValue('nextPayment'))}"></label><label>결제 주기<select name="cycle">${[['unknown','미확인'],['monthly','매월'],['yearly','매년']].map(([id,label])=>`<option value="${id}" ${(editorValue('cycle')||'unknown')===id?'selected':''}>${label}</option>`).join('')}</select></label><label>결제 경로<select name="channel">${[['unknown','미확인'],['website','서비스 웹사이트'],['appstore','App Store'],['googleplay','Google Play']].map(([id,label])=>`<option value="${id}" ${(editorValue('channel')||'unknown')===id?'selected':''}>${label}</option>`).join('')}</select></label><p class="sc-form-message" role="alert"></p><button class="sc-add" type="submit" ${savedState.busy?'disabled':''}>${icon('save')} ${savedState.busy?'저장 중…':'내 계정에 저장'}</button></form><p class="sc-footnote">이 사이트의 본인 계정에 저장됩니다. 결제·구독 변경은 실행되지 않아요.</p>`;
+  return `<button class="sc-back" data-screen="home">${icon('arrow-left')} 내 구독</button><h1>구독 정보 저장</h1><p class="sc-subtitle">${esc(service.name)} · 모르는 항목은 비워두세요.</p><p class="sc-footnote">서비스에서 자동으로 받지 못한 결제 정보만 처음 한 번 확인해 저장해요. 크레딧 잔액은 직접 입력하지 않습니다.</p><form data-subscription-form class="sc-edit-form"><label>서비스<input name="name" value="${esc(service.name)}" readonly></label><label>이용 플랜<input name="plan" maxlength="80" value="${esc(editorValue('plan')||(service.id==='kling'?live.balance?.plan||'':''))}" placeholder="미확인이면 비워두세요"></label><label>결제 통화<select name="currency">${[['USD','USD · 미국 달러'],['KRW','KRW · 원화']].map(([id,label])=>`<option value="${id}" ${(editorValue('currency')||'USD')===id?'selected':''}>${label}</option>`).join('')}</select></label><label>결제금액<input name="amount" type="number" min="0" max="100000000" step="0.01" inputmode="decimal" value="${editorValue('amount')}" placeholder="미확인이면 비워두세요"></label><p class="sc-fx-preview" data-fx-preview></p><label>다음 결제 예정일<input name="nextPayment" type="date" value="${esc(editorValue('nextPayment'))}"></label><label>결제 주기<select name="cycle">${[['unknown','미확인'],['monthly','매월'],['yearly','매년']].map(([id,label])=>`<option value="${id}" ${(editorValue('cycle')||'unknown')===id?'selected':''}>${label}</option>`).join('')}</select></label><label>결제 경로<select name="channel">${[['unknown','미확인'],['website','서비스 웹사이트'],['appstore','App Store'],['googleplay','Google Play']].map(([id,label])=>`<option value="${id}" ${(editorValue('channel')||'unknown')===id?'selected':''}>${label}</option>`).join('')}</select></label><p class="sc-form-message" role="alert"></p><button class="sc-add" type="submit" ${savedState.busy?'disabled':''}>${icon('save')} ${savedState.busy?'저장 중…':'내 계정에 저장'}</button></form><p class="sc-footnote">이 사이트의 본인 계정에 저장됩니다. 결제·구독 변경은 실행되지 않아요.</p>`;
 }
 const previousEditor=editSubscriptionScreen;
 editSubscriptionScreen=function(){const html=previousEditor();return savedState.items.some(x=>x.serviceId===s.editingSubscription)?html+`<button class="sc-secondary" data-remove-subscription="${s.editingSubscription}">저장 목록에서 지우기</button><p class="sc-footnote">저장한 구독 정보만 목록에서 숨깁니다. 실제 서비스 구독은 해지되지 않아요.</p>`:html;};
@@ -680,7 +703,7 @@ async function loadStoredSubscriptions(){
 el.addEventListener('submit',async event=>{
   if(!event.target.hasAttribute('data-subscription-form'))return;event.preventDefault();if(savedState.busy)return;
   const form=event.target,values=new FormData(form),message=form.querySelector('.sc-form-message');
-  const payload={serviceId:s.editingSubscription,name:values.get('name'),plan:values.get('plan'),amount:values.get('amount')===''?null:Number(values.get('amount')),nextPayment:values.get('nextPayment')||null,cycle:values.get('cycle'),channel:values.get('channel'),reminder3:values.has('reminder3'),reminderDay:values.has('reminderDay')};
+  const payload={serviceId:s.editingSubscription,name:values.get('name'),plan:values.get('plan'),amount:values.get('amount')===''?null:Number(values.get('amount')),nextPayment:values.get('nextPayment')||null,currency:values.get('currency'),cycle:values.get('cycle'),channel:values.get('channel'),reminder3:values.has('reminder3'),reminderDay:values.has('reminderDay')};
   savedState.busy=true;const button=form.querySelector('button[type="submit"]');button.disabled=true;button.textContent='저장 중…';
   try{const response=await fetch('/api/subscriptions',{method:'POST',headers:{'content-type':'application/json','x-subcheck-csrf':document.querySelector('meta[name="app-csrf"]').content},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw Error(data.message||'저장하지 못했어요.');applyStoredItems([data.item,...savedState.items.filter(x=>x.serviceId!==data.item.serviceId)]);savedState.error='';change('home');notify('내 계정에 구독 정보를 저장했어요.');}
   catch(error){message.textContent=error.message;}finally{savedState.busy=false;button.disabled=false;button.textContent='내 계정에 저장';}
@@ -826,6 +849,26 @@ render=function(){const left=el.querySelector('.sc-usage-rail')?.scrollLeft??0;r
 const homeBeforeTopAdd=homeV4;
 homeV4=function(){return homeBeforeTopAdd().replace('<span class="sc-demo">결제 정보 확인 중</span>','').replace('<h1>내 구독</h1>',`<div class="sc-title-add"><h1>내 구독</h1><button data-top-add>${icon('plus')} 구독 추가</button></div>`);};
 el.addEventListener('click',event=>{if(event.target.closest('[data-top-add]')){s.category='전체';s.search='';s.catalogPage=0;s.chosen=null;change('add');}});
+
+const fx={rate:null,date:null,stale:false};
+const usd=value=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(value);
+function krwEstimate(value){return fx.rate?'약 '+fmt(Math.round(value*fx.rate))+'원':'환율 확인 전';}
+subscriptionAmount=function(record){if(record.amount===null)return '미확인';if(record.currency==='USD')return `<span class="sc-money-main">${usd(record.amount)}</span><small class="sc-money-estimate">${krwEstimate(record.amount)}</small>`;return fmt(record.amount)+'원';};
+const homeBeforeCurrency=homeV4;
+homeV4=function(){let html=homeBeforeCurrency();const monthly=savedState.items.filter(x=>x.cycle==='monthly'&&x.amount!==null),dollars=monthly.filter(x=>x.currency==='USD').reduce((n,x)=>n+Math.round(x.amount*100),0)/100,won=monthly.filter(x=>x.currency!=='USD').reduce((n,x)=>n+x.amount,0);return html.replace(/<div class="sc-subscription-summary">[\s\S]*?<\/p><\/div>/,`<div class="sc-subscription-summary"><div><span>내 구독</span><strong>${new Set([...savedState.items.map(x=>x.serviceId),...(live.connected?['kling']:[])]).size}<small>개</small></strong></div><div><span>월 달러 결제 합계</span><strong>${usd(dollars)}</strong><small class="sc-money-estimate">${krwEstimate(dollars)}</small></div><p>${won?'원화 결제 '+fmt(won)+'원 별도 · ':''}저장한 월간 구독만 합산합니다. 연간 구독·미확인 금액 제외.<br>${fx.rate?`1달러 = ${fmt(fx.rate)}원 · ${esc(fx.date)} 기준${fx.stale?' · 이전 조회값':''}`:'환율을 확인하지 못했어요.'}<br>원화는 수수료·카드 환율을 제외한 예상액이에요.</p></div>`);};
+function updateFxPreview(){const form=el.querySelector('[data-subscription-form]'),preview=form?.querySelector('[data-fx-preview]');if(!preview)return;const value=form.elements.amount.value,currency=form.elements.currency.value;form.elements.amount.step=currency==='USD'?'0.01':'1';preview.textContent=currency==='USD'?(value!==''&&Number(value)>=0?usd(Number(value))+' · '+krwEstimate(Number(value))+(fx.date?' ('+fx.date+' 기준)':''):'달러 금액을 입력하면 원화 예상액을 보여드려요.'):'원화 결제금액으로 저장돼요.';}
+el.addEventListener('input',e=>{if(['amount','currency'].includes(e.target.name))updateFxPreview();});el.addEventListener('change',e=>{if(e.target.name==='currency')updateFxPreview();});
+let drag=null,preventRailClickUntil=0;
+el.addEventListener('pointerdown',e=>{const rail=e.target.closest('.sc-usage-rail');if(!rail||e.pointerType!=='mouse'||e.button!==0)return;drag={rail,x:e.clientX,left:rail.scrollLeft,moved:false};});
+window.addEventListener('pointermove',e=>{if(!drag)return;const delta=e.clientX-drag.x;if(Math.abs(delta)>5){drag.moved=true;drag.rail.classList.add('is-dragging');drag.rail.scrollLeft=drag.left-delta;e.preventDefault();}});
+window.addEventListener('pointerup',()=>{if(drag){if(drag.moved)preventRailClickUntil=Date.now()+250;drag.rail.classList.remove('is-dragging');drag=null;}});
+el.addEventListener('click',e=>{if(e.target.closest('.sc-usage-rail')&&Date.now()<preventRailClickUntil){e.preventDefault();e.stopImmediatePropagation();}},true);
+el.addEventListener('click',e=>{const b=e.target.closest('[data-rail-move]');if(!b)return;el.querySelector('.sc-usage-rail')?.scrollBy({left:Number(b.dataset.railMove)*180,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
+const usageBeforeRailControls=usageV5;
+usageV5=function(){return usageBeforeRailControls().replace('<span class="sc-small">옆으로 넘겨 선택</span>','<div class="sc-rail-controls"><button data-rail-move="-1" aria-label="이전 서비스">'+icon('chevron-left')+'</button><button data-rail-move="1" aria-label="다음 서비스">'+icon('chevron-right')+'</button></div>').replace('<div class="sc-usage-rail">','<div class="sc-usage-rail" tabindex="0" aria-label="서비스 목록 · 좌우로 넘기기">');};
+const renderBeforeSpacing=render;render=function(){renderBeforeSpacing();updateFxPreview();};
+async function loadFx(){try{const r=await fetch('/api/exchange-rate',{cache:'no-store'}),d=await r.json();if(r.ok){Object.assign(fx,d);if(['home','detail','editSubscription'].includes(s.screen))render();}}catch{}}
+loadFx();
 
 render();
 window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState){restore(e.detail.globals.widgetState);render();}});

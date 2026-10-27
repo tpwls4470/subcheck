@@ -29,6 +29,13 @@
       "when": 1793072306670,
       "tag": "0003_brown_madripoor",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1793073635437,
+      "tag": "0004_condemned_mister_fear",
+      "breakpoints": true
     }
   ]
 }

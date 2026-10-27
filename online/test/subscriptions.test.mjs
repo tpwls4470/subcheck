@@ -25,6 +25,10 @@ test('subscription storage persists and isolates owners using actual SQLite stat
   await worker.fetch(request('/api/subscriptions/remove','owner-A',{method:'POST',headers,body:JSON.stringify({serviceId:'netflix'})}),env);
   const removed=await worker.fetch(request('/api/subscriptions','owner-A'),env);assert.deepEqual((await removed.json()).items,[]);
   assert.equal(db.prepare('SELECT COUNT(*) AS n FROM subscriptions').get().n,1);
+  const usdItem={...item,amount:19.99,currency:'USD'};
+  assert.equal((await worker.fetch(request('/api/subscriptions','owner-A',{method:'POST',headers,body:JSON.stringify(usdItem)}),env)).status,200);
+  const usdRead=(await (await worker.fetch(request('/api/subscriptions','owner-A'),env)).json()).items[0];assert.equal(usdRead.amount,19.99);assert.equal(usdRead.currency,'USD');assert.equal(db.prepare('SELECT amount FROM subscriptions').get().amount,1999);
+  assert.throws(()=>validateSubscription({...usdItem,amount:19.999}));assert.throws(()=>validateSubscription({...usdItem,currency:'KRW',amount:19.99}));
   db.close();
 });
 
