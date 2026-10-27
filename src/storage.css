@@ -57,3 +57,9 @@
 #subcheck-design .sc-usage-alert-settings{margin-top:20px}#subcheck-design .sc-usage-alert-toggle{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px}#subcheck-design .sc-usage-alert-settings input{width:20px;height:20px;accent-color:var(--sc-deep)}
 
 #subcheck-design .sc-install-steps{padding-left:20px;font-size:14px;line-height:1.7}#subcheck-design .sc-install-steps li{margin-bottom:12px}@media(display-mode:standalone){#subcheck-design .sc-bottom{padding-bottom:max(12px,env(safe-area-inset-bottom))}body{padding-top:env(safe-area-inset-top)}}
+#subcheck-design .sc-app>.sc-bottom{position:fixed;z-index:50;left:50%;bottom:0;transform:translateX(-50%);box-sizing:border-box;width:100%;max-width:400px;margin:0;grid-template-columns:repeat(3,minmax(0,1fr));padding:5px 12px calc(5px + env(safe-area-inset-bottom,0px));gap:4px;border:1px solid var(--sc-line);border-bottom:0;border-radius:16px 16px 0 0;box-shadow:0 -5px 20px #203b560a;background:var(--sc-paper)}
+#subcheck-design .sc-app .sc-bottom .sc-nav{min-height:46px;padding:5px 3px 4px;gap:2px;font-size:10px;line-height:1.3;border-radius:10px}
+#subcheck-design .sc-app .sc-bottom .sc-nav svg{width:19px;height:19px}
+#subcheck-design .sc-app:has(>.sc-bottom)>.sc-content{padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
+#subcheck-design .sc-app .sc-toast{position:fixed;z-index:60;bottom:calc(72px + env(safe-area-inset-bottom,0px));max-width:calc(100% - 40px)}
+html{scroll-padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
