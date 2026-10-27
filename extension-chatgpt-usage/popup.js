@@ -7,3 +7,5 @@ async function showSync(){const d=await chrome.storage.local.get(['syncEnabled',
 syncToggle.addEventListener('change',async()=>{await chrome.storage.local.set({syncEnabled:syncToggle.checked});await chrome.runtime.sendMessage({type:'SUBCHECK_SYNC_NOW'});showSync();});
 document.querySelector('#connect').addEventListener('click',()=>chrome.tabs.create({url:'https://subcheck-mobile-tpwls4470.satinyshark14.chatgpt.site/?extensionSync=1'}));
 chrome.storage.onChanged.addListener(showSync);showSync();
+
+async function showBilling(){const d=await chrome.storage.local.get(['billingEnabled','billingCandidate','billingSyncStatus']);document.querySelector('#billingEnabled').checked=d.billingEnabled===true;document.querySelector('#billingStatus').textContent=!d.billingEnabled?'클링 수집 꺼짐':!d.billingCandidate?'Manage 창을 열어 수집해주세요.':d.billingSyncStatus==='synced'?'결제 기록을 동기화했어요. 앱에서 확인 후 입력란에 적용하세요.':'서브체크 연결 탭을 열어주세요.';}document.querySelector('#billingEnabled').addEventListener('change',e=>chrome.storage.local.set({billingEnabled:e.target.checked}));chrome.storage.onChanged.addListener(showBilling);showBilling();

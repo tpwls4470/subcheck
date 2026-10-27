@@ -37,3 +37,9 @@ export const usageSnapshots=sqliteTable('usage_snapshots',{
  updatedAt:text('updated_at').notNull(),
 },table=>[primaryKey({columns:[table.userId,table.serviceId]})]);
 
+export const billingCandidates=sqliteTable('billing_candidates',{
+ userId:text('user_id').notNull(),
+ serviceId:text('service_id').notNull(),
+ observedAt:text('observed_at').notNull(),
+ payload:text('payload').notNull(),
+},table=>[primaryKey({columns:[table.userId,table.serviceId]})]);

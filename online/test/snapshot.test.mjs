@@ -15,5 +15,9 @@ test('snapshot sync enforces authenticated owner, csrf and monotonic observed ti
  const data=sample();assert.equal((await put({...data,userId:'B'},headers)).status,200);assert.equal((await(await get('A')).json()).snapshot.windows[0].remainingPercent,40);assert.equal((await(await get('B')).json()).snapshot,null);
  const older={...sample(new Date(Date.now()-3600000).toISOString()),windows:[{window:'five_hour',remainingPercent:90,resetEstimatedAt:null}]};assert.equal((await put(older,headers)).status,200);assert.equal((await(await get('A')).json()).snapshot.windows[0].remainingPercent,40);
  assert.equal((await put({...data,scope:'chat'},headers)).status,400);
+ const candidate={service:'kling',source:'visible_manage_dialog',currency:'USD',amount:21.99,plan:'Pro Monthly Subscription',channel:'stripe',observedAt:new Date().toISOString(),nextPayment:'2099-01-01'};
+ const bill=await worker.fetch(new Request(origin+'/api/billing-candidate',{method:'POST',headers:{...headers,'oai-authenticated-user-id':'A'},body:JSON.stringify(candidate)}),env);assert.equal(bill.status,200);
+ const readBill=async user=>(await(await worker.fetch(new Request(origin+'/api/billing-candidate',{headers:{'oai-authenticated-user-id':user}}),env)).json()).candidate;
+ assert.equal((await readBill('A')).amount,21.99);assert.equal((await readBill('A')).nextPayment,null);assert.equal(await readBill('B'),null);
  }finally{db.close();}
 });

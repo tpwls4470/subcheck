@@ -45,6 +45,9 @@ export async function reminderApi(req,env,user,jar,url){
  try{if(!fxCache||Date.now()-fxCache.fetched>3600000){const r=await fetch('https://api.frankfurter.dev/v2/rate/usd/krw',{redirect:'manual',signal:AbortSignal.timeout(8000)});if(!r.ok)throw Error();const d=await r.json();if(d.base!=='USD'||d.quote!=='KRW'||typeof d.rate!=='number'||!Number.isFinite(d.rate)||d.rate<=0||!/^\d{4}-\d{2}-\d{2}$/.test(d.date))throw Error();fxCache={rate:d.rate,date:d.date,fetched:Date.now(),source:'Frankfurter'};}return json({...fxCache,stale:false});}catch{return fxCache?json({...fxCache,stale:true}):json({message:'환율을 불러오지 못했어요. 달러 금액만 표시합니다.'},503);}
  }
  if(!env.DB)return json({message:'알림 설정을 준비 중이에요.'},503);
+ if(req.method==='GET'&&url.pathname==='/api/billing-candidate'){
+ const {results}=await env.DB.prepare('SELECT payload FROM billing_candidates WHERE user_id=? AND service_id=?').bind(user,'kling').all();return json({candidate:results[0]?JSON.parse(results[0].payload):null});
+ }
  if(req.method==='GET'&&url.pathname==='/api/usage-snapshot'){
  const {results}=await env.DB.prepare('SELECT observed_at,windows,updated_at FROM usage_snapshots WHERE user_id=? AND service_id=?').bind(user,'chatgpt').all();const row=results[0];return json({snapshot:row?{version:1,service:'chatgpt',scope:'codex_work_shared',source:'visible_settings_page',observedAt:row.observed_at,windows:JSON.parse(row.windows),syncedAt:row.updated_at}:null});
  }
@@ -59,6 +62,11 @@ export async function reminderApi(req,env,user,jar,url){
  if(req.method!=='POST')return json({message:'지원하지 않는 요청이에요.'},405);
  if(req.headers.get('origin')!==ORIGIN||req.headers.get('sec-fetch-site')==='cross-site'||!jar['__Host-subcheck-csrf']||req.headers.get('x-subcheck-csrf')!==jar['__Host-subcheck-csrf'])return json({message:'화면을 다시 열어주세요.'},403);
  let p;try{const body=await req.text();if(body.length>4096)throw Error();p=JSON.parse(body);}catch{return json({message:'요청을 확인해주세요.'},400);}
+ if(url.pathname==='/api/billing-candidate'){
+ if(!p||p.service!=='kling'||p.source!=='visible_manage_dialog'||p.currency!=='USD'||typeof p.amount!=='number'||!Number.isFinite(p.amount)||p.amount<0||p.amount>1000000||Math.abs(p.amount*100-Math.round(p.amount*100))>0.00001||typeof p.plan!=='string'||!/^[-A-Za-z0-9 +]{1,80}$/.test(p.plan)||!Number.isFinite(Date.parse(p.observedAt))||Math.abs(Date.now()-Date.parse(p.observedAt))>86400000)return json({message:'결제 수집 기록을 확인해주세요.'},400);
+ const value={service:'kling',source:'visible_manage_dialog',currency:'USD',amount:p.amount,plan:p.plan,channel:p.channel==='stripe'?'stripe':'unknown',observedAt:new Date(p.observedAt).toISOString(),nextPayment:null};
+ await env.DB.prepare('INSERT INTO billing_candidates(user_id,service_id,observed_at,payload) VALUES(?,?,?,?) ON CONFLICT(user_id,service_id) DO UPDATE SET observed_at=excluded.observed_at,payload=excluded.payload WHERE excluded.observed_at>billing_candidates.observed_at').bind(user,'kling',value.observedAt,JSON.stringify(value)).run();return json({synced:true});
+ }
  if(url.pathname==='/api/usage-snapshot'){
  let value;try{value=validateSnapshot(p);}catch{return json({message:'수집 기록을 확인해주세요. 최신 사용량 화면을 다시 열어주세요.'},400);}
  await env.DB.prepare('INSERT INTO usage_snapshots(user_id,service_id,observed_at,windows,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(user_id,service_id) DO UPDATE SET observed_at=excluded.observed_at,windows=excluded.windows,updated_at=excluded.updated_at WHERE excluded.observed_at>usage_snapshots.observed_at').bind(user,'chatgpt',value.observedAt,JSON.stringify(value.windows),new Date().toISOString()).run();return json({synced:true});

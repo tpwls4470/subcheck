@@ -15,3 +15,7 @@ chrome.runtime.onMessage.addListener((message,sender,respond)=>{
  if(message?.type==='SUBCHECK_SYNC_NOW'){sync().then(()=>respond({ok:true}));return true;}
  if(message?.type==='SUBCHECK_BRIDGE_READY'&&sender.url?.startsWith(origin+'/')){sync();respond({ok:true});}
 });
+
+async function syncBilling(){const {billingEnabled,billingCandidate}=await chrome.storage.local.get(['billingEnabled','billingCandidate']);if(!billingEnabled||!billingCandidate)return;const tabs=await chrome.tabs.query({url:origin+'/*'});let ok=false;for(const tab of tabs)try{const r=await chrome.tabs.sendMessage(tab.id,{type:'SUBCHECK_BILLING_SYNC',candidate:billingCandidate});if(r?.ok){ok=true;break;}}catch{}await chrome.storage.local.set({billingSyncStatus:ok?'synced':tabs.length?'needs_login':'needs_tab'});}
+chrome.storage.onChanged.addListener((c,a)=>{if(a==='local'&&(c.billingCandidate||c.billingEnabled))syncBilling();});
+chrome.runtime.onMessage.addListener((m,sender)=>{if(sender.id===chrome.runtime.id&&m?.type==='SUBCHECK_BRIDGE_READY'&&sender.url?.startsWith(origin+'/'))syncBilling();});
