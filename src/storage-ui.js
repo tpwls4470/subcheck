@@ -11,13 +11,17 @@ const previousTile=subscriptionTile;
 subscriptionTile=function(record){
   let html=previousTile(record);
   if(record.source==='saved')html=html.replace(/<div class="sc-subscription-source">[\s\S]*?<\/div>/,'<div class="sc-subscription-source"><span class="sc-pill">저장한 정보</span><span>내가 확인한 구독·결제 정보</span></div>');
+  if(record.id==='kling'&&record.source!=='saved'){
+    html=html.replace('실제 연결','사용량 연결됨').replace('결제 예정일·금액 미확인','플랜·잔액 자동 조회 · 결제 정보 별도 확인');
+    return html.replace(/<\/article>$/,`<div class="sc-billing-help"><p>현재 연결에서는 결제일·금액을 자동으로 가져오지 않아요. 결제 내역에서 확인한 뒤 등록하면 결제 알림도 받을 수 있어요.</p><a href="https://kling.ai/app/subscribe" target="_blank" rel="noopener noreferrer">클링에서 구독 정보 확인 ${icon('external-link')}</a><button class="sc-secondary" data-open-editor="kling">결제 정보 등록</button></div></article>`);
+  }
   return record.source!=='saved'?html:html.replace(/<\/article>$/,`<button class="sc-textbtn sc-save-inline" data-open-editor="${record.id}">${record.source==='saved'?'구독 정보 수정':'내 구독에 저장'}</button></article>`);
 };
 const previousHome=homeV4;
 homeV4=function(){
   let html=previousHome();
   const monthly=savedState.items.filter(x=>x.cycle==='monthly'&&x.amount!==null).reduce((sum,x)=>sum+x.amount,0);
-  html=html.replace(/<div class="sc-subscription-summary">[\s\S]*?<\/p><\/div>/,`<div class="sc-subscription-summary"><div><span>저장한 구독</span><strong>${savedState.items.length}<small>개</small></strong></div><div><span>월 결제 합계</span><strong>${fmt(monthly)}<small>원</small></strong></div><p>저장한 월간 구독의 원화 금액만 합산해요. 미확인 금액·연간 구독·예시는 제외합니다.</p></div>`);
+  html=html.replace(/<div class="sc-subscription-summary">[\s\S]*?<\/p><\/div>/,`<div class="sc-subscription-summary"><div><span>내 구독</span><strong>${new Set([...savedState.items.map(x=>x.serviceId),...(live.connected?['kling']:[])]).size}<small>개</small></strong></div><div><span>월 결제 합계</span><strong>${fmt(monthly)}<small>원</small></strong></div><p>저장한 월간 구독의 원화 금액만 합산해요. 미확인 금액·연간 구독·예시는 제외합니다.</p></div>`);
   html=html.replace(/<section class="sc-section"><div class="sc-heading"><h2>구독 정보 둘러보기<\/h2>[\s\S]*?<\/section>/,'');
   const discover=`<section class="sc-discover"><div class="sc-heading"><h2>구독 추가하기</h2><button class="sc-textbtn sc-discover-all" data-discover-category="전체">전체 보기 ${icon('arrow-right')}</button></div><p class="sc-footnote">이용 중인 서비스를 찾아 내 구독에 추가해보세요.</p><div class="sc-discover-cards">${[['AI',['chatgpt','claude','gemini','kling'],'AI 서비스'],['영상·음악',['netflix','youtube','melon','spotify'],'영상·음악'],['멤버십',['coupang','naverplus','costco','baemin'],'멤버십']].map(([category,ids,label])=>`<button data-discover-category="${category}"><span class="sc-discover-logos" aria-hidden="true">${ids.map(id=>serviceLogo(id,catalog.find(x=>x.id===id)?.name||id)).join('')}</span><strong>${label}</strong>${icon('arrow-right')}</button>`).join('')}</div></section>`;
   html=html.replace(/<button class="sc-add" data-screen="add">[\s\S]*?<\/button>/,discover);
@@ -29,6 +33,7 @@ detailV4=function(){
   const record=subscriptionRecord(s.apps.find(x=>x.id===s.selected)||s.apps[0]);
   let html=previousDetail();
   if(record.source==='saved')html=html.replace('플랜: 클링 공식 조회 / 결제 정보: 미확인','내가 저장한 구독·결제 정보').replace('클링에서 받은 플랜을 표시합니다. 결제금액·예정일은 현재 조회 응답에 없어 미확인으로 표시해요.','내가 저장한 정보입니다. 자동 조회된 결제 정보와는 구분합니다.');
+  if(record.id==='kling'&&record.source!=='saved')return html+`<div class="sc-billing-help"><p>클링에서 결제 내역을 확인한 뒤 결제 예정일과 금액을 등록해주세요. 잔액은 계속 자동으로 조회돼요.</p><a href="https://kling.ai/app/subscribe" target="_blank" rel="noopener noreferrer">클링 구독 정보 확인 ${icon('external-link')}</a><button class="sc-secondary" data-open-editor="kling">결제 정보 등록</button></div>`;
   return record.source!=='saved'?html:html+`<button class="sc-add" data-open-editor="${record.id}">${icon('save')} ${record.source==='saved'?'구독 정보 수정':'내 구독에 저장'}</button>`;
 };
 function editorValue(key){const saved=savedState.items.find(x=>x.serviceId===s.editingSubscription);return saved?.[key]??'';}
