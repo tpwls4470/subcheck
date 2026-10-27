@@ -17,3 +17,14 @@
 #subcheck-design .sc-edit-form input[readonly]{background:var(--sc-soft)}
 #subcheck-design .sc-form-message{color:var(--sc-amber);font-size:13px;margin:0}
 #subcheck-design .sc-save-inline{margin-top:8px;min-height:44px;width:100%;justify-content:center}
+
+#subcheck-design .sc-app .sc-filters,#subcheck-design .sc-app .sc-services-subfilters{flex-wrap:nowrap;overflow-x:auto;max-width:100%;padding-bottom:8px;scrollbar-width:thin;overscroll-behavior-x:contain}
+#subcheck-design .sc-app .sc-filter,#subcheck-design .sc-app .sc-subfilter{flex:0 0 auto;white-space:nowrap;min-height:44px}
+#subcheck-design .sc-search-label{display:block;font-size:13px;font-weight:600;margin:0 0 8px;color:var(--sc-ink)}
+#subcheck-design .sc-discover{margin:24px 0}
+#subcheck-design .sc-discover-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#subcheck-design .sc-discover-cards button{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:14px 10px;background:var(--sc-paper);color:var(--sc-ink);border:1px solid var(--sc-line);border-radius:18px;text-align:left;cursor:pointer;min-width:0}
+#subcheck-design .sc-discover-cards strong{font-size:12px;white-space:nowrap}
+#subcheck-design .sc-discover-cards button>svg{width:16px;height:16px;align-self:flex-end;color:var(--sc-muted)}
+#subcheck-design .sc-discover-cards button:hover{border-color:var(--sc-deep);background:var(--sc-soft)}
+#subcheck-design .sc-discover-cards button:focus-visible{outline:2px solid var(--sc-deep);outline-offset:3px}

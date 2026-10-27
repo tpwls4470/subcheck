@@ -11,16 +11,16 @@ const previousTile=subscriptionTile;
 subscriptionTile=function(record){
   let html=previousTile(record);
   if(record.source==='saved')html=html.replace(/<div class="sc-subscription-source">[\s\S]*?<\/div>/,'<div class="sc-subscription-source"><span class="sc-pill">저장한 정보</span><span>내가 확인한 구독·결제 정보</span></div>');
-  return html.replace(/<\/article>$/,`<button class="sc-textbtn sc-save-inline" data-open-editor="${record.id}">${record.source==='saved'?'구독 정보 수정':'내 구독에 저장'}</button></article>`);
+  return record.source!=='saved'?html:html.replace(/<\/article>$/,`<button class="sc-textbtn sc-save-inline" data-open-editor="${record.id}">${record.source==='saved'?'구독 정보 수정':'내 구독에 저장'}</button></article>`);
 };
 const previousHome=homeV4;
 homeV4=function(){
   let html=previousHome();
   const monthly=savedState.items.filter(x=>x.cycle==='monthly'&&x.amount!==null).reduce((sum,x)=>sum+x.amount,0);
   html=html.replace(/<div class="sc-subscription-summary">[\s\S]*?<\/p><\/div>/,`<div class="sc-subscription-summary"><div><span>저장한 구독</span><strong>${savedState.items.length}<small>개</small></strong></div><div><span>월 결제 합계</span><strong>${fmt(monthly)}<small>원</small></strong></div><p>저장한 월간 구독의 원화 금액만 합산해요. 미확인 금액·연간 구독·예시는 제외합니다.</p></div>`);
-  const examples=subscriptionRecords().filter(x=>x.example&&(s.subscriptionFilter==='전체'||x.cat===s.subscriptionFilter));
-  const selected=examples.find(x=>x.id===s.exampleSelection);
-  html=html.replace(/<section class="sc-section"><div class="sc-heading"><h2>구독 정보 둘러보기<\/h2>[\s\S]*?<\/section>/,`<details class="sc-example-group"><summary>구독 예시 둘러보기 <span>${examples.length}개 서비스</span>${icon('chevron-down')}</summary><div class="sc-example-body"><label>보고 싶은 서비스<select data-example-select aria-label="구독 예시 선택"><option value="">서비스를 선택해주세요</option>${examples.map(x=>`<option value="${x.id}" ${selected?.id===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>${selected?subscriptionTile(selected):'<p class="sc-footnote">목록에서 선택한 서비스의 정보만 펼쳐 보여드려요. 금액과 일정은 예시입니다.</p>'}</div></details>`);
+  html=html.replace(/<section class="sc-section"><div class="sc-heading"><h2>구독 정보 둘러보기<\/h2>[\s\S]*?<\/section>/,'');
+  const discover=`<section class="sc-discover"><div class="sc-heading"><h2>새로운 구독 찾기</h2></div><p class="sc-footnote">이용 중인 서비스를 찾아 내 구독에 추가해보세요.</p><div class="sc-discover-cards">${[['AI','chatgpt','AI 서비스'],['영상·음악','netflix','영상·음악'],['멤버십','coupang','멤버십']].map(([category,id,label])=>`<button data-discover-category="${category}">${serviceLogo(id,label)}<strong>${label}</strong>${icon('arrow-right')}</button>`).join('')}</div></section>`;
+  html=html.replace('<button class="sc-add" data-screen="add">',discover+'<button class="sc-add" data-screen="add">');
   html=html.replace('<h2>연동 서비스</h2>','<h2>내 구독 정보</h2>');
   return (savedState.error?`<p class="sc-status-banner warning" role="alert">${esc(savedState.error)}</p>`:'')+html;
 };
@@ -29,7 +29,7 @@ detailV4=function(){
   const record=subscriptionRecord(s.apps.find(x=>x.id===s.selected)||s.apps[0]);
   let html=previousDetail();
   if(record.source==='saved')html=html.replace('플랜: 클링 공식 조회 / 결제 정보: 미확인','내가 저장한 구독·결제 정보').replace('클링에서 받은 플랜을 표시합니다. 결제금액·예정일은 현재 조회 응답에 없어 미확인으로 표시해요.','내가 저장한 정보입니다. 자동 조회된 결제 정보와는 구분합니다.');
-  return html+`<button class="sc-add" data-open-editor="${record.id}">${icon('save')} ${record.source==='saved'?'구독 정보 수정':'내 구독에 저장'}</button>`;
+  return record.source!=='saved'?html:html+`<button class="sc-add" data-open-editor="${record.id}">${icon('save')} ${record.source==='saved'?'구독 정보 수정':'내 구독에 저장'}</button>`;
 };
 function editorValue(key){const saved=savedState.items.find(x=>x.serviceId===s.editingSubscription);return saved?.[key]??'';}
 function editSubscriptionScreen(){
@@ -39,9 +39,9 @@ function editSubscriptionScreen(){
 const previousEditor=editSubscriptionScreen;
 editSubscriptionScreen=function(){const html=previousEditor();return savedState.items.some(x=>x.serviceId===s.editingSubscription)?html+`<button class="sc-secondary" data-remove-subscription="${s.editingSubscription}">저장 목록에서 지우기</button><p class="sc-footnote">저장한 구독 정보만 목록에서 숨깁니다. 실제 서비스 구독은 해지되지 않아요.</p>`:html;};
 const previousAdd=addV4;
-addV4=function(){return previousAdd()+`<button class="sc-secondary" data-open-editor="${s.chosen||'kling'}" ${!s.chosen?'disabled':''}>${icon('save')} 선택한 서비스 정보 저장</button>`;};
+addV4=function(){let html=previousAdd();html=html.replace(/<button class="sc-add cursor-interaction" data-next[\s\S]*?<\/button>/,`<button class="sc-add" data-open-editor="${s.chosen||''}" ${!s.chosen?'disabled':''}>${icon('plus')} ${s.chosen?esc(selectedService().name)+' 구독 추가하기':'서비스를 선택해주세요'}</button>`);return html+(s.chosen==='kling'?`<button class="sc-secondary" data-next>${icon('link-2')} 클링 계정 연결하기</button>`:'');};
 el.addEventListener('click',event=>{const button=event.target.closest('[data-open-editor]');if(button){s.editingSubscription=button.dataset.openEditor;change('editSubscription');}});
-el.addEventListener('change',event=>{if(event.target.hasAttribute('data-example-select')){s.exampleSelection=event.target.value;render();el.querySelector('.sc-example-group')?.setAttribute('open','');}});
+el.addEventListener('click',event=>{const button=event.target.closest('[data-discover-category]');if(button){s.category=button.dataset.discoverCategory;s.search='';s.catalogPage=0;change('add');}});
 function applyStoredItems(items){
   savedState.items=items;
   for(const item of items)if(!s.apps.some(x=>x.id===item.serviceId)){
