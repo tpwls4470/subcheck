@@ -42,3 +42,5 @@
 #subcheck-design .sc-card-refresh[aria-busy="true"] svg{animation:sc-refresh-spin 1s linear infinite}
 @keyframes sc-refresh-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){#subcheck-design .sc-card-refresh[aria-busy="true"] svg{animation:none}}
+
+#subcheck-design .sc-discover-all{min-height:44px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
