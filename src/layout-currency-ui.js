@@ -15,5 +15,5 @@ el.addEventListener('click',e=>{const b=e.target.closest('[data-rail-move]');if(
 const usageBeforeRailControls=usageV5;
 usageV5=function(){return usageBeforeRailControls().replace('<span class="sc-small">옆으로 넘겨 선택</span>','<div class="sc-rail-controls"><button data-rail-move="-1" aria-label="이전 서비스">'+icon('chevron-left')+'</button><button data-rail-move="1" aria-label="다음 서비스">'+icon('chevron-right')+'</button></div>').replace('<div class="sc-usage-rail">','<div class="sc-usage-rail" tabindex="0" aria-label="서비스 목록 · 좌우로 넘기기">');};
 const renderBeforeSpacing=render;render=function(){renderBeforeSpacing();updateFxPreview();};
-async function loadFx(){try{const r=await fetch('/api/exchange-rate',{cache:'no-store'}),d=await r.json();if(r.ok){Object.assign(fx,d);if(['home','detail','editSubscription'].includes(s.screen))render();}}catch{}}
+async function loadFx(){try{const r=await fetch('/api/exchange-rate',{cache:'no-store'}),d=await r.json();if(r.ok){Object.assign(fx,d);if(['home','detail'].includes(s.screen))render();else if(s.screen==='editSubscription')updateFxPreview();}}catch{}}
 loadFx();
