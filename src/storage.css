@@ -90,3 +90,5 @@ html{scroll-padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 #subcheck-design .sc-title-add>button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:9px 13px;flex-shrink:0;white-space:nowrap;font:inherit;font-size:13px;font-weight:650;color:var(--sc-deep);background:var(--sc-accent);border:1px solid var(--sc-line);border-radius:13px;cursor:pointer}
 #subcheck-design .sc-title-add>button svg{width:16px;height:16px}
 #subcheck-design .sc-title-add>button:focus-visible{outline:2px solid var(--sc-deep);outline-offset:3px}
+
+#subcheck-design .sc-title-add>button{position:relative;min-height:32px;padding:5px 9px;font-size:12px;font-weight:600;border:0;border-radius:9px;background:var(--sc-soft);color:var(--sc-deep)}#subcheck-design .sc-title-add>button:after{content:"";position:absolute;inset:-6px 0}#subcheck-design .sc-title-add>button svg{width:14px;height:14px}#subcheck-design .sc-title-add{margin-bottom:6px}

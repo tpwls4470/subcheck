@@ -17,5 +17,5 @@ addV4=function(){
 const renderBeforeQuickSelection=render;
 render=function(){const left=el.querySelector('.sc-usage-rail')?.scrollLeft??0;renderBeforeQuickSelection();const rail=el.querySelector('.sc-usage-rail');if(rail)rail.scrollLeft=left;};
 const homeBeforeTopAdd=homeV4;
-homeV4=function(){return homeBeforeTopAdd().replace('<h1>내 구독</h1>',`<div class="sc-title-add"><h1>내 구독</h1><button data-top-add>${icon('plus')} 구독 추가</button></div>`);};
+homeV4=function(){return homeBeforeTopAdd().replace('<span class="sc-demo">결제 정보 확인 중</span>','').replace('<h1>내 구독</h1>',`<div class="sc-title-add"><h1>내 구독</h1><button data-top-add>${icon('plus')} 구독 추가</button></div>`);};
 el.addEventListener('click',event=>{if(event.target.closest('[data-top-add]')){s.category='전체';s.search='';s.catalogPage=0;s.chosen=null;change('add');}});
