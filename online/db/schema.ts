@@ -20,3 +20,11 @@ export const pushDevices=sqliteTable('push_devices',{
  updatedAt:text('updated_at').notNull(),
  lastSent:text('last_sent'),
 },table=>[primaryKey({columns:[table.userId,table.deviceId]})]);
+export const usageAlerts=sqliteTable('usage_alerts',{
+ userId:text('user_id').notNull(),
+ serviceId:text('service_id').notNull(),
+ enabled:integer('enabled').notNull().default(0),
+ threshold:integer('threshold').notNull().default(20),
+ notified:integer('notified').notNull().default(0),
+ updatedAt:text('updated_at').notNull(),
+},table=>[primaryKey({columns:[table.userId,table.serviceId]})]);

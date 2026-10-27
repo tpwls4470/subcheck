@@ -42,7 +42,7 @@ async function fetchLive(refresh=false){
     const data=await response.json();
     if(!response.ok)throw Error(data.message||'잔액을 확인하지 못했어요. 잠시 후 다시 시도해주세요.');
     live.connected=data.connected;
-    if(data.balance)live.balance=data.balance;
+    if(data.balance)live.balance=data.balance;if(data.usageAlert?.low)notify('클링 잔액이 월 지급량 대비 '+data.usageAlert.threshold+'% 이하예요.'+(data.usageAlert.accepted?' 연결된 기기에 알림을 보냈어요.':''));
     if(!data.connected&&live.balance)live.error='연결이 만료됐어요. 다시 연결해주세요.';
   }catch(error){live.error=error.message;}finally{live.busy=false;live.loaded=true;render();}
 }

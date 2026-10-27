@@ -17,11 +17,25 @@ export async function dispatchReminders(env,user){
  }
  return {due:due.length,accepted,failed};
 }
+export async function checkUsageAlert(env,user,balance){
+ if(!env.DB||!balance||String(balance.plan).toLowerCase()!=='pro'||typeof balance.credits!=='number'||!Number.isFinite(balance.credits)||balance.credits<0)return null;
+ const {results}=await env.DB.prepare('SELECT enabled,threshold,notified FROM usage_alerts WHERE user_id=? AND service_id=?').bind(user,'kling').all();const setting=results[0];if(!setting?.enabled)return null;
+ const low=balance.credits<=3000*setting.threshold/100;
+ if(!low){await env.DB.prepare('UPDATE usage_alerts SET notified=0 WHERE user_id=? AND service_id=?').bind(user,'kling').run();return {low:false};}
+ const result={low:true,threshold:setting.threshold,accepted:0,failed:0};
+ const {results:devices}=await env.DB.prepare('SELECT device_id,endpoint FROM push_devices WHERE user_id=?').bind(user).all();if(!devices.length||setting.notified)return result;
+ const claim=await env.DB.prepare('UPDATE usage_alerts SET notified=1 WHERE user_id=? AND service_id=? AND notified=0 AND enabled=1').bind(user,'kling').run();if(!claim.meta?.changes&&!claim.changes)return result;
+ for(const d of devices){let status;try{status=await sendPush(d.endpoint,env);}catch{status=503;}if(status>=200&&status<300)result.accepted++;else if(status===404||status===410)await env.DB.prepare('DELETE FROM push_devices WHERE user_id=? AND device_id=?').bind(user,d.device_id).run();else result.failed++;}
+ if(!result.accepted)await env.DB.prepare('UPDATE usage_alerts SET notified=0 WHERE user_id=? AND service_id=?').bind(user,'kling').run();return result;
+}
 export async function reminderApi(req,env,user,jar,url){
  if(req.method==='GET'&&url.pathname==='/sw.js')return new Response(serviceWorker,{headers:{'content-type':'application/javascript','cache-control':'no-cache','service-worker-allowed':'/'}});
  if(req.method==='GET'&&url.pathname==='/manifest.webmanifest')return json({id:'/',name:'subcheck · 구독 알리미',short_name:'subcheck',start_url:'/',scope:'/',display:'standalone',background_color:'#f2f5fa',theme_color:'#e8f2ff',icons:[{src:'/app-icon.svg',sizes:'any',type:'image/svg+xml',purpose:'any'}]});
  if(req.method==='GET'&&url.pathname==='/app-icon.svg')return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#e8f2ff"/><text x="256" y="279" text-anchor="middle" font-family="Arial,sans-serif" font-size="85" font-weight="700" fill="#203d63">subcheck</text></svg>',{headers:{'content-type':'image/svg+xml'}});
  if(!env.DB)return json({message:'알림 설정을 준비 중이에요.'},503);
+ if(req.method==='GET'&&url.pathname==='/api/usage-alerts'){
+ const {results}=await env.DB.prepare('SELECT enabled,threshold FROM usage_alerts WHERE user_id=? AND service_id=?').bind(user,'kling').all();return json({enabled:!!results[0]?.enabled,threshold:results[0]?.threshold||20});
+ }
  if(req.method==='GET'&&url.pathname==='/api/reminders'){
   const items=await readReminderItems(env,user);const {results}=await env.DB.prepare('SELECT device_id FROM push_devices WHERE user_id=?').bind(user).all();
   return json({items,due:dueItems(items,seoulDay()),deviceCount:results.length,publicKey:env.PUSH_PUBLIC_KEY||null,today:seoulDay()});
@@ -30,6 +44,10 @@ export async function reminderApi(req,env,user,jar,url){
  if(req.method!=='POST')return json({message:'지원하지 않는 요청이에요.'},405);
  if(req.headers.get('origin')!==ORIGIN||req.headers.get('sec-fetch-site')==='cross-site'||!jar['__Host-subcheck-csrf']||req.headers.get('x-subcheck-csrf')!==jar['__Host-subcheck-csrf'])return json({message:'화면을 다시 열어주세요.'},403);
  let p;try{const body=await req.text();if(body.length>4096)throw Error();p=JSON.parse(body);}catch{return json({message:'요청을 확인해주세요.'},400);}
+ if(url.pathname==='/api/usage-alerts'){
+ if(!p||typeof p.enabled!=='boolean'||![10,20,30].includes(p.threshold))return json({message:'알림 기준을 확인해주세요.'},400);
+ await env.DB.prepare('INSERT INTO usage_alerts(user_id,service_id,enabled,threshold,notified,updated_at) VALUES(?,?,?,?,0,?) ON CONFLICT(user_id,service_id) DO UPDATE SET enabled=excluded.enabled,threshold=excluded.threshold,notified=CASE WHEN usage_alerts.threshold<>excluded.threshold OR usage_alerts.enabled<>excluded.enabled THEN 0 ELSE usage_alerts.notified END,updated_at=excluded.updated_at').bind(user,'kling',Number(p.enabled),p.threshold,new Date().toISOString()).run();return json({enabled:p.enabled,threshold:p.threshold});
+ }
  if(!p||typeof p.deviceId!=='string'||!/^[-a-zA-Z0-9_]{20,64}$/.test(p.deviceId))return json({message:'기기 연결을 다시 시도해주세요.'},400);
  if(url.pathname==='/api/push/subscribe'){
   if(!validEndpoint(p.endpoint))return json({message:'지원되는 브라우저에서 다시 연결해주세요.'},400);
