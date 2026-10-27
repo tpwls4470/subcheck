@@ -103,6 +103,11 @@ html{scroll-padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 #subcheck-design .sc-dock-selection .sc-textbtn{min-height:44px}
 #subcheck-design .sc-add-dock .sc-add{margin:0;min-height:48px}
 #subcheck-design .sc-app:has(.sc-add-dock)>.sc-content{padding-bottom:calc(160px + env(safe-area-inset-bottom,0px))}
+#subcheck-design .sc-title-add{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+#subcheck-design .sc-title-add h1{margin:0}
+#subcheck-design .sc-title-add>button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:9px 13px;flex-shrink:0;white-space:nowrap;font:inherit;font-size:13px;font-weight:650;color:var(--sc-deep);background:var(--sc-accent);border:1px solid var(--sc-line);border-radius:13px;cursor:pointer}
+#subcheck-design .sc-title-add>button svg{width:16px;height:16px}
+#subcheck-design .sc-title-add>button:focus-visible{outline:2px solid var(--sc-deep);outline-offset:3px}
 </style></head><body><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <div id="subcheck-design" class="viz-dotted-background" aria-label="서브체크 한눈에 보기 디자인">
   <div class="sc-stage"><article class="sc-app" aria-label="서브체크 서비스 연결 시안"></article></div>
@@ -816,6 +821,9 @@ addV4=function(){
 };
 const renderBeforeQuickSelection=render;
 render=function(){const left=el.querySelector('.sc-usage-rail')?.scrollLeft??0;renderBeforeQuickSelection();const rail=el.querySelector('.sc-usage-rail');if(rail)rail.scrollLeft=left;};
+const homeBeforeTopAdd=homeV4;
+homeV4=function(){return homeBeforeTopAdd().replace('<h1>내 구독</h1>',`<div class="sc-title-add"><h1>내 구독</h1><button data-top-add>${icon('plus')} 구독 추가</button></div>`);};
+el.addEventListener('click',event=>{if(event.target.closest('[data-top-add]')){s.category='전체';s.search='';s.catalogPage=0;s.chosen=null;change('add');}});
 
 render();
 window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState){restore(e.detail.globals.widgetState);render();}});
