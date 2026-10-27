@@ -1,4 +1,110 @@
-import {reminderApi,reminderMcp} from '../reminder-api.mjs';
+const {reminderApi,reminderMcp}=(()=>{const {calendar,dueItems,seoulDay,sendPush,validEndpoint,serviceWorker}=(()=>{const origin='https://subcheck-mobile-tpwls4470.satinyshark14.chatgpt.site';
+const enc=new TextEncoder();
+const b64=bytes=>btoa(String.fromCharCode(...bytes)).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
+const seoulDay=(now=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
+function occurrences(item,from,count=13){
+ if(!item.nextPayment)return [];
+ const anchor=new Date(item.nextPayment+'T00:00:00Z');if(!Number.isFinite(+anchor))return [];
+ const [year,month,day]=item.nextPayment.split('-').map(Number),out=[];
+ if(!['monthly','yearly'].includes(item.cycle))return item.nextPayment>=from?[item.nextPayment]:[];
+ const start=new Date(from+'T00:00:00Z');
+ let offset=Math.max(0,item.cycle==='monthly'?(start.getUTCFullYear()-year)*12+start.getUTCMonth()-(month-1):start.getUTCFullYear()-year);
+ for(let n=0;n<count+2&&out.length<count;n++,offset++){
+  const y=item.cycle==='yearly'?year+offset:year,m=item.cycle==='monthly'?month-1+offset:month-1;
+  const first=new Date(Date.UTC(y,m,1));const last=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate();
+  const date=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth(),Math.min(day,last))).toISOString().slice(0,10);
+  if(date>=from)out.push(date);
+ }
+ return out;
+}
+function dueItems(items,today){
+ return items.flatMap(item=>{const date=occurrences(item,today,1)[0];if(!date)return [];const days=(Date.parse(date)-Date.parse(today))/86400000;return (days===0&&item.reminderDay||days===3&&item.reminder3)?[{...item,dueDate:date,days}]:[];});
+}
+function escapeICS(text){return String(text).replaceAll('\\','\\\\').replaceAll('\r','').replaceAll('\n','\\n').replaceAll(';','\\;').replaceAll(',','\\,');}
+function fold(line){const out=[];let part='',size=0;for(const char of line){const n=enc.encode(char).length;if(size+n>73){out.push(part);part=' ';size=1;}part+=char;size+=n;}out.push(part);return out.join('\r\n');}
+async function calendar(items,user,now=new Date()){
+ const today=seoulDay(now),lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//subcheck//Payment reminders//KO','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-WR-CALNAME:서브체크 결제 알림'];
+ for(const item of items.filter(x=>x.reminder3||x.reminderDay))for(const date of occurrences(item,today,item.cycle==='yearly'?2:13)){
+  const hash=b64(new Uint8Array(await crypto.subtle.digest('SHA-256',enc.encode(user+'|'+item.serviceId+'|'+date))));
+  const start=date.replaceAll('-','')+'T000000Z';
+  lines.push('BEGIN:VEVENT','UID:'+hash+'@subcheck','DTSTAMP:'+now.toISOString().replace(/[-:]|\.\d{3}/g,''),'DTSTART:'+start,'DURATION:PT15M','SUMMARY:'+escapeICS(item.name+' 결제 예정'),'DESCRIPTION:'+escapeICS('서브체크에 저장한 결제 일정입니다. 실제 결제 여부는 서비스에서 확인하세요. 변경·해지 시 캘린더 일정도 직접 수정해주세요.'),'URL:'+origin);
+  for(const [enabled,trigger] of [[item.reminder3,'-P3D'],[item.reminderDay,'PT0S']])if(enabled)lines.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:구독 결제 예정','TRIGGER:'+trigger,'END:VALARM');
+  lines.push('END:VEVENT');
+ }
+ lines.push('END:VCALENDAR');return lines.map(fold).join('\r\n')+'\r\n';
+}
+function validEndpoint(value){
+ try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&!u.hash&&value.length<2048&&(['fcm.googleapis.com','updates.push.services.mozilla.com','web.push.apple.com'].includes(u.hostname)||u.hostname.endsWith('.notify.windows.com'));}catch{return false;}
+}
+async function sendPush(endpoint,env){
+ if(!validEndpoint(endpoint))throw Error('invalid_endpoint');
+ const key=await crypto.subtle.importKey('jwk',JSON.parse(env.PUSH_PRIVATE_JWK),{name:'ECDSA',namedCurve:'P-256'},false,['sign']);
+ const jwt=b64(enc.encode(JSON.stringify({typ:'JWT',alg:'ES256'})))+'.'+b64(enc.encode(JSON.stringify({aud:new URL(endpoint).origin,exp:Math.floor(Date.now()/1000)+3600,sub:origin})));
+ const sig=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,enc.encode(jwt));
+ const r=await fetch(endpoint,{method:'POST',redirect:'manual',headers:{authorization:'vapid t='+jwt+'.'+b64(new Uint8Array(sig))+', k='+env.PUSH_PUBLIC_KEY,TTL:'3600',Urgency:'normal'},body:new Uint8Array(0),signal:AbortSignal.timeout(15000)});
+ await r.body?.cancel();return r.status;
+}
+const serviceWorker=`self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('push',e=>e.waitUntil(self.registration.showNotification('subcheck · 결제 알림',{body:'결제 알림이 도착했어요. 앱에서 예정된 구독을 확인해주세요.',icon:'/app-icon.svg',tag:'subcheck-payment',data:{url:'/?screen=reminders'}})));self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(self.clients.openWindow('/?screen=reminders'));});`;
+;return {calendar,dueItems,seoulDay,sendPush,validEndpoint,serviceWorker};})();
+const ORIGIN='https://subcheck-mobile-tpwls4470.satinyshark14.chatgpt.site';
+const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
+async function readReminderItems(env,user){const {results}=await env.DB.prepare('SELECT service_id,name,next_payment,cycle,reminder_3,reminder_day FROM subscriptions WHERE user_id=? AND deleted_at IS NULL').bind(user).all();return results.map(x=>({serviceId:x.service_id,name:x.name,nextPayment:x.next_payment,cycle:x.cycle,reminder3:!!x.reminder_3,reminderDay:!!x.reminder_day}));}
+async function dispatchReminders(env,user){
+ const items=await readReminderItems(env,user),day=seoulDay(),due=dueItems(items,day);
+ if(!due.length)return {due:0,accepted:0,failed:0};
+ const {results}=await env.DB.prepare('SELECT device_id,endpoint,last_sent FROM push_devices WHERE user_id=?').bind(user).all();let accepted=0,failed=0;
+ for(const device of results){
+  if(device.last_sent===day)continue;
+  const claim=await env.DB.prepare('UPDATE push_devices SET last_sent=? WHERE user_id=? AND device_id=? AND (last_sent IS NULL OR last_sent<>?)').bind(day,user,device.device_id,day).run();
+  if(!claim.meta?.changes&&!claim.changes)continue;
+  let status;try{status=await sendPush(device.endpoint,env);}catch{status=503;}
+  if(status===404||status===410)await env.DB.prepare('DELETE FROM push_devices WHERE user_id=? AND device_id=?').bind(user,device.device_id).run();
+  else if(status>=200&&status<300)accepted++;
+  else {failed++;await env.DB.prepare('UPDATE push_devices SET last_sent=? WHERE user_id=? AND device_id=? AND last_sent=?').bind(device.last_sent,user,device.device_id,day).run();}
+ }
+ return {due:due.length,accepted,failed};
+}
+async function reminderApi(req,env,user,jar,url){
+ if(req.method==='GET'&&url.pathname==='/sw.js')return new Response(serviceWorker,{headers:{'content-type':'application/javascript','cache-control':'no-cache','service-worker-allowed':'/'}});
+ if(req.method==='GET'&&url.pathname==='/manifest.webmanifest')return json({id:'/',name:'subcheck · 구독 알리미',short_name:'subcheck',start_url:'/',scope:'/',display:'standalone',background_color:'#f2f5fa',theme_color:'#e8f2ff',icons:[{src:'/app-icon.svg',sizes:'any',type:'image/svg+xml',purpose:'any'}]});
+ if(req.method==='GET'&&url.pathname==='/app-icon.svg')return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#e8f2ff"/><text x="256" y="279" text-anchor="middle" font-family="Arial,sans-serif" font-size="85" font-weight="700" fill="#203d63">subcheck</text></svg>',{headers:{'content-type':'image/svg+xml'}});
+ if(!env.DB)return json({message:'알림 설정을 준비 중이에요.'},503);
+ if(req.method==='GET'&&url.pathname==='/api/reminders'){
+  const items=await readReminderItems(env,user);const {results}=await env.DB.prepare('SELECT device_id FROM push_devices WHERE user_id=?').bind(user).all();
+  return json({items,due:dueItems(items,seoulDay()),deviceCount:results.length,publicKey:env.PUSH_PUBLIC_KEY||null,today:seoulDay()});
+ }
+ if(req.method==='GET'&&url.pathname==='/api/reminders/calendar')return new Response(await calendar(await readReminderItems(env,user),user),{headers:{'content-type':'text/calendar; charset=utf-8','content-disposition':'attachment; filename="subcheck-payments.ics"','cache-control':'no-store'}});
+ if(req.method!=='POST')return json({message:'지원하지 않는 요청이에요.'},405);
+ if(req.headers.get('origin')!==ORIGIN||req.headers.get('sec-fetch-site')==='cross-site'||!jar['__Host-subcheck-csrf']||req.headers.get('x-subcheck-csrf')!==jar['__Host-subcheck-csrf'])return json({message:'화면을 다시 열어주세요.'},403);
+ let p;try{const body=await req.text();if(body.length>4096)throw Error();p=JSON.parse(body);}catch{return json({message:'요청을 확인해주세요.'},400);}
+ if(!p||typeof p.deviceId!=='string'||!/^[-a-zA-Z0-9_]{20,64}$/.test(p.deviceId))return json({message:'기기 연결을 다시 시도해주세요.'},400);
+ if(url.pathname==='/api/push/subscribe'){
+  if(!validEndpoint(p.endpoint))return json({message:'지원되는 브라우저에서 다시 연결해주세요.'},400);
+  const {results}=await env.DB.prepare('SELECT device_id FROM push_devices WHERE user_id=?').bind(user).all();
+  if(results.length>=5&&!results.some(x=>x.device_id===p.deviceId))return json({message:'최대 5대까지 연결할 수 있어요.'},400);
+  await env.DB.prepare('INSERT INTO push_devices(user_id,device_id,endpoint,updated_at,last_sent) VALUES(?,?,?,?,NULL) ON CONFLICT(user_id,device_id) DO UPDATE SET endpoint=excluded.endpoint,updated_at=excluded.updated_at').bind(user,p.deviceId,p.endpoint,new Date().toISOString()).run();return json({connected:true});
+ }
+ if(url.pathname==='/api/push/unsubscribe'){await env.DB.prepare('DELETE FROM push_devices WHERE user_id=? AND device_id=?').bind(user,p.deviceId).run();return json({connected:false});}
+ if(url.pathname==='/api/push/test'){
+  const {results}=await env.DB.prepare('SELECT endpoint FROM push_devices WHERE user_id=? AND device_id=?').bind(user,p.deviceId).all();if(!results[0])return json({message:'이 기기의 푸시를 먼저 연결해주세요.'},400);
+  let status;try{status=await sendPush(results[0].endpoint,env);}catch{return json({message:'푸시 발송을 완료하지 못했어요.'},502);}
+  return status>=200&&status<300?json({accepted:true,message:'푸시 서버에 전달했어요. 기기에서 알림 수신을 확인해주세요.'}):json({message:'기기 연결을 해제한 뒤 다시 연결해주세요.'},502);
+ }
+ return json({message:'요청을 찾을 수 없어요.'},404);
+}
+async function reminderMcp(req,env,user){
+ let p;try{p=await req.json();}catch{return json({error:'invalid request'},400);}
+ const result=value=>json({jsonrpc:'2.0',id:p.id,result:value});
+ if(p.method==='server/discover')return result({supportedVersions:['2026-07-28'],capabilities:{tools:{}}});
+ if(p.method==='initialize')return result({protocolVersion:'2025-03-26',capabilities:{tools:{}},serverInfo:{name:'subcheck-reminders',version:'1.0.0'}});
+ if(p.method?.startsWith('notifications/'))return new Response(null,{status:202});
+ if(p.method==='tools/list')return result({tools:[{name:'payment_reminder_status',description:'현재 사용자의 결제 알림 설정 수와 푸시 연결 기기 수를 확인합니다. 개인정보는 반환하지 않습니다.',inputSchema:{type:'object',properties:{},additionalProperties:false}},{name:'send_due_payment_reminders',description:'현재 사용자가 직접 설정한 당일·3일 전 결제 알림을 연결한 기기에 보냅니다. 서울 날짜 기준 하루 한 번만 발송하며 결제나 구독을 변경하지 않습니다.',inputSchema:{type:'object',properties:{},additionalProperties:false}}]});
+ if(p.method==='tools/call'){
+  try{let value;if(p.params?.name==='send_due_payment_reminders')value=await dispatchReminders(env,user);else if(p.params?.name==='payment_reminder_status'){const items=await readReminderItems(env,user),{results}=await env.DB.prepare('SELECT device_id FROM push_devices WHERE user_id=?').bind(user).all();value={enabledSubscriptions:items.filter(x=>x.reminder3||x.reminderDay).length,devices:results.length};}else throw Error();return result({content:[{type:'text',text:JSON.stringify(value)}]});}catch{return result({isError:true,content:[{type:'text',text:'결제 알림을 처리하지 못했습니다.'}]});}
+ }
+ return json({jsonrpc:'2.0',id:p.id,error:{code:-32601,message:'Method not found'}});
+}
+;return {reminderApi,reminderMcp};})();
 const ORIGIN='https://subcheck-mobile-tpwls4470.satinyshark14.chatgpt.site';
 const CALLBACK=ORIGIN+'/oauth/kling/callback';
 const AUTH='https://kling.ai/auth';
