@@ -65,3 +65,5 @@
 html{scroll-padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 
 #subcheck-design .sc-billing-help{margin-top:14px;padding:14px;background:var(--sc-soft);border-radius:12px;font-size:12px;line-height:1.7}#subcheck-design .sc-billing-help p{margin:0 0 8px;color:var(--sc-muted)}#subcheck-design .sc-billing-help a{display:inline-flex;align-items:center;gap:5px;color:var(--sc-deep);min-height:44px}#subcheck-design .sc-billing-help a svg{width:14px;height:14px}#subcheck-design .sc-billing-help .sc-secondary{margin:8px 0 0}
+
+#subcheck-design .sc-usage-window{margin:22px 0}#subcheck-design .sc-usage-window .sc-heading{font-size:14px;margin-bottom:10px}#subcheck-design .sc-usage-window .sc-track{height:10px;margin:8px 0}

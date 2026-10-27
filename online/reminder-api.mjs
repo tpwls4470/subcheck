@@ -29,12 +29,21 @@ export async function checkUsageAlert(env,user,balance){
  for(const d of devices){let status;try{status=await sendPush(d.endpoint,env);}catch{status=503;}if(status>=200&&status<300)result.accepted++;else if(status===404||status===410)await env.DB.prepare('DELETE FROM push_devices WHERE user_id=? AND device_id=?').bind(user,d.device_id).run();else result.failed++;}
  if(!result.accepted)await env.DB.prepare('UPDATE usage_alerts SET notified=0 WHERE user_id=? AND service_id=?').bind(user,'kling').run();return result;
 }
+export function validateSnapshot(p,now=Date.now()){
+ if(!p||p.version!==1||p.service!=='chatgpt'||p.scope!=='codex_work_shared'||p.source!=='visible_settings_page'||!Array.isArray(p.windows)||!p.windows.length||p.windows.length>2)throw Error('invalid');
+ const observed=Date.parse(p.observedAt);if(!Number.isFinite(observed)||observed>now+60000||observed<now-7*86400000)throw Error('invalid');
+ const seen=new Set(),windows=p.windows.map(x=>{if(!['five_hour','weekly'].includes(x.window)||seen.has(x.window)||typeof x.remainingPercent!=='number'||!Number.isFinite(x.remainingPercent)||x.remainingPercent<0||x.remainingPercent>100)throw Error('invalid');seen.add(x.window);let reset=null;if(x.resetEstimatedAt!==null&&x.resetEstimatedAt!==undefined){const time=Date.parse(x.resetEstimatedAt);if(!Number.isFinite(time)||time<observed||time>observed+14*86400000)throw Error('invalid');reset=new Date(time).toISOString();}return {window:x.window,remainingPercent:x.remainingPercent,resetEstimatedAt:reset,resetIsEstimate:true};});
+ return {version:1,service:'chatgpt',scope:'codex_work_shared',source:'visible_settings_page',observedAt:new Date(observed).toISOString(),windows};
+}
 export async function reminderApi(req,env,user,jar,url){
  if(req.method==='GET'&&url.pathname==='/sw.js')return new Response(serviceWorker,{headers:{'content-type':'application/javascript','cache-control':'no-cache','service-worker-allowed':'/'}});
  if(req.method==='GET'&&url.pathname==='/manifest.webmanifest')return new Response(JSON.stringify({id:'/',name:'subcheck · 구독 알리미',short_name:'subcheck',lang:'ko',start_url:'/',scope:'/',display:'standalone',background_color:'#f2f5fa',theme_color:'#e8f2ff',icons:[192,512].map(n=>({src:'/icons/icon-'+n+'.png',sizes:n+'x'+n,type:'image/png',purpose:'any'}))}),{headers:{'content-type':'application/manifest+json','cache-control':'no-cache'}});
  if(req.method==='GET'&&/^\/icons\/icon-(180|192|512)\.png$/.test(url.pathname)){const n=url.pathname.match(/(180|192|512)/)[0];return new Response(Uint8Array.from(atob(appIcons[n]),c=>c.charCodeAt(0)),{headers:{'content-type':'image/png','cache-control':'public, max-age=86400'}});}
  if(req.method==='GET'&&url.pathname==='/app-icon.svg')return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#e8f2ff"/><text x="256" y="279" text-anchor="middle" font-family="Arial,sans-serif" font-size="85" font-weight="700" fill="#203d63">subcheck</text></svg>',{headers:{'content-type':'image/svg+xml'}});
  if(!env.DB)return json({message:'알림 설정을 준비 중이에요.'},503);
+ if(req.method==='GET'&&url.pathname==='/api/usage-snapshot'){
+ const {results}=await env.DB.prepare('SELECT observed_at,windows,updated_at FROM usage_snapshots WHERE user_id=? AND service_id=?').bind(user,'chatgpt').all();const row=results[0];return json({snapshot:row?{version:1,service:'chatgpt',scope:'codex_work_shared',source:'visible_settings_page',observedAt:row.observed_at,windows:JSON.parse(row.windows),syncedAt:row.updated_at}:null});
+ }
  if(req.method==='GET'&&url.pathname==='/api/usage-alerts'){
  const {results}=await env.DB.prepare('SELECT enabled,threshold FROM usage_alerts WHERE user_id=? AND service_id=?').bind(user,'kling').all();return json({enabled:!!results[0]?.enabled,threshold:results[0]?.threshold||20});
  }
@@ -46,6 +55,10 @@ export async function reminderApi(req,env,user,jar,url){
  if(req.method!=='POST')return json({message:'지원하지 않는 요청이에요.'},405);
  if(req.headers.get('origin')!==ORIGIN||req.headers.get('sec-fetch-site')==='cross-site'||!jar['__Host-subcheck-csrf']||req.headers.get('x-subcheck-csrf')!==jar['__Host-subcheck-csrf'])return json({message:'화면을 다시 열어주세요.'},403);
  let p;try{const body=await req.text();if(body.length>4096)throw Error();p=JSON.parse(body);}catch{return json({message:'요청을 확인해주세요.'},400);}
+ if(url.pathname==='/api/usage-snapshot'){
+ let value;try{value=validateSnapshot(p);}catch{return json({message:'수집 기록을 확인해주세요. 최신 사용량 화면을 다시 열어주세요.'},400);}
+ await env.DB.prepare('INSERT INTO usage_snapshots(user_id,service_id,observed_at,windows,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(user_id,service_id) DO UPDATE SET observed_at=excluded.observed_at,windows=excluded.windows,updated_at=excluded.updated_at WHERE excluded.observed_at>usage_snapshots.observed_at').bind(user,'chatgpt',value.observedAt,JSON.stringify(value.windows),new Date().toISOString()).run();return json({synced:true});
+ }
  if(url.pathname==='/api/usage-alerts'){
  if(!p||typeof p.enabled!=='boolean'||![10,20,30].includes(p.threshold))return json({message:'알림 기준을 확인해주세요.'},400);
  await env.DB.prepare('INSERT INTO usage_alerts(user_id,service_id,enabled,threshold,notified,updated_at) VALUES(?,?,?,?,0,?) ON CONFLICT(user_id,service_id) DO UPDATE SET enabled=excluded.enabled,threshold=excluded.threshold,notified=CASE WHEN usage_alerts.threshold<>excluded.threshold OR usage_alerts.enabled<>excluded.enabled THEN 0 ELSE usage_alerts.notified END,updated_at=excluded.updated_at').bind(user,'kling',Number(p.enabled),p.threshold,new Date().toISOString()).run();return json({enabled:p.enabled,threshold:p.threshold});

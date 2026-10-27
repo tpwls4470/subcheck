@@ -28,3 +28,10 @@ export const usageAlerts=sqliteTable('usage_alerts',{
  notified:integer('notified').notNull().default(0),
  updatedAt:text('updated_at').notNull(),
 },table=>[primaryKey({columns:[table.userId,table.serviceId]})]);
+export const usageSnapshots=sqliteTable('usage_snapshots',{
+ userId:text('user_id').notNull(),
+ serviceId:text('service_id').notNull(),
+ observedAt:text('observed_at').notNull(),
+ windows:text('windows').notNull(),
+ updatedAt:text('updated_at').notNull(),
+},table=>[primaryKey({columns:[table.userId,table.serviceId]})]);

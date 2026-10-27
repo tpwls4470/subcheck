@@ -83,6 +83,8 @@
 html{scroll-padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
 
 #subcheck-design .sc-billing-help{margin-top:14px;padding:14px;background:var(--sc-soft);border-radius:12px;font-size:12px;line-height:1.7}#subcheck-design .sc-billing-help p{margin:0 0 8px;color:var(--sc-muted)}#subcheck-design .sc-billing-help a{display:inline-flex;align-items:center;gap:5px;color:var(--sc-deep);min-height:44px}#subcheck-design .sc-billing-help a svg{width:14px;height:14px}#subcheck-design .sc-billing-help .sc-secondary{margin:8px 0 0}
+
+#subcheck-design .sc-usage-window{margin:22px 0}#subcheck-design .sc-usage-window .sc-heading{font-size:14px;margin-bottom:10px}#subcheck-design .sc-usage-window .sc-track{height:10px;margin:8px 0}
 </style></head><body><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <div id="subcheck-design" class="viz-dotted-background" aria-label="서브체크 한눈에 보기 디자인">
   <div class="sc-stage"><article class="sc-app" aria-label="서브체크 서비스 연결 시안"></article></div>
@@ -760,6 +762,23 @@ el.addEventListener('click',async e=>{
  if(e.target.closest('[data-copy-mobile-url]')){const message=el.querySelector('[data-mobile-message]');try{await navigator.clipboard.writeText(location.origin+'/');message.textContent='주소를 복사했어요.';}catch{message.textContent='Safari 또는 Chrome에서 열 주소: '+location.origin+'/';}}
  if(e.target.closest('[data-install-app]')&&mobileState.prompt){const prompt=mobileState.prompt;mobileState.prompt=null;await prompt.prompt();await prompt.userChoice;if(s.screen==='install')render();}
 });
+
+const extensionUsage={snapshot:null,loading:true,error:''};
+const usageBeforeSnapshot=usageCard;
+usageCard=function(a){
+ if(a.id!=='chatgpt')return usageBeforeSnapshot(a);
+ const record=extensionUsage.snapshot,age=record?Math.max(0,Date.now()-Date.parse(record.observedAt)):null,stale=age!==null&&age>15*60000;
+ const rows=record?.windows.map(x=>`<div class="sc-usage-window"><div class="sc-heading"><strong>${x.window==='five_hour'?'5시간 한도':'주간 한도'}</strong><strong>${x.remainingPercent}% 남음</strong></div><div class="sc-track" role="img" aria-label="${x.window==='five_hour'?'5시간':'주간'} 잔여 ${x.remainingPercent}%"><span style="width:${x.remainingPercent}%"></span></div><p class="sc-footnote">${x.resetEstimatedAt?(Date.parse(x.resetEstimatedAt)>Date.now()?'초기화 예상 '+esc(new Date(x.resetEstimatedAt).toLocaleString('ko-KR')):'초기화 예상 시각이 지났어요. PC에서 다시 수집해주세요.'):'초기화 시각 확인 안 됨'}</p></div>`).join('')||'';
+ return `<section class="sc-card sc-inner"><div class="sc-inline">${serviceLogo('chatgpt','ChatGPT')}<div><h2>ChatGPT</h2><span class="sc-small">Codex·Work 공유 사용량</span></div></div><p class="sc-status-banner ${stale?'warning':''}">${extensionUsage.loading?'계정 기록을 불러오는 중…':record?stale?'오래된 기록 · 현재 잔액이 아닐 수 있어요':'확장에서 마지막으로 확인한 기록':'PC 확장 연결 후 사용량이 표시돼요.'}</p>${extensionUsage.error?`<p class="sc-footnote" role="alert">${esc(extensionUsage.error)}</p>`:''}${rows}${record?`<p class="sc-small">수집 ${esc(new Date(record.observedAt).toLocaleString('ko-KR'))}<br>동기화 ${esc(new Date(record.syncedAt).toLocaleString('ko-KR'))}</p>`:''}<button class="sc-secondary" data-load-extension-usage ${extensionUsage.loading?'disabled':''}>${icon('refresh-cw')} 동기화 기록 새로고침</button><p class="sc-footnote">일반 GPT 채팅 한도가 아닙니다. PC의 ChatGPT 사용량 설정 화면에서 읽은 공유 한도예요. 초기화 시각은 상대 시간을 바탕으로 한 예상값입니다.</p><details class="sc-push-help" ${!record?'open':''}><summary>PC 확장과 연결하는 방법</summary><ol><li>확장 관리 화면에서 subcheck 확장을 0.2.0으로 새로고침해요.</li><li>확장에서 ‘내 서브체크 계정에 동기화’를 켜요.</li><li>‘서브체크 연결 탭 열기’를 눌러 같은 계정으로 로그인해요.</li><li>ChatGPT 사용량 화면을 새로고침하면 기록이 저장돼요.</li></ol><p class="sc-footnote">PC의 사용량 설정 탭과 서브체크 연결 탭을 열어두세요. 휴대폰에서는 같은 계정으로 확인할 수 있어요. 확장에서 동기화를 끄면 새 기록 전송이 중단됩니다.</p></details><a class="sc-live-link" href="https://chatgpt.com/settings/usage" target="_blank" rel="noopener noreferrer">ChatGPT에서 사용량 확인 ${icon('external-link')}</a><button class="sc-secondary" data-open-editor="chatgpt">구독·결제 알림 등록</button></section>`;
+};
+async function loadExtensionUsage(){extensionUsage.loading=true;if(s.screen==='usage'&&s.usageId==='chatgpt')render();try{const response=await fetch('/api/usage-snapshot',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.message||'기록을 불러오지 못했어요.');extensionUsage.snapshot=data.snapshot;extensionUsage.error='';}catch(e){extensionUsage.error=e.message;}finally{extensionUsage.loading=false;if(s.screen==='usage'&&s.usageId==='chatgpt')render();}}
+el.addEventListener('click',e=>{if(e.target.closest('[data-load-extension-usage]'))loadExtensionUsage();});
+el.addEventListener('change',e=>{if(e.target.hasAttribute('data-usage-select')&&e.target.value==='chatgpt')loadExtensionUsage();});
+if(new URLSearchParams(location.search).get('extensionSync')==='1'){s.screen='usage';s.usageId='chatgpt';}
+setInterval(()=>{if(s.screen==='usage'&&s.usageId==='chatgpt')loadExtensionUsage();},60000);
+loadExtensionUsage();
+const usageBeforeSyncLabel=usageV5;
+usageV5=function(){let html=usageBeforeSyncLabel();html=html.replace('ChatGPT · 공식 화면 확인','ChatGPT · 확장 동기화');return s.usageId==='chatgpt'?html.replace('공식 화면에서 확인','확장 수집 기록'):html;};
 
 render();
 window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState){restore(e.detail.globals.widgetState);render();}});
