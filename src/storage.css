@@ -51,3 +51,5 @@
 #subcheck-design .sc-reminder-options label,#subcheck-design .sc-reminder-field label{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px}
 #subcheck-design .sc-reminder-field{border:1px solid var(--sc-line);border-radius:12px;padding:12px}#subcheck-design .sc-reminder-field legend{font-size:13px}
 #subcheck-design .sc-edit-form .sc-reminder-field input,#subcheck-design .sc-reminder-options input{width:20px;height:20px;min-height:20px;margin:0;accent-color:var(--sc-deep)}
+
+#subcheck-design .sc-push-help{margin:16px 0;padding:12px;border:1px solid var(--sc-line);border-radius:12px;font-size:13px;line-height:1.7}#subcheck-design .sc-push-help summary{cursor:pointer;min-height:32px;font-weight:600}#subcheck-design .sc-push-help ol{padding-left:20px}#subcheck-design .sc-push-help li{margin-bottom:8px}#subcheck-design .sc-push-feedback{overflow-wrap:anywhere}
