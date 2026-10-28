@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
+    "build:online": "npm run build && node scripts/prepare-online.mjs && npm --prefix online run build",
     "start": "node server/app.mjs",
     "auth:register": "node server/kling-auth.mjs --register",
     "auth:start": "node server/kling-auth.mjs",

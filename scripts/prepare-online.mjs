@@ -1,0 +1,20 @@
+import fs from 'node:fs/promises';
+const dir='online';
+await fs.mkdir(dir+'/worker',{recursive:true});await fs.mkdir(dir+'/scripts',{recursive:true});await fs.mkdir(dir+'/test',{recursive:true});
+let html=await fs.readFile('public/index.html','utf8');
+html=html.replaceAll('이 컴퓨터에서만 사용하는 테스트 연결이에요.','이 기기에서 승인한 클링 연결이에요.').replace('승인 후 별도 확인 화면으로 돌아옵니다. 이 앱 주소로 돌아오면 연결 결과가 반영돼요.','승인 후 이 앱으로 자동으로 돌아와 실제 잔액을 확인해요.');
+html=html.replace('const response=await fetch(\'/api/kling/disconnect\'', 'const response=await fetch(\'/api/kling/disconnect\'');
+html=html.replace("live.connected=false;live.balance=null;", "const result=await response.json();live.connected=false;live.balance=null;").replace("notify('이 기기의 클링 연결 정보와 잔액을 지웠어요.');", "notify(result.message||'이 기기의 클링 연결 정보를 지웠어요.');");
+html=html.replace('<title>subcheck · 내 사용량</title>','<title>subcheck · 온라인 사용량</title><meta name="theme-color" content="#e8f2ff">');
+html=html.replace('<div id="subcheck-design"','<aside style="text-align:center;padding:10px 15px;background:#e8f2ff;color:#29496b;font:13px/1.6 system-ui">본인 전용 온라인 테스트 · 클링 크레딧 읽기 전용</aside><div id="subcheck-design"');
+html=html.replace("s.screen='home';s.usageId='kling';", `s.screen='home';s.usageId='kling';
+const cloudNotice=new URLSearchParams(location.search).get('connection');
+if(cloudNotice==='failed'||cloudNotice==='expired')setTimeout(()=>notify(cloudNotice==='expired'?'로그인 요청이 만료됐어요. 다시 연결해주세요.':'클링 연결을 완료하지 못했어요. 다시 시도해주세요.'),0);
+`);
+let worker=await fs.readFile(dir+'/worker-template.mjs','utf8');worker=worker.replace('__APP_HTML__',JSON.stringify(html));
+const reminderLogic=(await fs.readFile(dir+'/reminders.mjs','utf8')).replaceAll('export ','');
+const reminderApiLogic=(await fs.readFile(dir+'/reminder-api.mjs','utf8')).replace(/^import[^;]+;/,'').replaceAll('export ','');
+const reminderBundle="const {reminderApi,reminderMcp,checkUsageAlert}=(()=>{const {calendar,dueItems,seoulDay,sendPush,validEndpoint,serviceWorker}=(()=>{"+reminderLogic+";return {calendar,dueItems,seoulDay,sendPush,validEndpoint,serviceWorker};})();"+reminderApiLogic+";return {reminderApi,reminderMcp,checkUsageAlert};})();";
+worker=worker.replace("import {reminderApi,reminderMcp,checkUsageAlert} from '../reminder-api.mjs';",reminderBundle);
+await fs.writeFile(dir+'/worker/index.js',worker);
+
