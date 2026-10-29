@@ -8,4 +8,28 @@ syncToggle.addEventListener('change',async()=>{await chrome.storage.local.set({s
 document.querySelector('#connect').addEventListener('click',()=>chrome.tabs.create({url:'https://subcheck-mobile-tpwls4470.satinyshark14.chatgpt.site/?extensionSync=1'}));
 chrome.storage.onChanged.addListener(showSync);showSync();
 
-async function showBilling(){const d=await chrome.storage.local.get(['billingEnabled','billingCandidate','billingSyncStatus']);document.querySelector('#billingEnabled').checked=d.billingEnabled===true;document.querySelector('#billingStatus').textContent=!d.billingEnabled?'클링 수집 꺼짐':!d.billingCandidate?'Manage 창을 열어 수집해주세요.':d.billingSyncStatus==='synced'?'결제 기록을 동기화했어요. 앱에서 확인 후 입력란에 적용하세요.':'서브체크 연결 탭을 열어주세요.';}document.querySelector('#billingEnabled').addEventListener('change',e=>chrome.storage.local.set({billingEnabled:e.target.checked}));chrome.storage.onChanged.addListener(showBilling);showBilling();
+function billingTime(value){return value?new Date(value).toLocaleString('ko-KR'):'아직 없음';}
+async function showBilling(){
+ const d=await chrome.storage.local.get(['billingEnabled','billingCandidate','billingSyncStatus','billingCaptureStatus']);
+ document.querySelector('#billingEnabled').checked=d.billingEnabled===true;
+ document.querySelector('#extensionVersion').textContent='버전 '+chrome.runtime.getManifest().version;
+ const candidate=d.billingCandidate,raw=d.billingSyncStatus,status=typeof raw==='string'?{state:raw}:raw||{};
+ const capture=d.billingCaptureStatus?.state;
+ const age=candidate?Date.now()-Date.parse(candidate.observedAt):Infinity;
+ const stale=!Number.isFinite(age)||age>=86400000||age < -60000;
+ const captureLabels={page_hidden:'클링 탭이 뒤에 있어 새 정보를 읽지 않고 있어요.',needs_dialog:'클링의 구독 관리 창을 열어주세요.',unsupported_display:'창은 찾았지만 플랜·다음 청구금액을 읽지 못했어요.',captured:'화면에서 읽었어요.'};
+ const labels={disabled:'수집·전송이 꺼져 있어요.',needs_capture:'먼저 클링 구독 관리 창을 열어주세요.',stale_record:'기록이 오래됐어요. 클링을 새로고침하고 구독 관리 창을 다시 열어주세요.',sending:'서브체크에 보내는 중…',needs_tab:'같은 Chrome에서 서브체크 연결 탭을 열어주세요.',needs_reload:'서브체크 탭을 새로고침한 뒤 다시 시도해주세요.',needs_login:'서브체크 탭에서 로그인한 뒤 다시 시도해주세요.',permission_denied:'접근 또는 보안 확인에 실패했어요. 서브체크 탭을 새로고침하고 다시 시도해주세요.',invalid_record:'서버가 수집 기록을 거절했어요. 클링에서 다시 수집해주세요.',rate_limited:'요청이 많아요. 잠시 후 다시 시도해주세요.',server_error:'서브체크 서버가 응답하지 못했어요. 잠시 후 다시 시도해주세요.',network_error:'통신에 실패했어요. 인터넷 연결 후 다시 시도해주세요.',rejected:'서버가 기록을 받지 못했어요. 다시 수집 후 시도해주세요.',synced:'계정의 확인 대기 기록으로 전송했어요.'};
+ const lines=!d.billingEnabled?['클링 수집·동기화 꺼짐']:[
+  '① 화면 읽기: '+(stale&&candidate?'마지막 기록이 오래됐어요.':captureLabels[capture]||(candidate?'마지막 읽기 기록이 있어요.':'아직 읽은 기록이 없어요.')),
+  '마지막 수집: '+billingTime(candidate?.observedAt),
+  '② 서버 전송: '+(stale&&candidate?labels.stale_record:labels[status.state]||'새 수집 기록을 기다리고 있어요.'),
+  '마지막 전송 성공: '+billingTime(status.lastSuccessAt),
+  '③ 앱 반영: '+(status.state==='synced'&&!stale?'서브체크에서 새 수집 기록 확인 → 이 정보로 내 구독에 저장을 눌러주세요. 아직 구독에 자동 저장된 것은 아니에요.':'서버 전송 후 앱에서 확인·저장하는 단계예요.')
+ ];
+ document.querySelector('#billingStatus').textContent=lines.join('\n\n');
+ document.querySelector('#billingRetry').disabled=!d.billingEnabled||!candidate||stale||status.state==='sending';
+}
+document.querySelector('#billingEnabled').addEventListener('change',e=>chrome.storage.local.set({billingEnabled:e.target.checked}));
+document.querySelector('#billingConnect').addEventListener('click',()=>chrome.tabs.create({url:'https://subcheck-mobile-tpwls4470.satinyshark14.chatgpt.site/?extensionSync=1'}));
+document.querySelector('#billingRetry').addEventListener('click',async()=>{const button=document.querySelector('#billingRetry');button.disabled=true;try{await chrome.runtime.sendMessage({type:'SUBCHECK_BILLING_RETRY'});}catch{document.querySelector('#billingStatus').textContent='확장을 새로고침한 뒤 다시 시도해주세요.';}finally{await showBilling();}});
+chrome.storage.onChanged.addListener(showBilling);showBilling();

@@ -16,6 +16,37 @@ chrome.runtime.onMessage.addListener((message,sender,respond)=>{
  if(message?.type==='SUBCHECK_BRIDGE_READY'&&sender.url?.startsWith(origin+'/')){sync();respond({ok:true});}
 });
 
-async function syncBilling(){const {billingEnabled,billingCandidate}=await chrome.storage.local.get(['billingEnabled','billingCandidate']);if(!billingEnabled||!billingCandidate)return;const tabs=await chrome.tabs.query({url:origin+'/*'});let ok=false;for(const tab of tabs)try{const r=await chrome.tabs.sendMessage(tab.id,{type:'SUBCHECK_BILLING_SYNC',candidate:billingCandidate});if(r?.ok){ok=true;break;}}catch{}await chrome.storage.local.set({billingSyncStatus:ok?'synced':tabs.length?'needs_login':'needs_tab'});}
+let billingRunning=false,billingAgain=false;
+async function writeBillingStatus(state,observedAt){
+ const {billingSyncStatus:previous}=await chrome.storage.local.get('billingSyncStatus');
+ const at=new Date().toISOString();
+ await chrome.storage.local.set({billingSyncStatus:{state,at,observedAt:observedAt||null,lastSuccessAt:state==='synced'?at:previous?.lastSuccessAt||null,lastSuccessObservedAt:state==='synced'?observedAt:previous?.lastSuccessObservedAt||null}});
+}
+async function syncBilling(){
+ if(billingRunning){billingAgain=true;return;}billingRunning=true;
+ try{do{billingAgain=false;await sendBilling();}while(billingAgain);}finally{billingRunning=false;}
+}
+async function sendBilling(){
+ let candidate;
+ try{
+  const d=await chrome.storage.local.get(['billingEnabled','billingCandidate']);candidate=d.billingCandidate;
+  if(!d.billingEnabled){await writeBillingStatus('disabled');return;}
+  if(!candidate){await writeBillingStatus('needs_capture');return;}
+  const age=Date.now()-Date.parse(candidate.observedAt);
+  if(!Number.isFinite(age)||age < -60000||age>=86400000){await writeBillingStatus('stale_record',candidate.observedAt);return;}
+  await writeBillingStatus('sending',candidate.observedAt);
+  const tabs=await chrome.tabs.query({url:origin+'/*'});
+  if(!tabs.length){await writeBillingStatus('needs_tab',candidate.observedAt);return;}
+  let state='needs_reload';
+  for(const tab of tabs){
+   try{const r=await chrome.tabs.sendMessage(tab.id,{type:'SUBCHECK_BILLING_SYNC',candidate});if(r?.ok){await writeBillingStatus('synced',candidate.observedAt);return;}if(r?.state)state=r.state;}catch{}
+  }
+  await writeBillingStatus(state,candidate.observedAt);
+ }catch{await writeBillingStatus('network_error',candidate?.observedAt);}
+}
 chrome.storage.onChanged.addListener((c,a)=>{if(a==='local'&&(c.billingCandidate||c.billingEnabled))syncBilling();});
-chrome.runtime.onMessage.addListener((m,sender)=>{if(sender.id===chrome.runtime.id&&m?.type==='SUBCHECK_BRIDGE_READY'&&sender.url?.startsWith(origin+'/'))syncBilling();});
+chrome.runtime.onMessage.addListener((m,sender,respond)=>{
+ if(sender.id!==chrome.runtime.id)return;
+ if(m?.type==='SUBCHECK_BILLING_RETRY'){syncBilling().then(()=>respond({ok:true}));return true;}
+ if(m?.type==='SUBCHECK_BRIDGE_READY'&&sender.url?.startsWith(origin+'/'))syncBilling();
+});
