@@ -5,7 +5,8 @@ chrome.runtime.onMessage.addListener((message,sender,respond)=>{
  const response=await fetch(billing?'/api/billing-candidate':'/api/usage-snapshot',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json','x-subcheck-csrf':csrf},body:JSON.stringify(billing?message.candidate:message.snapshot)});
  const json=(response.headers.get('content-type')||'').includes('application/json');
  const state=response.status===401||response.redirected||response.ok&&!json?'needs_login':response.status===403?'permission_denied':response.status===400?'invalid_record':response.status===429?'rate_limited':response.status>=500?'server_error':response.ok?'synced':'rejected';
- respond({ok:response.ok&&json&&!response.redirected,state});
+ let applied=false;if(billing&&response.ok&&json&&!response.redirected){const data=await response.json();applied=data.applied===true;}
+ respond({ok:response.ok&&json&&!response.redirected,state,applied});
  }catch{respond({ok:false,state:'network_error'});}})();return true;
 });
 chrome.runtime.sendMessage({type:'SUBCHECK_BRIDGE_READY'}).catch(()=>{});

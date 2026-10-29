@@ -17,10 +17,10 @@ chrome.runtime.onMessage.addListener((message,sender,respond)=>{
 });
 
 let billingRunning=false,billingAgain=false;
-async function writeBillingStatus(state,observedAt){
+async function writeBillingStatus(state,observedAt,applied=false){
  const {billingSyncStatus:previous}=await chrome.storage.local.get('billingSyncStatus');
  const at=new Date().toISOString();
- await chrome.storage.local.set({billingSyncStatus:{state,at,observedAt:observedAt||null,lastSuccessAt:state==='synced'?at:previous?.lastSuccessAt||null,lastSuccessObservedAt:state==='synced'?observedAt:previous?.lastSuccessObservedAt||null}});
+ await chrome.storage.local.set({billingSyncStatus:{state,at,applied,observedAt:observedAt||null,lastSuccessAt:state==='synced'?at:previous?.lastSuccessAt||null,lastSuccessObservedAt:state==='synced'?observedAt:previous?.lastSuccessObservedAt||null}});
 }
 async function syncBilling(){
  if(billingRunning){billingAgain=true;return;}billingRunning=true;
@@ -39,7 +39,7 @@ async function sendBilling(){
   if(!tabs.length){await writeBillingStatus('needs_tab',candidate.observedAt);return;}
   let state='needs_reload';
   for(const tab of tabs){
-   try{const r=await chrome.tabs.sendMessage(tab.id,{type:'SUBCHECK_BILLING_SYNC',candidate});if(r?.ok){await writeBillingStatus('synced',candidate.observedAt);return;}if(r?.state)state=r.state;}catch{}
+   try{const r=await chrome.tabs.sendMessage(tab.id,{type:'SUBCHECK_BILLING_SYNC',candidate});if(r?.ok){await writeBillingStatus('synced',candidate.observedAt,r.applied===true);return;}if(r?.state)state=r.state;}catch{}
   }
   await writeBillingStatus(state,candidate.observedAt);
  }catch{await writeBillingStatus('network_error',candidate?.observedAt);}

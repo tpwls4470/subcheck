@@ -6,7 +6,7 @@ function billingImportMarkup(){
  const c=billingImport.candidate,old=c&&!freshBillingCandidate(c);
  const check=`<button type="button" class="sc-secondary" data-check-billing-import ${billingImport.loading?'disabled':''}>${billingImport.loading?'수집 기록 확인 중…':'새 수집 기록 확인'}</button>`;
  const error=billingImport.error?`<p class="sc-form-message" role="alert">${esc(billingImport.error)}</p>`:'';
- if(!c)return `<h2>클링 결제정보 가져오기</h2><p class="sc-footnote">PC 확장 0.3.1에서 클링 수집을 켠 뒤, 클링의 ‘구독 관리’ 창을 열어주세요. 같은 Chrome에 서브체크 연결 탭도 열어두세요.</p>${check}${error}`;
+ if(!c)return `<h2>클링 결제정보 가져오기</h2><p class="sc-footnote">PC 확장 0.4.1에서 클링 수집을 켠 뒤, 클링의 ‘구독 관리’ 창을 열어주세요. 같은 Chrome에 서브체크 연결 탭도 열어두세요.</p>${check}${error}`;
  return `<h2>${old?'이전에 읽은 결제정보':'클링에서 읽은 결제정보'}</h2><p class="sc-footnote"><strong>${esc(c.plan)} · ${usd(c.amount)}</strong><br>수집 ${esc(new Date(c.observedAt).toLocaleString('ko-KR'))}</p>${old?'<p class="sc-footnote" role="status">수집 후 하루가 지나 저장할 수 없어요. PC Chrome에서 클링 페이지를 새로고침하고 ‘구독 관리’ 창을 다시 연 뒤, 아래에서 새 기록을 확인해주세요.</p>':`<button type="button" class="sc-add" data-save-billing-import ${billingImport.loading||savedState.busy?'disabled':''}>이 정보로 내 구독에 저장</button><button type="button" class="sc-textbtn" data-apply-billing-import>입력란에서 먼저 수정하기</button>`}${check}${error}<p class="sc-footnote">세금을 포함한 다음 청구금액이에요. 저장해도 실제 클링 결제·구독은 변경되지 않아요. 정확한 결제일은 제공되지 않아 비워두며, 이미 저장한 결제일은 유지해요.</p>`;
 }
 const editorBeforeBillingImport=editSubscriptionScreen;

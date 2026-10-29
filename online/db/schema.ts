@@ -11,6 +11,8 @@ export const subscriptions=sqliteTable('subscriptions',{
  channel:text('channel').notNull().default('unknown'),
  updatedAt:text('updated_at').notNull(),
  deletedAt:text('deleted_at'),
+ billingObservedAt:text('billing_observed_at'),
+ billingSyncedAt:text('billing_synced_at'),
  reminder3:integer('reminder_3').notNull().default(0),
  reminderDay:integer('reminder_day').notNull().default(0),
 },table=>[primaryKey({columns:[table.userId,table.serviceId]})]);
@@ -42,4 +44,10 @@ export const billingCandidates=sqliteTable('billing_candidates',{
  serviceId:text('service_id').notNull(),
  observedAt:text('observed_at').notNull(),
  payload:text('payload').notNull(),
+},table=>[primaryKey({columns:[table.userId,table.serviceId]})]);
+export const billingSyncSettings=sqliteTable('billing_sync_settings',{
+ userId:text('user_id').notNull(),
+ serviceId:text('service_id').notNull(),
+ enabled:integer('enabled').notNull().default(0),
+ updatedAt:text('updated_at').notNull(),
 },table=>[primaryKey({columns:[table.userId,table.serviceId]})]);

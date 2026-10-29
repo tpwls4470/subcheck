@@ -24,7 +24,7 @@ async function showBilling(){
   '마지막 수집: '+billingTime(candidate?.observedAt),
   '② 서버 전송: '+(stale&&candidate?labels.stale_record:labels[status.state]||'새 수집 기록을 기다리고 있어요.'),
   '마지막 전송 성공: '+billingTime(status.lastSuccessAt),
-  '③ 앱 반영: '+(status.state==='synced'&&!stale?'서브체크에서 새 수집 기록 확인 → 이 정보로 내 구독에 저장을 눌러주세요. 아직 구독에 자동 저장된 것은 아니에요.':'서버 전송 후 앱에서 확인·저장하는 단계예요.')
+  '③ 앱 반영: '+(status.state==='synced'&&!stale?status.applied?'이 수집 기록을 내 구독에 자동 반영했어요.':'계정에 전송됐어요. 자동 업데이트를 켜거나 앱에서 확인 후 저장해주세요. 아직 구독에 자동 저장된 것은 아니에요.':'서버 전송 후 자동 업데이트 설정에 따라 반영해요.')
  ];
  document.querySelector('#billingStatus').textContent=lines.join('\n\n');
  document.querySelector('#billingRetry').disabled=!d.billingEnabled||!candidate||stale||status.state==='sending';

@@ -1,0 +1,22 @@
+const billingAuto={loaded:false,enabled:false,busy:false,appliedAt:null,observedAt:null,error:''};
+function billingAutoMarkup(){return `<div class="sc-auto-billing"><h2>결제정보 자동 업데이트</h2><p class="sc-footnote">켜면 지금 도착한 최신 기록과 앞으로 PC 확장에서 읽은 금액·플랜·결제 주기·결제 수단을 내 구독에 자동 반영해요. 직접 입력한 결제일과 알림 설정은 유지해요.</p><button type="button" class="sc-secondary" data-toggle-billing-auto aria-pressed="${billingAuto.enabled}" ${!billingAuto.loaded||billingAuto.busy?'disabled':''}>${billingAuto.busy?'설정 중…':billingAuto.enabled?'자동 업데이트 끄기':'자동 업데이트 켜기'}</button><p class="sc-footnote" role="status">${!billingAuto.loaded?'설정을 확인하는 중…':billingAuto.enabled?'자동 업데이트 켜짐':'자동 업데이트 꺼짐'}${billingAuto.appliedAt?'<br>마지막 자동 반영 '+esc(new Date(billingAuto.appliedAt).toLocaleString('ko-KR')):''}</p>${billingAuto.error?`<p class="sc-form-message" role="alert">${esc(billingAuto.error)}</p>`:''}<p class="sc-footnote">클링 구독 관리 화면이 PC Chrome에서 열려 있을 때만 새 정보를 읽어요. 이 설정은 클링의 자동 결제 여부를 변경하지 않아요.</p></div><hr>`;}
+async function loadBillingAuto(){try{const r=await fetch('/api/billing-sync',{cache:'no-store'}),d=await r.json();if(!r.ok)throw Error(d.message||'자동 업데이트 설정을 확인하지 못했어요.');Object.assign(billingAuto,d,{loaded:true,error:''});}catch(e){billingAuto.error=e.message;}refreshBillingBox();}
+const importBeforeAuto=billingImportMarkup;
+billingImportMarkup=function(){let html=importBeforeAuto();if(billingAuto.appliedAt&&billingAuto.observedAt===billingImport.candidate?.observedAt)html=html.replace(/<button[^>]*data-save-billing-import[^>]*>[\s\S]*?<\/button>/,'<p class="sc-status-banner" role="status">이 수집 기록은 내 구독에 자동 반영됐어요.</p>');return billingAutoMarkup()+html;};
+el.addEventListener('click',async e=>{
+ if(!e.target.closest('[data-toggle-billing-auto]')||billingAuto.busy||!billingAuto.loaded)return;
+ billingAuto.busy=true;billingAuto.error='';refreshBillingBox();
+ try{const r=await fetch('/api/billing-sync',{method:'POST',headers:{'content-type':'application/json','x-subcheck-csrf':document.querySelector('meta[name="app-csrf"]').content},body:JSON.stringify({enabled:!billingAuto.enabled})}),d=await r.json();if(!r.ok)throw Error(d.message||'설정을 저장하지 못했어요.');Object.assign(billingAuto,d);notify(d.enabled?'자동 업데이트를 켰어요. 새 기록이 도착하면 반영해요.':'자동 업데이트를 껐어요.');await refreshBillingSubscriptions();if(d.enabled&&d.appliedAt){const item=savedState.items.find(x=>x.serviceId==='kling'),form=el.querySelector('[data-subscription-form]');if(item&&form){for(const key of ['plan','currency','amount','channel','cycle'])form.elements[key].value=item[key]??'';updateFxPreview();}}}
+ catch(error){billingAuto.error=error.message;}finally{billingAuto.busy=false;const error=billingAuto.error;await loadBillingAuto();if(error){billingAuto.error=error;refreshBillingBox();}}
+});
+const tileBeforeAuto=subscriptionTile;
+subscriptionTile=function(record){let html=tileBeforeAuto(record);const item=savedState.items.find(x=>x.serviceId===record.id);if(record.id==='kling'&&item?.billingSyncedAt)html=html.replace('<span class="sc-pill">저장한 정보</span><span>내가 확인한 구독·결제 정보</span>',`<span class="sc-pill">확장 자동 반영</span><span>${esc(new Date(item.billingSyncedAt).toLocaleString('ko-KR'))}</span>`);return html;};
+const detailBeforeAuto=detailV4;
+detailV4=function(){let html=detailBeforeAuto();const item=savedState.items.find(x=>x.serviceId===s.selected);if(item?.serviceId==='kling'&&item.billingSyncedAt)html=html.replaceAll('내가 저장한 구독·결제 정보','PC 확장에서 자동 반영한 금액·플랜').replace('내가 저장한 정보입니다. 자동 조회된 결제 정보와는 구분합니다.','PC 확장에서 수집한 결제정보를 자동 반영했어요. 결제일은 직접 입력한 정보예요.')+`<p class="sc-footnote">마지막 자동 반영 ${esc(new Date(item.billingSyncedAt).toLocaleString('ko-KR'))}</p>`;return html;};
+let billingRefreshBusy=false;
+async function refreshBillingSubscriptions(){if(billingRefreshBusy)return;billingRefreshBusy=true;try{const r=await fetch('/api/subscriptions',{cache:'no-store'}),d=await r.json();if(!r.ok)return;const before=JSON.stringify(savedState.items);applyStoredItems(d.items);if(before!==JSON.stringify(savedState.items)&&['home','detail'].includes(s.screen))render();}catch{}finally{billingRefreshBusy=false;}}
+async function refreshBillingView(){if(document.visibilityState!=='visible')return;await Promise.all([refreshBillingSubscriptions(),loadBillingAuto()]);if(s.screen==='editSubscription'&&s.editingSubscription==='kling')await loadBillingImport();}
+setInterval(refreshBillingView,30000);
+window.addEventListener('focus',refreshBillingView);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshBillingView();});
+loadBillingAuto();

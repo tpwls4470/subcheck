@@ -43,6 +43,13 @@
       "when": 1793074418728,
       "tag": "0005_lovely_white_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1793256673224,
+      "tag": "0006_flowery_lady_ursula",
+      "breakpoints": true
     }
   ]
 }

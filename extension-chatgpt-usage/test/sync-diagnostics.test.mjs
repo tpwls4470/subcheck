@@ -15,10 +15,10 @@ test('stale record is not transmitted; failures retain last confirmed success',a
  const stale=await runSync({candidate:{observedAt:new Date(Date.now()-86400001).toISOString()}});assert.equal(stale.sent,0);assert.equal(stale.data.billingSyncStatus.state,'stale_record');
  const previous={lastSuccessAt:'2026-10-01T00:00:00Z',lastSuccessObservedAt:'2026-10-01T00:00:00Z'};
  const failed=await runSync({reply:{ok:false,state:'server_error'},previous});assert.equal(failed.data.billingSyncStatus.lastSuccessAt,previous.lastSuccessAt);
- const success=await runSync();assert.equal(success.data.billingSyncStatus.state,'synced');assert.ok(success.data.billingSyncStatus.lastSuccessAt);
+ const applied=await runSync({reply:{ok:true,applied:true}});assert.equal(applied.data.billingSyncStatus.applied,true);const success=await runSync();assert.equal(success.data.billingSyncStatus.state,'synced');assert.ok(success.data.billingSyncStatus.lastSuccessAt);
 });
 async function runBridge(status,{type='application/json',redirected=false,networkError=false}={}){
- let listener,requests=0;const context={document:{querySelector:()=>({content:'test-csrf'})},fetch:async()=>{requests++;if(networkError)throw Error();return {status,ok:status>=200&&status<300,redirected,headers:{get:()=>type}};},chrome:{runtime:{id:'own',onMessage:{addListener(fn){listener=fn;}},sendMessage:async()=>{}},storage:{local:{get:async()=>({billingEnabled:true})}}}};vm.runInNewContext(bridge,context);
+ let listener,requests=0;const context={document:{querySelector:()=>({content:'test-csrf'})},fetch:async()=>{requests++;if(networkError)throw Error();return {status,ok:status>=200&&status<300,redirected,headers:{get:()=>type},json:async()=>({applied:true})};},chrome:{runtime:{id:'own',onMessage:{addListener(fn){listener=fn;}},sendMessage:async()=>{}},storage:{local:{get:async()=>({billingEnabled:true})}}}};vm.runInNewContext(bridge,context);
  const result=await new Promise(resolve=>listener({type:'SUBCHECK_BILLING_SYNC',candidate:{}},{id:'own'},resolve));return {result,requests};
 }
 test('bridge never mistakes a login HTML page for successful synchronization',async()=>{
@@ -29,7 +29,7 @@ test('bridge never mistakes a login HTML page for successful synchronization',as
  assert.equal((await runBridge(400)).result.state,'invalid_record');
  assert.equal((await runBridge(500)).result.state,'server_error');
  assert.equal((await runBridge(200,{networkError:true})).result.state,'network_error');
- assert.equal((await runBridge(200)).result.ok,true);
+ assert.equal((await runBridge(200)).result.ok,true);assert.equal((await runBridge(200)).result.applied,true);
 });
 
 test('popup labels server success as pending review and displays extension version',async()=>{

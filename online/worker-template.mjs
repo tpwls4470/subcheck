@@ -118,7 +118,7 @@ export function validateSubscription(value){
   for(const k of ['reminder3','reminderDay'])if(value[k]!==undefined&&typeof value[k]!=='boolean')throw Error('invalid');
   return {serviceId,name,plan:plan||null,amount,currency,nextPayment,cycle,channel,reminder3:value.reminder3===true,reminderDay:value.reminderDay===true};
 }
-function publicSubscription(row){return {serviceId:row.service_id,name:row.name,plan:row.plan,amount:row.amount==null?null:(row.currency==='USD'?row.amount/100:row.amount),currency:row.currency||'KRW',nextPayment:row.next_payment,cycle:row.cycle,channel:row.channel,updatedAt:row.updated_at,reminder3:!!row.reminder_3,reminderDay:!!row.reminder_day};}
+function publicSubscription(row){return {serviceId:row.service_id,name:row.name,plan:row.plan,amount:row.amount==null?null:(row.currency==='USD'?row.amount/100:row.amount),currency:row.currency||'KRW',nextPayment:row.next_payment,cycle:row.cycle,channel:row.channel,updatedAt:row.updated_at,reminder3:!!row.reminder_3,reminderDay:!!row.reminder_day,billingObservedAt:row.billing_observed_at||null,billingSyncedAt:row.billing_synced_at||null};}
 async function subscriptionApi(req,env,user,jar,url){
   if(!env.DB)return response({message:'구독 저장 기능을 준비 중이에요.'},503);
   if(req.method==='GET'){
@@ -136,7 +136,7 @@ async function subscriptionApi(req,env,user,jar,url){
   }
   let value;try{value=validateSubscription(payload);}catch{return response({message:'서비스명·금액·결제일을 확인해주세요.'},400);}
   const updatedAt=new Date().toISOString();
-  await env.DB.prepare('INSERT INTO subscriptions(user_id,service_id,name,plan,amount,next_payment,cycle,channel,updated_at,deleted_at,reminder_3,reminder_day,currency) VALUES(?,?,?,?,?,?,?,?,?,NULL,?,?,?) ON CONFLICT(user_id,service_id) DO UPDATE SET name=excluded.name,plan=excluded.plan,amount=excluded.amount,next_payment=excluded.next_payment,cycle=excluded.cycle,channel=excluded.channel,updated_at=excluded.updated_at,deleted_at=NULL,reminder_3=excluded.reminder_3,reminder_day=excluded.reminder_day,currency=excluded.currency').bind(user,value.serviceId,value.name,value.plan,value.amount==null?null:Math.round(value.amount*(value.currency==='USD'?100:1)),value.nextPayment,value.cycle,value.channel,updatedAt,Number(value.reminder3),Number(value.reminderDay),value.currency).run();
+  await env.DB.prepare('INSERT INTO subscriptions(user_id,service_id,name,plan,amount,next_payment,cycle,channel,updated_at,deleted_at,reminder_3,reminder_day,currency) VALUES(?,?,?,?,?,?,?,?,?,NULL,?,?,?) ON CONFLICT(user_id,service_id) DO UPDATE SET name=excluded.name,plan=excluded.plan,amount=excluded.amount,next_payment=excluded.next_payment,cycle=excluded.cycle,channel=excluded.channel,updated_at=excluded.updated_at,deleted_at=NULL,reminder_3=excluded.reminder_3,reminder_day=excluded.reminder_day,currency=excluded.currency,billing_synced_at=NULL').bind(user,value.serviceId,value.name,value.plan,value.amount==null?null:Math.round(value.amount*(value.currency==='USD'?100:1)),value.nextPayment,value.cycle,value.channel,updatedAt,Number(value.reminder3),Number(value.reminderDay),value.currency).run();
   return response({item:{...value,updatedAt}});
 }
 
@@ -154,7 +154,7 @@ export default {async fetch(req,env){
     }
     const jar=cookies(req);
     if(url.pathname==='/mcp'&&req.method==='POST')return reminderMcp(req,env,user);
-    if(url.pathname.startsWith('/icons/')||['/sw.js','/manifest.webmanifest','/app-icon.svg'].includes(url.pathname)||url.pathname.startsWith('/api/reminders')||url.pathname.startsWith('/api/push/')||url.pathname==='/api/usage-alerts'||url.pathname==='/api/usage-snapshot'||url.pathname==='/api/exchange-rate'||url.pathname==='/api/billing-candidate')return reminderApi(req,env,user,jar,url);
+    if(url.pathname.startsWith('/icons/')||['/sw.js','/manifest.webmanifest','/app-icon.svg'].includes(url.pathname)||url.pathname.startsWith('/api/reminders')||url.pathname.startsWith('/api/push/')||url.pathname==='/api/usage-alerts'||url.pathname==='/api/usage-snapshot'||url.pathname==='/api/exchange-rate'||url.pathname==='/api/billing-candidate'||url.pathname==='/api/billing-sync')return reminderApi(req,env,user,jar,url);
     if(['/api/subscriptions','/api/subscriptions/remove'].includes(url.pathname))return subscriptionApi(req,env,user,jar,url);
     if(req.method==='GET'&&url.pathname==='/'){
       const csrf=jar['__Host-subcheck-csrf']||random();
