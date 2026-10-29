@@ -45,7 +45,7 @@
      const buttons=Array.from(document.querySelectorAll('button')).filter(b=>b.getClientRects().length&&!b.disabled);
      const manage=buttons.find(b=>/^(Manage|구독 관리)$/.test(b.innerText.trim()));
      if(manage&&!job.clicked){job.clicked=true;manage.click();}
-     else if(!manage&&buttons.some(b=>/^(Log in|Log In|Sign in|Sign In|로그인|登录)$/.test(b.innerText.trim())))return finishManaged(job,{ok:false,state:'needs_kling_login'});
+     else if(!manage&&buttons.some(b=>/^(log\s?in|sign\s?in|로그인|登录)$/i.test(b.innerText.trim())))return finishManaged(job,{ok:false,state:'needs_kling_login'});
     }
    }
    if(Date.now()-job.started>38000)return finishManaged(job,{ok:false,state:job.lastState==='waiting_total'?'waiting_total':'needs_interaction'});

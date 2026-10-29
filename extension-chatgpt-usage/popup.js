@@ -10,7 +10,7 @@ chrome.storage.onChanged.addListener(showSync);showSync();
 
 function billingTime(value){return value?new Date(value).toLocaleString('ko-KR'):'아직 없음';}
 async function showBilling(){
- const d=await chrome.storage.local.get(['billingEnabled','billingCandidate','billingSyncStatus','billingCaptureStatus']);
+ const d=await chrome.storage.local.get(['billingEnabled','billingCandidate','billingSyncStatus','billingCaptureStatus','billingRefreshStatus']);
  document.querySelector('#billingEnabled').checked=d.billingEnabled===true;
  document.querySelector('#extensionVersion').textContent='버전 '+chrome.runtime.getManifest().version;
  const candidate=d.billingCandidate,raw=d.billingSyncStatus,status=typeof raw==='string'?{state:raw}:raw||{};
@@ -26,7 +26,8 @@ async function showBilling(){
   '마지막 전송 성공: '+billingTime(status.lastSuccessAt),
   '③ 앱 반영: '+(status.state==='synced'&&!stale?status.applied?'이 수집 기록을 내 구독에 자동 반영했어요.':'계정에 전송됐어요. 자동 업데이트를 켜거나 앱에서 확인 후 저장해주세요. 아직 구독에 자동 저장된 것은 아니에요.':'서버 전송 후 자동 업데이트 설정에 따라 반영해요.')
  ];
- document.querySelector('#billingStatus').textContent=lines.join('\n\n');
+ const refresh=d.billingRefreshStatus;const refreshLabels={reading:'조회 중',synced:'조회·전송 완료',interrupted:'브라우저 또는 확장 재시작으로 중단됐어요. 서브체크에서 다시 새로고침해주세요.',timeout:'시간이 초과됐어요. 클링 로그인 확인 후 다시 시도해주세요.',disabled:'수집이 꺼져 조회를 멈췄어요.',needs_reload:'서브체크 탭이 닫혔거나 연결이 끊겼어요.',needs_interaction:'클링 탭이 닫혔거나 직접 확인이 필요해요.',needs_kling_login:'클링 로그인이 필요해요.',open_failed:'조회 탭을 열지 못했어요.',cooldown:'잠시 후 다시 시도해주세요.'};const refreshInfo=refresh?'최근 새로고침: '+(refreshLabels[refresh.state]||'조회하지 못했어요. 다시 시도해주세요.')+'\n마지막 조회 성공: '+billingTime(refresh.lastSuccessAt)+'\n\n':'';
+ document.querySelector('#billingStatus').textContent=refreshInfo+lines.join('\n\n');
  document.querySelector('#billingRetry').disabled=!d.billingEnabled||!candidate||stale||status.state==='sending';
 }
 document.querySelector('#billingEnabled').addEventListener('change',e=>chrome.storage.local.set({billingEnabled:e.target.checked}));

@@ -18,7 +18,7 @@ test('stale record is not transmitted; failures retain last confirmed success',a
  const applied=await runSync({reply:{ok:true,applied:true}});assert.equal(applied.data.billingSyncStatus.applied,true);const success=await runSync();assert.equal(success.data.billingSyncStatus.state,'synced');assert.ok(success.data.billingSyncStatus.lastSuccessAt);
 });
 async function runBridge(status,{type='application/json',redirected=false,networkError=false}={}){
- let listener,requests=0;const context={document:{querySelector:()=>({content:'test-csrf'}),documentElement:{setAttribute(){}},addEventListener(){}},fetch:async()=>{requests++;if(networkError)throw Error();return {status,ok:status>=200&&status<300,redirected,headers:{get:()=>type},json:async()=>({applied:true})};},chrome:{runtime:{id:'own',getManifest:()=>({version:'0.5.0'}),onMessage:{addListener(fn){listener=fn;}},sendMessage:async()=>{}},storage:{local:{get:async()=>({billingEnabled:true})}}}};vm.runInNewContext(bridge,context);
+ let listener,requests=0;const context={AbortSignal,document:{querySelector:()=>({content:'test-csrf'}),documentElement:{setAttribute(){}},addEventListener(){}},fetch:async()=>{requests++;if(networkError)throw Error();return {status,ok:status>=200&&status<300,redirected,headers:{get:()=>type},json:async()=>({applied:true})};},chrome:{runtime:{id:'own',getManifest:()=>({version:'0.5.0'}),onMessage:{addListener(fn){listener=fn;}},sendMessage:async()=>{}},storage:{local:{get:async()=>({billingEnabled:true})}}}};vm.runInNewContext(bridge,context);
  const result=await new Promise(resolve=>listener({type:'SUBCHECK_BILLING_SYNC',candidate:{}},{id:'own'},resolve));return {result,requests};
 }
 test('bridge never mistakes a login HTML page for successful synchronization',async()=>{
