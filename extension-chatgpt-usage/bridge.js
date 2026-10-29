@@ -10,3 +10,13 @@ chrome.runtime.onMessage.addListener((message,sender,respond)=>{
  }catch{respond({ok:false,state:'network_error'});}})();return true;
 });
 chrome.runtime.sendMessage({type:'SUBCHECK_BRIDGE_READY'}).catch(()=>{});
+// A real click in the authorized Subcheck tab is required. Page scripts cannot invoke this via an untrusted event.
+let billingRefreshInFlight=false;
+document.documentElement.setAttribute('data-subcheck-background-refresh',chrome.runtime.getManifest().version);
+function reportBackgroundRefresh(result){document.dispatchEvent(new CustomEvent('subcheck:kling-refresh-status',{detail:JSON.stringify(result)}));}
+document.addEventListener('click',async event=>{
+ if(!event.isTrusted||!event.target.closest('#subcheck-design [data-refresh],#subcheck-design [data-live-refresh],#subcheck-design [data-bg-kling-refresh]')||billingRefreshInFlight)return;
+ billingRefreshInFlight=true;reportBackgroundRefresh({state:'reading'});
+ try{const result=await chrome.runtime.sendMessage({type:'SUBCHECK_REQUEST_KLING_REFRESH'});reportBackgroundRefresh(result||{ok:false,state:'needs_reload'});}
+ catch{reportBackgroundRefresh({ok:false,state:'needs_reload'});}finally{billingRefreshInFlight=false;}
+},true);

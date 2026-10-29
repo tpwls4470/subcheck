@@ -16,15 +16,15 @@ chrome.runtime.onMessage.addListener((message,sender,respond)=>{
  if(message?.type==='SUBCHECK_BRIDGE_READY'&&sender.url?.startsWith(origin+'/')){sync();respond({ok:true});}
 });
 
-let billingRunning=false,billingAgain=false;
+let billingRunning=false,billingAgain=false;const billingWaiters=[];
 async function writeBillingStatus(state,observedAt,applied=false){
  const {billingSyncStatus:previous}=await chrome.storage.local.get('billingSyncStatus');
  const at=new Date().toISOString();
  await chrome.storage.local.set({billingSyncStatus:{state,at,applied,observedAt:observedAt||null,lastSuccessAt:state==='synced'?at:previous?.lastSuccessAt||null,lastSuccessObservedAt:state==='synced'?observedAt:previous?.lastSuccessObservedAt||null}});
 }
 async function syncBilling(){
- if(billingRunning){billingAgain=true;return;}billingRunning=true;
- try{do{billingAgain=false;await sendBilling();}while(billingAgain);}finally{billingRunning=false;}
+ if(billingRunning){billingAgain=true;return new Promise(resolve=>billingWaiters.push(resolve));}billingRunning=true;
+ try{do{billingAgain=false;await sendBilling();}while(billingAgain);}finally{billingRunning=false;for(const resolve of billingWaiters.splice(0))resolve();}
 }
 async function sendBilling(){
  let candidate;
@@ -49,4 +49,45 @@ chrome.runtime.onMessage.addListener((m,sender,respond)=>{
  if(sender.id!==chrome.runtime.id)return;
  if(m?.type==='SUBCHECK_BILLING_RETRY'){syncBilling().then(()=>respond({ok:true}));return true;}
  if(m?.type==='SUBCHECK_BRIDGE_READY'&&sender.url?.startsWith(origin+'/'))syncBilling();
+});
+// User-triggered, bounded read-only lookup. Never reuses or changes existing tabs.
+const klingMembershipUrl='https://kling.ai/app/membership/membership-plan';
+let klingRefreshJob=null,lastKlingRefreshStart=0;
+function isKlingMembership(url){try{const u=new URL(url);return u.origin==='https://kling.ai'&&u.pathname==='/app/membership/membership-plan';}catch{return false;}}
+async function requestKlingRefresh(sender){
+ if(klingRefreshJob)return {ok:false,state:'busy'};
+ const {billingEnabled}=await chrome.storage.local.get('billingEnabled');
+ if(!billingEnabled)return {ok:false,state:'disabled'};
+ if(Date.now()-lastKlingRefreshStart<15000)return {ok:false,state:'cooldown'};
+ lastKlingRefreshStart=Date.now();
+ const job={sourceTabId:sender.tab.id,tabId:null,id:crypto.randomUUID(),settled:false};klingRefreshJob=job;
+ const result=new Promise(resolve=>{job.resolve=resolve;job.timer=setTimeout(()=>finishKlingRefresh(job,{ok:false,state:'timeout'}),45000);});
+ try{const tab=await chrome.tabs.create({url:klingMembershipUrl,active:false});job.tabId=tab.id;}catch{await finishKlingRefresh(job,{ok:false,state:'open_failed'});}
+ return result;
+}
+async function finishKlingRefresh(job,result){
+ if(job.settled)return;job.settled=true;clearTimeout(job.timer);
+ if(job.tabId!=null){try{const tab=await chrome.tabs.get(job.tabId);if(!tab.active)await chrome.tabs.remove(job.tabId);}catch{}}
+ if(klingRefreshJob===job)klingRefreshJob=null;job.resolve(result);
+}
+chrome.runtime.onMessage.addListener((message,sender,respond)=>{
+ if(sender.id!==chrome.runtime.id)return;
+ if(message?.type==='SUBCHECK_REQUEST_KLING_REFRESH'){
+  if(sender.frameId!==0||!sender.tab?.id||!sender.url?.startsWith(origin+'/'))return;
+  requestKlingRefresh(sender).then(respond).catch(()=>respond({ok:false,state:'network_error'}));return true;
+ }
+ const job=klingRefreshJob;if(!job||job.settled||sender.tab?.id!==job.tabId||!isKlingMembership(sender.url))return;
+ if(message?.type==='SUBCHECK_KLING_READY'){respond({jobId:job.id});return;}
+ if(message?.type==='SUBCHECK_KLING_REFRESH_PING'&&message.jobId===job.id){respond({ok:true});return;}
+ if(message?.type==='SUBCHECK_KLING_REFRESH_RESULT'&&message.jobId===job.id){
+  (async()=>{
+   if(!message.ok||!message.candidate){await finishKlingRefresh(job,{ok:false,state:message.state||'unsupported_display'});respond({ok:true});return;}
+   const c=message.candidate;
+   if(c.service!=='kling'||c.source!=='visible_manage_dialog'||!Number.isFinite(Date.parse(c.observedAt))||Math.abs(Date.now()-Date.parse(c.observedAt))>60000){await finishKlingRefresh(job,{ok:false,state:'invalid_record'});respond({ok:false});return;}
+   await chrome.storage.local.set({billingCandidate:c,billingCaptureStatus:{state:'captured',at:c.observedAt}});
+   await syncBilling();
+   const {billingSyncStatus:status}=await chrome.storage.local.get('billingSyncStatus');
+   await finishKlingRefresh(job,{ok:status?.state==='synced',state:status?.state||'network_error',applied:status?.applied===true,observedAt:c.observedAt});respond({ok:true});
+  })().catch(async()=>{await finishKlingRefresh(job,{ok:false,state:'network_error'});respond({ok:false});});return true;
+ }
 });
