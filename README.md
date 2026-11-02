@@ -4,7 +4,7 @@
 
 ## 다른 컴퓨터에서 이어가기
 
-**[CONTINUE.md](CONTINUE.md)**에 설치, 실행, 확장 업데이트, 기존 사이트 배포 연결과 다음 작업을 정리했습니다. 새 컴퓨터에서는 이 문서를 먼저 읽어주세요.
+**[여기서 시작하세요 · START_HERE.md](START_HERE.md)**에 앱 접속 링크, 코드 내려받기, 새 컴퓨터의 Chrome 연결과 Codex에 보낼 문장을 정리했습니다. 자세한 상태와 이력은 **[CONTINUE.md](CONTINUE.md)**에 있습니다. Codex가 이어갈 때 참고할 **[AGENTS.md](AGENTS.md)**도 함께 보관합니다.
 
 ## 현재 기능
 
