@@ -29,27 +29,36 @@ async function showBilling(){
  const refresh=d.billingRefreshStatus;const refreshLabels={reading:'조회 중',synced:'조회·전송 완료',interrupted:'브라우저 또는 확장 재시작으로 중단됐어요. 서브체크에서 다시 새로고침해주세요.',timeout:'시간이 초과됐어요. 클링 로그인 확인 후 다시 시도해주세요.',disabled:'수집이 꺼져 조회를 멈췄어요.',needs_reload:'서브체크 탭이 닫혔거나 연결이 끊겼어요.',needs_interaction:'클링 탭이 닫혔거나 직접 확인이 필요해요.',needs_kling_login:'클링 로그인이 필요해요.',open_failed:'조회 탭을 열지 못했어요.',cooldown:'잠시 후 다시 시도해주세요.'};const refreshInfo=refresh?'최근 새로고침: '+(refreshLabels[refresh.state]||'조회하지 못했어요. 다시 시도해주세요.')+'\n마지막 조회 성공: '+billingTime(refresh.lastSuccessAt)+'\n\n':'';
  document.querySelector('#billingStatus').textContent=refreshInfo+lines.join('\n\n');
  
- // [수정 지점] 수집 여부나 시간 만료와 상관없이, 동기화가 켜져 있고 전송 중이 아닐 때는 버튼 활성화
- document.querySelector('#billingRetry').disabled = !d.billingEnabled || status.state === 'sending';
+ // [수정] 무조건 버튼을 활성화 상태로 유지
+ const retryBtn = document.querySelector('#billingRetry');
+ if (retryBtn) {
+   retryBtn.disabled = false;
+   retryBtn.removeAttribute('disabled');
+ }
 }
 
 document.querySelector('#billingEnabled').addEventListener('change',e=>chrome.storage.local.set({billingEnabled:e.target.checked}));
 document.querySelector('#billingConnect').addEventListener('click',()=>chrome.tabs.create({url:'https://subcheck-mobile-tpwls4470.satinyshark14.chatgpt.site/?extensionSync=1'}));
 
-// [수정 지점] 재시도 버튼 클릭 시 상태 표시 및 백그라운드 재전송 보장
-document.querySelector('#billingRetry').addEventListener('click', async () => {
- const button = document.querySelector('#billingRetry');
- button.disabled = true;
- button.textContent = '전송 중…';
- try {
-   await chrome.runtime.sendMessage({type: 'SUBCHECK_BILLING_RETRY'});
- } catch (err) {
-   document.querySelector('#billingStatus').textContent = '확장을 새로고침한 뒤 다시 시도해주세요.';
- } finally {
-   button.textContent = '전송 다시 시도';
-   await showBilling();
- }
-});
+// [수정] 클릭 시 알림창과 콘솔을 띄워 작동 여부를 즉시 확인
+const retryBtn = document.querySelector('#billingRetry');
+if (retryBtn) {
+  retryBtn.addEventListener('click', async () => {
+    alert('버튼 클릭됨! 백그라운드로 전송을 시도합니다.');
+    retryBtn.textContent = '전송 중…';
+    try {
+      const response = await chrome.runtime.sendMessage({type: 'SUBCHECK_BILLING_RETRY'});
+      console.log('재전송 응답:', response);
+    } catch (err) {
+      console.error('재시도 오류:', err);
+      alert('오류 발생: ' + err.message);
+      document.querySelector('#billingStatus').textContent = '확장을 새로고침한 뒤 다시 시도해주세요.';
+    } finally {
+      retryBtn.textContent = '전송 다시 시도';
+      await showBilling();
+    }
+  });
+}
 
 chrome.storage.onChanged.addListener(showBilling);
 showBilling();
